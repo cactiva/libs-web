@@ -16,19 +16,21 @@ export default observer((props: any) => {
             meta.date = props.value;
             const h = getHours(props.value);
             const m = getMinutes(props.value);
-            if (h && m) meta.time = `${h}:${m}`;
+            if (h && m) meta.time = `${h < 10 ? '0' + h : h}:${m < 10 ? '0' + m : m}`;
         }
     }, []);
 
     const getValue = () => {
         let date = new Date();
         if (meta.date) date = meta.date;
+        const oldDate = date;
 
         const ts = meta.time.split(':');
         if (ts.length === 2) {
             date = setHours(date, parseInt(ts[0]));
             date = setMinutes(date, parseInt(ts[1]));
         }
+        if (date.getTime() !== date.getTime()) date = oldDate
         return date;
     }
 
@@ -39,7 +41,6 @@ export default observer((props: any) => {
             value={meta.date}
             formatDate={(date?: Date): string => {
                 if (!date) return "";
-                console.log(date);
                 return dateFormat(date, 'dd MMM yyyy');
             }}
             onSelectDate={(value) => {
@@ -52,11 +53,9 @@ export default observer((props: any) => {
             value={meta.time}
             onChange={(e: any) => {
                 meta.time = e.target.value;
-            }}
-
-            onBlur={(e) => {
                 props.onChange(getValue());
             }}
+
         />
 
 
