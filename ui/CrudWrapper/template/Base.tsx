@@ -51,6 +51,15 @@ export default observer(({ parsed, mode, setMode, idKey, structure }: any) => {
                 table={table}
                 setMode={setMode}
                 list={meta.list}
+                filter={meta.filter}
+                reload={async () => {
+                    meta.list = await reloadList({
+                        structure,
+                        idKey,
+                        filter: meta.filter,
+                        paging: meta.paging
+                    });
+                }}
                 colDef={colDef}
                 fkeys={fkeys} />
             : <Form form={form} data={meta.form} mode={mode} />

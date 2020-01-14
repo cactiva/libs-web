@@ -1,5 +1,5 @@
 import * as React from 'react';
 
-export default () => {
+export default ({ label, value }: any) => {
     return <div>[datetime]</div>;
 }

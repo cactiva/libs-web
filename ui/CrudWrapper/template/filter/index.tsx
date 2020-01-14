@@ -8,7 +8,7 @@ import FilterDecimal from './FilterDecimal';
 import FilterDateTime from './FilterDateTime';
 
 export default observer((props: any) => {
-    const { columns, colDef, fkeys } = props;
+    const { reload, filter, columns, colDef, fkeys } = props;
     const meta = useObservable({
         show: false,
         visibles: {},
@@ -48,21 +48,35 @@ export default observer((props: any) => {
         {columns.map((e, key) => {
             if (meta.visibles[e.key]) {
                 const type = _.get(colDef, `${e.key}.data_type`);
+                const submit = () => {
+                    reload();
+                }
+                const setValue = (newvalue) => {
+                    filter.form[e.key] = newvalue;
+                }
                 switch (type) {
                     case "character varying":
                     case "text":
-                        return <FilterString key={key} />
+                        return <FilterString
+                            setValue={setValue}
+                            submit={submit}
+                            value={filter.form[e.key]}
+                            key={key}
+                            field={e.key}
+                            label={e.name} />
                     case "integer":
-                        return <FilterInteger key={key} />
+                        return <FilterInteger submit={submit} key={key} value={e.key} label={e.name} />
+                    case "numeric": // money
+                        return <FilterInteger submit={submit} key={key} value={e.key} label={e.name} />
                     case "double precision":
                     case "decimal":
-                        return <FilterDecimal key={key} />
+                        return <FilterDecimal submit={submit} key={key} value={e.key} label={e.name} />
                     case "timestamp without time zone":
                     case "timestamp with time zone":
-                        return <FilterDateTime key={key} />
+                        return <FilterDateTime submit={submit} key={key} value={e.key} label={e.name} />
                 }
 
-                return null;
+                return <div key={key}>[MISSING-{type}]</div>;
             }
         })}
 

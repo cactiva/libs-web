@@ -5,10 +5,10 @@ import { dateFormat } from '@src/libs/utils/date';
 import NiceValue from '../../Field/NiceValue';
 import Filter from './filter';
 
-export default ({ table, list, colDef, fkeys, setMode }: any) => {
+export default ({ table, reload, list, filter, colDef, fkeys, setMode }: any) => {
     const columns = generateColumns(table, colDef, fkeys);
     return <>
-        <Filter columns={columns} colDef={colDef} fkeys={fkeys} />
+        <Filter filter={filter} reload={reload} columns={columns} colDef={colDef} fkeys={fkeys} />
         <DetailsList
             selectionMode={SelectionMode.single}
             items={list || []}
