@@ -10,6 +10,7 @@ export default observer (({ label, value, field, setValue, submit }: any) => {
     return <ItemButton
         label = {label}
         field = {field}
+        setValue={setValue}
         onClose= {() => {
             setValue(parseFloat(meta.oldval));
             submit()
