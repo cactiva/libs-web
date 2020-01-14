@@ -107,7 +107,6 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
             }
         }
     }
-    console.log(where);
     const query = generateQueryString({
         ...structure,
         where,
