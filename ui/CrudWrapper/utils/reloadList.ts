@@ -2,6 +2,8 @@ import _ from 'lodash';
 import { toJS } from 'mobx';
 import { generateQueryString } from '@src/libs/utils/genQueryString';
 import { queryAll } from '@src/libs/utils/gql';
+import { columnDefs } from '..';
+import { dateFormat } from '@src/libs/utils/date';
 
 export default async (opt: { structure: any, paging: any, filter: any, idKey: string }) => {
     const { structure, paging, filter, idKey } = opt;
@@ -40,11 +42,19 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
 
 
     if (filter && filter.form) {
+        const colDef = _.get(columnDefs, `${structure.name}.columns`);
         for (let i in filter.form) {
             let value = filter.form[i];
             let operator = "";
             let vtype = "";
             let valueType: string = typeof value;
+
+            const cold = _.find(colDef, { column_name: i });
+            const colType = _.get(cold, 'data_type');
+            if (colType) {
+                valueType = colType;
+            }
+
             if (filterCols[i]) {
                 if (filterCols[i].type) {
                     valueType = filterCols[i].type;
@@ -66,10 +76,24 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
                     vtype = "IntValue";
                     operator = "_eq";
                     break;
+
+                case "timestamp without time zone":
+                case "timestamp with time zone":
+                    if (value) {
+                        vtype ="StringValue";
+                        operator = "_eq";
+                        value = dateFormat(value, 'yyyy-MM-dd HH:mm:ss');
+                    } 
+                    break;
                 case "string":
                     vtype = "StringValue";
                     operator = "_ilike";
                     value = `%${value}%`;
+                    break;
+                case "double precision":
+                    vtype = "float8";
+                    operator = "_eq";
+                    value = `${value}`;
                     break;
             }
 
@@ -83,9 +107,6 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
             }
         }
     }
-
-    console.log(where)
-
     const query = generateQueryString({
         ...structure,
         where,
@@ -98,7 +119,7 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
     });
 
     const res = await queryAll(query, { auth: structure.auth });
-    
+
     // _.map(res, (e) => {
     //     if (e.aggregate) {
     //         const count = e.aggregate.count
