@@ -1,8 +1,8 @@
-import { Text } from '../..';
-import * as React from 'react';
 import _ from 'lodash';
-import { CommandBar, ActionButton } from 'office-ui-fabric-react';
 import { observer } from 'mobx-react-lite';
+import { ActionButton } from 'office-ui-fabric-react';
+import * as React from 'react';
+import { Text } from '../..';
 
 export default observer(({ parsed, mode, setMode }: any) => {
     const title = _.get(parsed, 'title.children');
@@ -48,6 +48,9 @@ export default observer(({ parsed, mode, setMode }: any) => {
                         text: 'Save',
                         primary: true,
                         iconProps: { iconName: 'Save' },
+                        onClick: () => {
+                            alert('ngesave')
+                        }
                     }
                 }
                 break;

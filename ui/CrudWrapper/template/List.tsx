@@ -2,16 +2,22 @@ import * as React from 'react';
 import { DetailsList, ColumnActionsMode, SelectionMode } from 'office-ui-fabric-react';
 import _ from 'lodash';
 import { dateFormat } from '@src/libs/utils/date';
+import NiceValue from '../../Field/NiceValue';
+import Filter from './filter';
 
-export default ({ table, list, colDef, fkeys }: any) => {
+export default ({ table, list, colDef, fkeys, setMode }: any) => {
     const columns = generateColumns(table, colDef, fkeys);
-    return <DetailsList
-        selectionMode={SelectionMode.none}
-        items={list}
-        onItemInvoked={() => {
-            console.log('mantab');
-        }}
-        columns={columns} />;
+    return <>
+        <Filter columns={columns} colDef={colDef} fkeys={fkeys} />
+        <DetailsList
+            selectionMode={SelectionMode.single}
+            items={list || []}
+            onItemInvoked={() => {
+                setMode('edit');
+            }}
+            onRenderCheckbox={() => { return null; }}
+            columns={columns} />
+    </>;
 }
 
 const generateColumns = (table, colDef, fkeys) => {
@@ -22,20 +28,29 @@ const generateColumns = (table, colDef, fkeys) => {
         }
     })
 
-    return cols.map(e => {
+    return cols.map((e: any) => {
         return {
             key: e.path,
             name: e.title,
+            maxWidth: 200,
             columnActionsMode: ColumnActionsMode.disabled,
             onRender: (item: any) => {
                 const cdef = colDef[e.path];
                 const value = _.get(item, e.path);
+                let valueEl: any = null;
                 if (cdef) {
                     if (cdef.data_type.indexOf('timestamp') >= 0 || cdef.data_type === 'date') {
-                        return dateFormat(value);
+                        valueEl = dateFormat(value);
                     }
                 }
-                return value;
+                if (typeof value === 'string') {
+                    valueEl = value;
+                }
+
+                if (typeof value === "object") {
+                    valueEl = <NiceValue value={value} />;
+                }
+                return valueEl;
             }
         }
     });

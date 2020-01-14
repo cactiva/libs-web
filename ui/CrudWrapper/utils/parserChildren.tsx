@@ -1,12 +1,10 @@
-import * as React from 'react';
-import Table from '../../Table';
-import TableRow from '../../Table/TableRow';
 import _ from 'lodash';
+import * as React from 'react';
 import { columnDefs } from '..';
 import { Text, View } from '../..';
-import { isColumnForeign } from './isColumnForeign';
+import Table from '../../Table';
 import TableHead from '../../Table/TableHead';
-import BreadcrumbTrigger from '../template/breads/BreadcrumbTrigger';
+import TableRow from '../../Table/TableRow';
 
 export default (input: any) => {
     const { children, idKey, data, relations } = input;

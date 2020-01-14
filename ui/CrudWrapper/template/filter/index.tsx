@@ -1,106 +1,100 @@
-import Theme from "@src/theme.json";
 import _ from 'lodash';
-import { observer } from 'mobx-react-lite';
-import React from 'react';
-import Number from './Number';
-import { View } from "@src/libs/ui";
+import { observer, useObservable } from 'mobx-react-lite';
+import { Callout, Checkbox, IconButton } from 'office-ui-fabric-react';
+import React, { useEffect, useRef } from 'react';
+import FilterString from './FilterString';
+import FilterInteger from './FilterInteger';
+import FilterDecimal from './FilterDecimal';
+import FilterDateTime from './FilterDateTime';
+
 export default observer((props: any) => {
-    const form = _.get(props, 'filter.form', {});
-    const optionCols = _.cloneDeep(_.get(props, 'options.columns', {}));
-    const optionColsKeys = Object.keys(optionCols);
-    const columns: any = [];
+    const { columns, colDef, fkeys } = props;
+    const meta = useObservable({
+        show: false,
+        visibles: {},
+        init: false
+    })
+    const btnRef = useRef(null);
 
-    if (optionColsKeys.length === 0) {
-        props.columns.map(e => {
-            columns.push(e);
-        });
-
-    } else {
-        optionColsKeys.map(key => {
-            columns.push({
-                path: key,
-                title: optionCols[key].label || _.startCase(key)
-            })
-        })
-    }
-    return <View style={filterStyles.outer}>{
-        columns.map((e, idx) => {
-            const columns = _.get(props, `defs.columns`, []);
-            let type = _.get(props.options, `columns.${e.path}.type`, undefined);
-            if (!type) {
-                type = (_.find(columns, { column_name: e.path }) || {}).data_type;
+    useEffect(() => {
+        if (!meta.init) {
+            if (columns.length > 6) {
+                for (let i = 0; i < 6; i++) {
+                    const e = columns[i];
+                    meta.visibles[e.key] = true;
+                }
+            } else {
+                for (let i in columns) {
+                    const e = columns[i];
+                    meta.visibles[e.key] = true;
+                }
             }
-            switch (type) {
-                case "number":
-                case "numeric":
-                case "integer":
-                    return <Number
-                        key={idx}
-                        title={e.title}
-                        submit={props.submit}
-                        currentValue={form[e.path]}
-                        form={form}
-                        name={e.path} />;
-                default:
-                    // console.log(type);
-                    break;
-            }
-        })
-    }</View>;
-})
+            meta.init = true;
+        }
+    }, []);
 
-export const filterStyles = {
-    outer: { flexDirection: 'row', alignItems: 'center', padding: 10 },
-    label: {
-        fontSize: 14,
-        fontFamily: _.get(Theme, "fontFamily", undefined),
-        paddingHorizontal: 5
-    },
-    labelContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 5,
-    },
-    outerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    container: {
-        flexDirection: 'row',
-        alignItems: 'stretch',
-        borderWidth: 1,
-        borderColor: '#ccc',
-        backgroundColor: '#ececeb',
-        height: 30,
-        marginRight: 5
-    },
-    field: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-        padding: 3,
-        paddingHorizontal: 6,
-        borderLeftWidth: 1,
-        borderColor: '#ccc',
-    },
-    inputTextContainer: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 5 },
-    inputText: {
-        fontFamily: _.get(Theme, "fontFamily", undefined),
-        fontSize: 14,
-        minWidth: 30,
-        marginLeft: -3,
-        textAlign: 'center'
-    },
-    resetButton: {
-        height: 20,
-        backgroundColor: '#ececeb',
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderLeftWidth: 0,
-        marginLeft: -5,
-        marginRight: 5,
-        padding: 2,
+    return <div style={{
+        display: 'flex',
         flexDirection: 'row',
         alignItems: 'center'
-    }
-}
+    }}>
+
+        <div ref={btnRef}>
+            <IconButton
+                onClick={() => meta.show = true}
+                iconProps={{ iconName: "GlobalNavButton" }} />
+        </div>
+
+        {columns.map((e, key) => {
+            if (meta.visibles[e.key]) {
+                const type = _.get(colDef, `${e.key}.data_type`);
+                switch (type) {
+                    case "character varying":
+                    case "text":
+                        return <FilterString key={key} />
+                    case "integer":
+                        return <FilterInteger key={key} />
+                    case "double precision":
+                    case "decimal":
+                        return <FilterDecimal key={key} />
+                    case "timestamp without time zone":
+                    case "timestamp with time zone":
+                        return <FilterDateTime key={key} />
+                }
+
+                return null;
+            }
+        })}
+
+        {meta.show && (
+            <Callout
+                onDismiss={() => meta.show = false}
+                setInitialFocus={true}
+                target={btnRef.current}
+            >
+                <div style={{
+                    padding: 10,
+                    display: "flex",
+                    width: '250px',
+                    flexWrap: 'wrap',
+                    flexDirection: 'row'
+                }}>
+                    {columns.map((e, key) => {
+                        return <Checkbox
+                            key={e.key}
+                            styles={{ root: { marginBottom: 3, marginRight: 3, width: '120px' } }}
+                            label={e.name}
+                            checked={!!meta.visibles[e.key]}
+                            onChange={() => {
+                                if (meta.visibles[e.key]) {
+                                    meta.visibles[e.key] = false;
+                                } else {
+                                    meta.visibles[e.key] = true;
+                                }
+                            }} />;
+                    })}
+                </div>
+            </Callout>
+        )}
+    </div>;
+})

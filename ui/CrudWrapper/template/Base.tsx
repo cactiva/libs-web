@@ -47,7 +47,12 @@ export default observer(({ parsed, mode, setMode, idKey, structure }: any) => {
     return <div style={{ display: "flex", flexDirection: 'column', flex: 1 }}>
         <Header parsed={parsed} mode={mode} setMode={setMode} />
         {mode === ''
-            ? <List table={table} list={meta.list} colDef={colDef} fkeys={fkeys} />
+            ? <List
+                table={table}
+                setMode={setMode}
+                list={meta.list}
+                colDef={colDef}
+                fkeys={fkeys} />
             : <Form form={form} data={meta.form} mode={mode} />
         }
     </div>;
