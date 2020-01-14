@@ -1,7 +1,7 @@
 import * as React from 'react';
 import ItemButton from './ItemButton';
 import { observer } from 'mobx-react-lite';
-import { DateTime } from '@src/libs/ui';
+import { DatePicker } from 'office-ui-fabric-react';
 import { dateFormat } from '@src/libs/utils/date';
 
 export default observer(({ label, field, value, setValue, submit }: any) => {
@@ -11,10 +11,11 @@ export default observer(({ label, field, value, setValue, submit }: any) => {
         setValue={setValue}
         onClose={() => submit()}
         value={value instanceof Date ? dateFormat(value) : ""}>
-        <DateTime
+        <DatePicker
             value={value}
-            onChange={(e: any) => {
+            onSelectDate={(e: any) => {
                 setValue(e);
+                console.log(e);
             }}
             styles={{ root: { padding: 10 } }} />
     </ItemButton>;

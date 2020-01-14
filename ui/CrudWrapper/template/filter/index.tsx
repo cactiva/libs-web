@@ -7,8 +7,8 @@ import FilterInteger from './FilterInteger';
 import FilterDecimal from './FilterDecimal';
 import FilterDateTime from './FilterDateTime';
 import FilterMoney from './FilterMoney';
-import { toJS } from 'mobx';
 import FilterBoolean from './FilterBoolean';
+import FilterDate from './FilterDate';
 
 export default observer((props: any) => {
     const { reload, filter, columns, colDef, fkeys } = props;
@@ -111,6 +111,13 @@ export default observer((props: any) => {
                             value={filter.form[e.key]}
                             label={e.name}
                             field={e.key} />
+                    case "date":
+                        return <FilterDate
+                            setValue={setValue}
+                            submit={submit}
+                            key={key}
+                            value={filter.form[e.key]}
+                            label={e.name} />
                 }
 
                 return <div key={key}>[MISSING-{type}]</div>;
