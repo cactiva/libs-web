@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { observer } from 'mobx-react-lite';
-import { Dropdown } from './Dropdown';
 
 interface ISelectProps {
     items: (string | {
@@ -27,5 +26,5 @@ export default observer((props: ISelectProps) => {
         }
     }).filter(e => !!e);
 
-    return <Dropdown options={items} />;
+    return <div />;
 });
