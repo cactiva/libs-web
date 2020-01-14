@@ -72,6 +72,7 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
                     }
                     break;
                 case "number":
+                case "integer":
                 case "relation":
                     vtype = "IntValue";
                     operator = "_eq";
@@ -80,12 +81,14 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
                 case "timestamp without time zone":
                 case "timestamp with time zone":
                     if (value) {
-                        vtype ="StringValue";
+                        vtype = "StringValue";
                         operator = "_eq";
                         value = dateFormat(value, 'yyyy-MM-dd HH:mm:ss');
-                    } 
+                    }
                     break;
                 case "string":
+                case "character varying":
+                case "text":
                     vtype = "StringValue";
                     operator = "_ilike";
                     value = `%${value}%`;
