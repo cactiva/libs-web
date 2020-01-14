@@ -58,8 +58,8 @@ export default observer((props: any) => {
                 const setValue = (newvalue) => {
                     if (!newvalue) {
                         delete filter.form[e.key];
-                    } else 
-                    filter.form[e.key] = newvalue;
+                    } else
+                        filter.form[e.key] = newvalue;
                 }
                 switch (type) {
                     case "character varying":
@@ -72,39 +72,44 @@ export default observer((props: any) => {
                             field={e.key}
                             label={e.name} />
                     case "integer":
-                        return <FilterInteger 
+                        return <FilterInteger
                             setValue={setValue}
-                            submit={submit} 
-                            key={key} 
-                            value={filter.form[e.key]} 
+                            submit={submit}
+                            key={key}
+                            value={filter.form[e.key]}
                             field={e.key}
-                            label={e.name} />                 
+                            label={e.name} />
                     case "numeric": // money
-                        return <FilterMoney 
+                        return <FilterMoney
                             setValue={setValue}
-                            submit={submit} 
-                            key={key} 
-                            value={filter.form[e.key]} 
+                            submit={submit}
+                            key={key}
+                            value={filter.form[e.key]}
                             field={e.key}
-                            label={e.name} /> 
+                            label={e.name} />
                     case "double precision":
                     case "decimal":
-                        return <FilterDecimal 
+                        return <FilterDecimal
                             setValue={setValue}
-                            submit={submit} 
-                            key={key} 
-                            value={filter.form[e.key]} 
+                            submit={submit}
+                            key={key}
+                            value={filter.form[e.key]}
                             field={e.key}
-                            label={e.name} /> 
+                            label={e.name} />
                     case "timestamp without time zone":
                     case "timestamp with time zone":
-                        return <FilterDateTime submit={submit} key={key} value={e.key} label={e.name} />
-                    case "boolean":
-                        return <FilterBoolean 
+                        return <FilterDateTime
                             setValue={setValue}
-                            submit={submit} 
-                            key={key} 
-                            value={filter.form[e.key]} 
+                            submit={submit}
+                            key={key}
+                            value={filter.form[e.key]}
+                            label={e.name} />
+                    case "boolean":
+                        return <FilterBoolean
+                            setValue={setValue}
+                            submit={submit}
+                            key={key}
+                            value={filter.form[e.key]}
                             label={e.name}
                             field={e.key} />
                 }

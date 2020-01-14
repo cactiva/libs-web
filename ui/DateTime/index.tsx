@@ -39,6 +39,7 @@ export default observer((props: any) => {
             value={meta.date}
             formatDate={(date?: Date): string => {
                 if (!date) return "";
+                console.log(date);
                 return dateFormat(date, 'dd MMM yyyy');
             }}
             onSelectDate={(value) => {

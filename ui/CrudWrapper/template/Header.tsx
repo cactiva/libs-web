@@ -40,7 +40,7 @@ export default observer(({ parsed, mode, form, structure, setLoading, setMode, a
                                             valueType: 'Int'
                                         }
                                     ]
-                                });
+                                }); 
 
                                 setLoading(true);
                                 await queryAll(q.query, { auth });

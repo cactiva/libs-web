@@ -9,7 +9,7 @@ export default observer(({ label, field, value, setValue, submit }: any) => {
         label={label}
         field={field}
         onClose={() => submit()}
-        value={dateFormat(value)}>
+        value={value instanceof Date ? dateFormat(value) : ""}>
         <DateTime
             value={value}
             onChange={(e: any) => {
