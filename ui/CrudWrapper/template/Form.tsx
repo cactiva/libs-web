@@ -2,6 +2,7 @@ import * as React from 'react';
 import Form from '../../Form';
 import _ from 'lodash';
 import { Field } from '../..';
+import { toJS } from 'mobx';
 
 export default ({ form, data, mode }: any) => {
     if (typeof form !== 'function') return null;

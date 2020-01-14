@@ -9,7 +9,7 @@ import reloadList from '../utils/reloadList';
 import useAsyncEffect from 'use-async-effect';
 import _ from 'lodash';
 
-export default observer(({ parsed, mode, setMode, idKey, structure }: any) => {
+export default observer(({ parsed, mode, setMode, structure, auth, idKey }: any) => {
     const { table, form } = parsed;
 
     const meta = useObservable({
@@ -22,6 +22,7 @@ export default observer(({ parsed, mode, setMode, idKey, structure }: any) => {
         paging: {
             current: 0,
         },
+        loading: false,
         form: {}
     });
 
@@ -44,22 +45,34 @@ export default observer(({ parsed, mode, setMode, idKey, structure }: any) => {
     const fkeys = structure.fkeys;
     if (!colDef || !fkeys) return null;
 
+    const reload = async () => {
+        meta.list = await reloadList({
+            structure,
+            idKey,
+            filter: meta.filter,
+            paging: meta.paging
+        });
+    };
+
     return <div style={{ display: "flex", flexDirection: 'column', flex: 1 }}>
-        <Header parsed={parsed} mode={mode} setMode={setMode} />
+        <Header
+            structure={structure}
+            parsed={parsed}
+            form={meta.form}
+            mode={mode}
+            auth={auth}
+            idKey={idKey}
+            reload={reload}
+            setLoading={(v: boolean) => meta.loading = v}
+            setMode={setMode} />
         {mode === ''
             ? <List
                 table={table}
                 setMode={setMode}
                 list={meta.list}
+                setForm={(v) => meta.form = v}
                 filter={meta.filter}
-                reload={async () => {
-                    meta.list = await reloadList({
-                        structure,
-                        idKey,
-                        filter: meta.filter,
-                        paging: meta.paging
-                    });
-                }}
+                reload={reload}
                 colDef={colDef}
                 fkeys={fkeys} />
             : <Form form={form} data={meta.form} mode={mode} />

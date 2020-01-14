@@ -18,11 +18,13 @@ export default observer((props: any) => {
     if (!data || !children) return null;
 
     const structure = _.get(props, 'data.structure');
+    const auth = _.get(props, 'data.auth');
     const parsed = parserChildren(props);
 
     return <Template
         idKey={idKey}
         structure={structure}
+        auth={auth}
         parsed={parsed}
         mode={meta.front.mode}
         setMode={(newmode) => meta.front.mode = newmode} />;
