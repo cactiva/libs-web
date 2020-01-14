@@ -18,8 +18,8 @@ export default observer((props: any) => {
 
     useEffect(() => {
         if (!meta.init) {
-            if (columns.length > 6) {
-                for (let i = 0; i < 6; i++) {
+            if (columns.length > 1) {
+                for (let i = 0; i < 1; i++) {
                     const e = columns[i];
                     meta.visibles[e.key] = true;
                 }
@@ -70,10 +70,22 @@ export default observer((props: any) => {
                         return <FilterInteger submit={submit} key={key} value={e.key} label={e.name} />
                     case "double precision":
                     case "decimal":
-                        return <FilterDecimal submit={submit} key={key} value={e.key} label={e.name} />
+                        return <FilterDecimal 
+                            setValue={setValue}
+                            submit={submit}
+                            value={filter.form[e.key]}
+                            key={key}
+                            field={e.key}
+                            label={e.name} />
                     case "timestamp without time zone":
                     case "timestamp with time zone":
-                        return <FilterDateTime submit={submit} key={key} value={e.key} label={e.name} />
+                        return <FilterDateTime 
+                            setValue={setValue}
+                            submit={submit}
+                            value={filter.form[e.key]}
+                            key={key}
+                            field={e.key}
+                            label={e.name} />
                 }
 
                 return <div key={key}>[MISSING-{type}]</div>;
