@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DetailsList, ColumnActionsMode, SelectionMode, IDetailsHeaderProps, IRenderFunction, Sticky, DetailsListLayoutMode } from 'office-ui-fabric-react';
+import { DetailsList, ColumnActionsMode, SelectionMode, IDetailsHeaderProps, IRenderFunction, Sticky, DetailsListLayoutMode, StickyPositionType, IDetailsRowProps } from 'office-ui-fabric-react';
 import _ from 'lodash';
 import { dateFormat } from '@src/libs/utils/date';
 import NiceValue from '../../Field/NiceValue';
@@ -23,12 +23,18 @@ export default ({ table, reload, setForm, list, filter, colDef, fkeys, setMode }
                         setForm(e);
                         setMode('edit');
                     }}
-                    onRenderDetailsHeader={
-                        (detailsHeaderProps?: IDetailsHeaderProps, defaultRender?: IRenderFunction<IDetailsHeaderProps>) => (
-                            <Sticky>
-                                {defaultRender && defaultRender(detailsHeaderProps)}
-                            </Sticky>
-                        )}
+                    onRenderRow={(detailsRowProps?: IDetailsRowProps, defaultRender?: IRenderFunction<IDetailsRowProps>) => (
+                        <>
+                            <div onClick={() => {
+                                if (detailsRowProps) {
+                                    setForm(detailsRowProps.item);
+                                    setMode('edit');
+                                }
+                            }}>
+                                {defaultRender && defaultRender(detailsRowProps)}
+                            </div>
+                        </>
+                    )}
                     layoutMode={DetailsListLayoutMode.fixedColumns}
                     onRenderCheckbox={() => { return null; }}
                     columns={columns} />
