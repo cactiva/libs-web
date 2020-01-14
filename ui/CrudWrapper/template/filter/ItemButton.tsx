@@ -1,8 +1,8 @@
 import { observer, useObservable } from 'mobx-react-lite';
-import { ActionButton, Callout } from 'office-ui-fabric-react';
+import { ActionButton, Callout, PrimaryButton, DefaultButton, IconButton } from 'office-ui-fabric-react';
 import * as React from 'react';
 
-export default observer(({ label, field, value, onClose, children }: any) => {
+export default observer(({ label, value, onClose, children, setValue }: any) => {
     const meta = useObservable({
         show: false,
     });
@@ -12,6 +12,7 @@ export default observer(({ label, field, value, onClose, children }: any) => {
             <ActionButton onClick={() => {
                 meta.show = true;
             }} text={`${label}: ${value || 'All'}`} />
+
         </div>
 
         {meta.show && (
@@ -25,7 +26,16 @@ export default observer(({ label, field, value, onClose, children }: any) => {
                 setInitialFocus={true}
                 target={btnRef.current}
             >
-                {children}
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', paddingRight: 10 }}>
+                    {children}
+                    <IconButton iconProps={{ iconName: 'Trash' }} onClick={() => {
+                        meta.show = false;
+                        setValue(undefined);
+                        if (onClose) {
+                            onClose();
+                        }
+                    }} />
+                </div>
             </Callout>
         )}
     </>;

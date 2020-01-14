@@ -10,6 +10,7 @@ export default ({ label, field, value, setValue, submit }: any) => {
     return <ItemButton
         label={label}
         field={field}
+        setValue={setValue}
         onClose={() => submit()}
         value={value}>
             

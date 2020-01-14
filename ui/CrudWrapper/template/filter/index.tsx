@@ -51,7 +51,6 @@ export default observer((props: any) => {
         {columns.map((e, key) => {
             if (meta.visibles[e.key]) {
                 const type = _.get(colDef, `${e.key}.data_type`);
-                console.log(toJS(colDef[e.key]));
                 const submit = () => {
                     reload();
                 }
