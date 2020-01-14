@@ -56,6 +56,10 @@ const generateColumns = (table, colDef, fkeys) => {
                 if (typeof value === "object") {
                     valueEl = <NiceValue value={value} />;
                 }
+
+                if (typeof value === 'number') {
+                    valueEl = value;
+                }
                 return valueEl;
             }
         }
