@@ -7,6 +7,7 @@ export default (props: any) => {
 
     const onChange = (e: any) => {
         const value = e.target.value;
+        console.log("iki value", value)
         props.setValue(value)
     }
 

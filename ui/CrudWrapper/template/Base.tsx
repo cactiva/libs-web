@@ -37,6 +37,7 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey }: any)
             });
         }
     }, []);
+    console.log("iki structure", typeof structure)
 
     const colDef = {};
     _.get(columnDefs, `${structure.name}.columns`, []).map(e => {
