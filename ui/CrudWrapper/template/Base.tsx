@@ -44,7 +44,7 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey }: any)
         colDef[e.column_name] = e;
     })
     const fkeys = structure.fkeys;
-    if (!colDef || !fkeys) return null;
+    if (Object.keys(colDef).length === 0 || !fkeys) return null;
 
     const reload = async () => {
         meta.list = await reloadList({
@@ -70,13 +70,15 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey }: any)
             ? <List
                 table={table}
                 setMode={setMode}
+                structure={structure}
                 list={meta.list}
                 setForm={(v) => meta.form = v}
                 filter={meta.filter}
                 reload={reload}
+                auth={auth}
                 colDef={colDef}
                 fkeys={fkeys} />
-            : <Form form={form} data={meta.form} mode={mode} />
+            : <Form form={form} colDef={colDef} fkeys={fkeys} data={meta.form} mode={mode} />
         }
     </div>;
 })

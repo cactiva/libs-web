@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { observer, useObservable } from 'mobx-react-lite';
-import { Callout, Checkbox, IconButton } from 'office-ui-fabric-react';
+import { Callout, Checkbox, IconButton, Spinner } from 'office-ui-fabric-react';
 import React, { useEffect, useRef } from 'react';
 import FilterString from './FilterString';
 import FilterInteger from './FilterInteger';
@@ -9,9 +9,10 @@ import FilterDateTime from './FilterDateTime';
 import FilterMoney from './FilterMoney';
 import FilterBoolean from './FilterBoolean';
 import FilterDate from './FilterDate';
+import FilterRelation from './FilterRelation';
 
 export default observer((props: any) => {
-    const { reload, filter, columns, colDef, fkeys } = props;
+    const { reload, filter, columns, colDef, fkeys, structure, auth } = props;
     const meta = useObservable({
         show: false,
         visibles: {},
@@ -22,7 +23,7 @@ export default observer((props: any) => {
     useEffect(() => {
         if (!meta.init) {
             if (columns.length > 1) {
-                for (let i = 0; i < 1; i++) {
+                for (let i = 0; i < 4; i++) {
                     const e = columns[i];
                     meta.visibles[e.key] = true;
                 }
@@ -55,11 +56,44 @@ export default observer((props: any) => {
                     reload();
                 }
                 const setValue = (newvalue) => {
+                    let key = e.key;
+                    if (!type && !fkeys[e.key] && e.relation && e.relation.alias) {
+                        key = e.relation.alias;
+                    }
                     if (!newvalue) {
-                        delete filter.form[e.key];
+                        delete filter.form[key];
                     } else
-                        filter.form[e.key] = newvalue;
+                        filter.form[key] = newvalue;
                 }
+
+                if (e.relation) {
+                    const alias = e.relation.alias;
+                    if (alias) {
+                        let tablename = "";
+                        let key: any = [e.key];
+                        if (!type && !fkeys[e.key] && e.relation && e.relation.alias) {
+                            key = e.relation.alias;
+                        }
+
+                        if (fkeys[e.key]) {
+                            tablename = fkeys[e.key].foreign_table_name;
+                        }
+
+                        return <FilterRelation
+                            setValue={setValue}
+                            submit={submit}
+                            value={filter.form[key]}
+                            key={key}
+                            structure={structure}
+                            auth={auth}
+                            tablename={tablename}
+                            relation={e.relation}
+                            alias={alias}
+                            field={e.key}
+                            label={e.name} />
+                    }
+                }
+
                 switch (type) {
                     case "character varying":
                     case "text":
@@ -120,7 +154,7 @@ export default observer((props: any) => {
                             label={e.name} />
                 }
 
-                return <div key={key}>[MISSING-{type}]</div>;
+                return <Spinner key={key} />;
             }
         })}
 

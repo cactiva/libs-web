@@ -49,6 +49,29 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
             let vtype = "";
             let valueType: string = typeof value;
 
+            if (i.indexOf('.') > 0) {
+                const it = i.split(".");
+
+                let obj = {};
+                let cur: any = obj;
+                for (let k in it) {
+                    const t = it[k];
+
+                    cur.name = t;
+                    cur.valueType = "ObjectValue";
+                    cur.value = [{}];
+                    if ((k as any) * 1 < it.length - 1) {
+                        cur = cur.value[0];
+                    }
+                }
+
+                cur.valueType = "IntValue";
+                cur.operator = "_eq";
+                cur.value = value;
+                where.push(obj);
+                continue;
+            }
+
             const cold = _.find(colDef, { column_name: i });
             const colType = _.get(cold, 'data_type');
             if (colType) {
@@ -110,6 +133,7 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
             }
         }
     }
+
     const query = generateQueryString({
         ...structure,
         where,

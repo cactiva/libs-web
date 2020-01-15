@@ -10,9 +10,13 @@ export default observer(({ label, field, value, setValue, submit }: any) => {
         field={field}
         setValue={setValue}
         onClose={() => submit()}
-        value={value instanceof Date ? dateFormat(value) : ""}>
+        value={value instanceof Date ? dateFormat(value, "dd MMM yyyy") : ""}>
         <DatePicker
             value={value}
+            formatDate={(date?: Date): string => {
+                if (!date) return "";
+                return dateFormat(date, 'dd MMM yyyy');
+            }}
             onSelectDate={(e: any) => {
                 setValue(e);
                 console.log(e);
