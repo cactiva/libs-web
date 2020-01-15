@@ -1,7 +1,12 @@
 import * as React from 'react';
 import { observer } from 'mobx-react-lite';
+import { ComboBox } from 'office-ui-fabric-react';
+import { toJS } from 'mobx';
 
 interface ISelectProps {
+    styles?: any,
+    selectedKey?: any,
+    onChange?: any,
     items: (string | {
         value: string,
         label: string
@@ -13,18 +18,16 @@ export default observer((props: ISelectProps) => {
         if (typeof e === 'string') {
             return {
                 key: e,
-                displayValue: e,
-                searchValue: e
+                text: e,
             }
         }
         if (typeof e === 'object') {
             return {
                 key: e.value,
-                displayValue: e.label,
-                searchValue: e.value
+                text: e.label
             }
         }
     }).filter(e => !!e);
 
-    return <div />;
+    return <ComboBox {...props} allowFreeform={true}  options={items} />;
 });

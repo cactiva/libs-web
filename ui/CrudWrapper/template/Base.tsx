@@ -69,13 +69,15 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey }: any)
             ? <List
                 table={table}
                 setMode={setMode}
+                structure={structure}
                 list={meta.list}
                 setForm={(v) => meta.form = v}
                 filter={meta.filter}
                 reload={reload}
+                auth={auth}
                 colDef={colDef}
                 fkeys={fkeys} />
-            : <Form form={form} data={meta.form} mode={mode} />
+            : <Form form={form} colDef={colDef} fkeys={fkeys} data={meta.form} mode={mode} />
         }
     </div>;
 })
