@@ -4,8 +4,11 @@ import { ColumnActionsMode, DetailsList, DetailsListLayoutMode, IDetailsRowProps
 import * as React from 'react';
 import NiceValue from '../../Field/NiceValue';
 import Filter from './filter';
+import { toJS } from 'mobx';
 
 export default ({ table, reload, setForm, list, auth, filter, colDef, fkeys, setMode, structure }: any) => {
+    if (Object.keys(colDef).length === 0) return null;
+
     const columns = generateColumns(table, colDef, fkeys);
     return <>
         <Filter
@@ -75,9 +78,9 @@ const generateColumns = (table, colDef, fkeys) => {
                     if (cdef.data_type.indexOf('timestamp') >= 0 || cdef.data_type === 'date') {
                         valueEl = dateFormat(value);
                     } else {
-                        formatValue(value);
+                        valueEl = formatValue(value);
                     }
-                }
+                } 
                 return valueEl;
             }
         }

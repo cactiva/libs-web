@@ -43,7 +43,7 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey }: any)
         colDef[e.column_name] = e;
     })
     const fkeys = structure.fkeys;
-    if (!colDef || !fkeys) return null;
+    if (Object.keys(colDef).length === 0 || !fkeys) return null;
 
     const reload = async () => {
         meta.list = await reloadList({

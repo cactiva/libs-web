@@ -37,13 +37,14 @@ export default observer(({ label, field, value, setValue, submit, tablename, aut
 
                 if (relation.filter) {
                     labelFunc = relation.filter.label;
-                }
-
-                if (typeof labelFunc === 'function') {
-                    label = labelFunc({ [alias]: e });
+                    label = labelFunc(e);
                 } else {
-                    const keys = Object.keys(e);
-                    label = e[keys[0]];
+                    if (typeof labelFunc === 'function') {
+                        label = labelFunc({ [alias]: e });
+                    } else {
+                        const keys = Object.keys(e);
+                        label = e[keys[0]];
+                    }
                 }
 
                 return {
