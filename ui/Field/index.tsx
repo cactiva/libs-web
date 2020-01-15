@@ -4,6 +4,7 @@ import Input from '../Input';
 
 export default (props: any) => {
     const type = _.get(props, 'children.type');
+    const childProps = _.get(props, 'children.props');
 
     const onChange = (e: any) => {
         const value = e.target.value;
