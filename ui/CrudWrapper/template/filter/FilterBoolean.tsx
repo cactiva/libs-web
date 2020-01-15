@@ -1,6 +1,6 @@
 import * as React from 'react';
 import ItemButton from './ItemButton';
-import { TextField, IStackTokens, Stack, Toggle } from 'office-ui-fabric-react';
+import { IStackTokens, Stack, Toggle } from 'office-ui-fabric-react';
 import { observer, useObservable } from 'mobx-react-lite';
 
 export default observer(({ label, field, value, setValue, submit }: any) => {
@@ -11,16 +11,29 @@ export default observer(({ label, field, value, setValue, submit }: any) => {
     label={label}
     field={field}
     return (
-    <Stack
+        <Stack
         tokens={stackTokens}>
-        <Toggle label="Enabled and checked" onText="On" offText="Off" onChange={          
-            (e: any) => {
-            meta.oldval = e.target.value;
-            setValue=value
-            onclose=submit()
-            value={value}
-            }
-        } />
-    </Stack>
-  );
+            <ItemButton
+            label={label}
+            field={field}
+            setValue={setValue}
+            onClose={() => { 
+                setValue(parseFloat(meta.oldval));
+                submit();
+            }}
+            value={value}>
+            <Toggle label={label.label} onText="On" offText="Off" onChange={          
+                (e: any) => {
+                    // console.log("iki label", {label})
+                meta.oldval = e.target.value;
+                setValue=value
+                onclose=submit()
+                value={value}
+                }
+            } />
+        </ItemButton>
+        
+        </Stack>
+    );
 });
+
