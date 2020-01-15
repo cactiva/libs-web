@@ -19,8 +19,6 @@ export default observer (({ label, value, field, setValue, submit }: any) => {
         <TextField
             value= {meta.oldval}
             onChange= {(e: any) => {
-                console.log("iki field", field)
-                console.log("ihiii")
                 meta.oldval = setValue(parseFloat(e.target.value));
             }}
             onKeyDown={(e: any) => {

@@ -26,7 +26,9 @@ export default observer((props: any) => {
             if (columns.length > 1) {
                 for (let i = 0; i < 2; i++) {
                     const e = columns[i];
-                    meta.visibles[e.key] = true;
+                    if (e) {
+                        meta.visibles[e.key] = true;
+                    }
                 }
             } else {
                 for (let i in columns) {

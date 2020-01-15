@@ -7,7 +7,7 @@ import saveForm from '../utils/saveForm';
 import { generateDeleteString } from '@src/libs/utils/genDeleteString';
 import { queryAll } from '@src/libs/utils/gql';
 
-export default observer(({ parsed, mode, form, structure, setLoading, setMode, auth, idKey, reload }: any) => {
+export default observer(({ parsed, mode, form, structure, setLoading, setMode, auth, idKey, reload, style, hasRelation }: any) => {
     const title = _.get(parsed, 'title.children');
     const actions = _.get(parsed, 'actions.children', []).map(e => {
         switch (e.props.type) {
@@ -18,6 +18,7 @@ export default observer(({ parsed, mode, form, structure, setLoading, setMode, a
                         text: 'Create',
                         iconProps: { iconName: 'Add' },
                         onClick: () => {
+                            form = {};
                             setMode('create');
                         }
                     }
@@ -40,7 +41,7 @@ export default observer(({ parsed, mode, form, structure, setLoading, setMode, a
                                             valueType: 'Int'
                                         }
                                     ]
-                                }); 
+                                });
 
                                 setLoading(true);
                                 await queryAll(q.query, { auth });
@@ -72,7 +73,7 @@ export default observer(({ parsed, mode, form, structure, setLoading, setMode, a
                         primary: true,
                         iconProps: { iconName: 'Save' },
                         onClick: () => {
-                            saveForm({ mode, form, structure, setLoading, setMode, auth, idKey, reload })
+                            saveForm({ mode, form, structure, setLoading, setMode, auth, idKey, reload, hasRelation })
                         }
                     }
                 }
@@ -85,7 +86,8 @@ export default observer(({ parsed, mode, form, structure, setLoading, setMode, a
         flexDirection: 'row',
         alignItems: 'center',
         height: '50px',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        ...style
     }}>
         <div style={{
             display: "flex",

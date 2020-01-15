@@ -1,6 +1,6 @@
 import { dateFormat } from '@src/libs/utils/date';
 import _ from 'lodash';
-import { ColumnActionsMode, DetailsList, DetailsListLayoutMode, IDetailsRowProps, IRenderFunction, SelectionMode } from 'office-ui-fabric-react';
+import { ColumnActionsMode, DetailsList, DetailsListLayoutMode, IDetailsRowProps, IRenderFunction, SelectionMode, IDetailsHeaderProps } from 'office-ui-fabric-react';
 import * as React from 'react';
 import NiceValue from '../../Field/NiceValue';
 import Filter from './filter';
@@ -19,14 +19,19 @@ export default ({ table, reload, setForm, list, auth, filter, colDef, fkeys, set
             auth={auth}
             colDef={colDef}
             fkeys={fkeys} />
-        <div style={{ flex: 1, position: 'relative' }}>
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'auto' }}>
+        <div style={{ flex: 1, position: 'relative', display: 'flex' }}>
+            <div className="base-list">
                 <DetailsList
                     selectionMode={SelectionMode.single}
                     items={list || []}
                     onItemInvoked={(e) => {
                         setForm(e);
                         setMode('edit');
+                    }}
+                    onRenderDetailsHeader={(detailsHeaderProps?: IDetailsHeaderProps, defaultRender?: IRenderFunction<IDetailsHeaderProps>) => {
+                        return (
+                            defaultRender ? defaultRender(detailsHeaderProps) : <div></div>
+                        )
                     }}
                     onRenderRow={(detailsRowProps?: IDetailsRowProps, defaultRender?: IRenderFunction<IDetailsRowProps>) => (
                         <>
@@ -81,7 +86,7 @@ const generateColumns = (table, colDef, fkeys) => {
                     } else {
                         valueEl = formatValue(value);
                     }
-                } 
+                }
                 return valueEl;
             }
         }

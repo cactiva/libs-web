@@ -17,7 +17,6 @@ export default ({ label, field, value, setValue, submit }: any) => {
             <TextField
                 value={meta.oldval}
                 onChange={(e: any) => {
-                    console.log('yguu')
                     meta.oldval = e.target.value.replace(/\D{3}/g,'');
                 }}
                 onKeyDown={(e: any) => {
