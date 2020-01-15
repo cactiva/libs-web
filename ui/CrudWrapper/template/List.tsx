@@ -61,6 +61,7 @@ const generateColumns = (table, colDef, fkeys) => {
             key: e.path,
             name: e.title,
             relation: e.relation,
+            filter: e.filter,
             maxWidth: 200,
             columnActionsMode: ColumnActionsMode.disabled,
             onRender: (item: any) => {

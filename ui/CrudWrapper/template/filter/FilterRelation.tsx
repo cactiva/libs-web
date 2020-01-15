@@ -16,9 +16,13 @@ export default observer(({ label, field, value, setValue, submit, tablename, aut
     useAsyncEffect(async () => {
         if (!datas[tablename]) {
             let q = ``;
-            if (relation.filter && relation.filter.table) {
-                tablename = relation.filter.table;
-                q = `${tablename} { ${relation.filter.columns.join('\n')} }`;
+            if (relation.filter) {
+                if (relation.filter.table) {
+                    tablename = relation.filter.table;
+                    q = `${tablename} { ${relation.filter.columns.join('\n')} }`;
+                } else if (relation.filter.query) {
+                    q = relation.filter.query;
+                }
             } else {
                 let col = _.cloneDeep(_.find(structure.fields, { name: alias }));
                 col.name = tablename;
@@ -70,7 +74,6 @@ export default observer(({ label, field, value, setValue, submit, tablename, aut
                 submit();
             }} />
         </div>
-
     </ItemButton>
 });
 

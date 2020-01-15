@@ -10,6 +10,7 @@ import FilterMoney from './FilterMoney';
 import FilterBoolean from './FilterBoolean';
 import FilterDate from './FilterDate';
 import FilterRelation from './FilterRelation';
+import FilterSelect from './FilterSelect';
 
 export default observer((props: any) => {
     const { reload, filter, columns, colDef, fkeys, structure, auth } = props;
@@ -23,7 +24,7 @@ export default observer((props: any) => {
     useEffect(() => {
         if (!meta.init) {
             if (columns.length > 1) {
-                for (let i = 0; i < 4; i++) {
+                for (let i = 0; i < 6; i++) {
                     const e = columns[i];
                     meta.visibles[e.key] = true;
                 }
@@ -51,7 +52,7 @@ export default observer((props: any) => {
 
         {columns.map((e, key) => {
             if (meta.visibles[e.key]) {
-                const type = _.get(colDef, `${e.key}.data_type`);
+                let type = _.get(colDef, `${e.key}.data_type`);
                 const submit = () => {
                     reload();
                 }
@@ -64,6 +65,10 @@ export default observer((props: any) => {
                         delete filter.form[key];
                     } else
                         filter.form[key] = newvalue;
+                }
+
+                if (e.filter) {
+                    type = e.filter.type;
                 }
 
                 if (e.relation) {
@@ -151,6 +156,15 @@ export default observer((props: any) => {
                             submit={submit}
                             key={key}
                             value={filter.form[e.key]}
+                            label={e.name} />
+                    case "select":
+                        return <FilterSelect
+                            setValue={setValue}
+                            submit={submit}
+                            key={key}
+                            value={filter.form[e.key]}
+                            field={e.key}
+                            items={e.filter.items}
                             label={e.name} />
                 }
 
