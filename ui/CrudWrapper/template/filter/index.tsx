@@ -24,7 +24,7 @@ export default observer((props: any) => {
     useEffect(() => {
         if (!meta.init) {
             if (columns.length > 1) {
-                for (let i = 0; i < 6; i++) {
+                for (let i = 0; i < 2; i++) {
                     const e = columns[i];
                     meta.visibles[e.key] = true;
                 }
@@ -37,7 +37,7 @@ export default observer((props: any) => {
             meta.init = true;
         }
     }, []);
-
+    //^ i=0; i < 2; i++ karena jika karena kolom tidak lebih dari / sama dengan i maka error -Iman
     return <div style={{
         display: 'flex',
         flexDirection: 'row',

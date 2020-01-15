@@ -4,6 +4,7 @@ import Input from '../Input';
 
 export default (props: any) => {
     const type = _.get(props, 'children.type');
+    const childProps = _.get(props, 'children.props');
 
     const onChange = (e: any) => {
         const value = e.target.value;
@@ -12,7 +13,7 @@ export default (props: any) => {
     }
 
     if (type === Input) {
-        return <Input value={props.value} onChange={onChange} label={props.label} styles={props.styles} />;
+        return <Input {...childProps} value={props.value} onChange={onChange} label={props.label} styles={props.styles} />;
     } else {
         return props.children;
     }
