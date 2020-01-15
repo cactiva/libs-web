@@ -1,13 +1,14 @@
 import { dateFormat } from '@src/libs/utils/date';
 import _ from 'lodash';
-import { ColumnActionsMode, DetailsList, DetailsListLayoutMode, IDetailsRowProps, IRenderFunction, SelectionMode, IDetailsHeaderProps } from 'office-ui-fabric-react';
+import { ColumnActionsMode, DetailsList, DetailsListLayoutMode, IDetailsHeaderProps, IDetailsRowProps, IRenderFunction, SelectionMode, Spinner } from 'office-ui-fabric-react';
 import * as React from 'react';
 import NiceValue from '../../Field/NiceValue';
 import Filter from './filter';
-import { toJS } from 'mobx';
 
 export default ({ table, reload, setForm, list, auth, filter, colDef, fkeys, setMode, structure }: any) => {
-    if (Object.keys(colDef).length === 0) return null;
+    if (Object.keys(colDef).length === 0) return <div style={{ width: 150, height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Spinner />
+    </div>;;
 
     const columns = generateColumns(table, colDef, fkeys);
     return <>

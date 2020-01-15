@@ -8,6 +8,9 @@ import List from './List';
 import reloadList from '../utils/reloadList';
 import useAsyncEffect from 'use-async-effect';
 import _ from 'lodash';
+import { observable } from 'mobx';
+
+export const relationDatas = observable({});
 
 export default observer(({ parsed, mode, setMode, structure, auth, idKey, renderHeader, style, headerStyle }: any) => {
     const { table, form } = parsed;

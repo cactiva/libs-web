@@ -7,14 +7,14 @@ export default (props: any) => {
 
     const onChange = (e: any) => {
         const value = e.target.value;
-        console.log("iki value", value)
         props.setValue(value)
     }
 
     if (type === Input) {
-        return <Input value={props.value} onChange={onChange} label={props.label} styles={props.styles} />;
+        return <Input value={props.value} onChange={onChange} type={props.type} label={props.label} styles={props.styles} />;
     } else {
-        return props.children;
+        const Component = props.children.type;
+        return <Component  styles={props.styles} {...props} {...props.children.props} />;
     }
 };
 

@@ -7,6 +7,7 @@ interface ISelectProps {
     styles?: any,
     selectedKey?: any,
     onChange?: any,
+    label?:any,
     items: (string | {
         value: string,
         label: string

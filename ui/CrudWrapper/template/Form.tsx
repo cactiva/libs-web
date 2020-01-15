@@ -7,6 +7,8 @@ import { Pivot, PivotItem } from 'office-ui-fabric-react';
 import { observer, useObservable } from 'mobx-react-lite';
 import Base from './Base';
 import generateSubStructure from '../utils/generateSubStructure';
+import { toJS } from 'mobx';
+import SelectFk from './fields/SelectFk';
 
 export default observer(({ structure, form, data, mode, colDef, auth, parsed, fkeys, setHasRelation }: any) => {
     const meta = useObservable({
@@ -19,7 +21,7 @@ export default observer(({ structure, form, data, mode, colDef, auth, parsed, fk
     if (typeof form !== 'function') return null;
 
     const parsedForm = form(mode);
-    const fields = processFields(parsedForm, structure, colDef, fkeys);
+    const fields = processFields(parsedForm, structure, colDef, fkeys, auth);
     const relationKeys = Object.keys(fields.relations);
     if (setHasRelation) {
         setHasRelation(relationKeys.length > 0)
@@ -86,7 +88,7 @@ export default observer(({ structure, form, data, mode, colDef, auth, parsed, fk
     </div >;
 });
 
-const processFields = (parsedForm: any, structure, colDef, fkeys) => {
+const processFields = (parsedForm: any, structure, colDef, fkeys, auth) => {
     const relations = {};
     const columns = _.get(parsedForm, 'props.children', []).filter(e => {
         let fk = fkeys[e.props.path];
@@ -100,6 +102,42 @@ const processFields = (parsedForm: any, structure, colDef, fkeys) => {
             return false;
         }
         return true;
+    }).map(e => {
+        const path = e.props.path;
+        const cdef = colDef[path];
+        const fk = fkeys[path];
+        let label = e.props.label;
+        let children = e.props.children;
+        if (label.indexOf('Id') === 0) {
+            label = e.props.label.substr(3);
+        }
+        
+        if (cdef || fk) {
+            const type = cdef.data_type;
+            if (fk) {
+                const tablename = fk.foreign_table_name;
+                if (tablename) {
+                    children = <SelectFk tablename={tablename} labelField={e.props.labelOptions} auth={auth} label={label} styles={{
+                        container: {
+                            width: '32%',
+                            marginRight: '10px'
+                        }
+                    }}  />
+                }
+            }
+            switch (type) {
+
+            }
+        }
+
+
+        return {
+            props: {
+                ...e.props,
+                label,
+                children
+            }
+        };
     });
 
     return { columns, relations };
