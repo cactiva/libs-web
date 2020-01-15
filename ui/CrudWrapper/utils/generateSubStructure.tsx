@@ -29,7 +29,10 @@ export default (metasub, rel, structure, parsed, data) => {
             }],
             orderBy: [],
             options: {},
-            fkeys: {}
+            fkeys: {},
+            overrideForm: {
+                [relfk.column_name]: id
+            }
         },
         parsed: {
             title: { children: rel.column.props.label },

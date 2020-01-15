@@ -8,7 +8,7 @@ import { observer, useObservable } from 'mobx-react-lite';
 import Base from './Base';
 import generateSubStructure from '../utils/generateSubStructure';
 
-export default observer(({ structure, form, data, mode, colDef, auth, parsed, fkeys }: any) => {
+export default observer(({ structure, form, data, mode, colDef, auth, parsed, fkeys, setHasRelation }: any) => {
     const meta = useObservable({
         size: localStorage['cactiva-app-split-size'] || '200',
         subs: {
@@ -21,6 +21,10 @@ export default observer(({ structure, form, data, mode, colDef, auth, parsed, fk
     const parsedForm = form(mode);
     const fields = processFields(parsedForm, structure, colDef, fkeys);
     const relationKeys = Object.keys(fields.relations);
+    if (setHasRelation) {
+        setHasRelation(relationKeys.length > 0)
+    }
+
     return <div style={{ flex: 1, position: 'relative' }}>
         <SplitPane
             split="horizontal"
@@ -44,9 +48,9 @@ export default observer(({ structure, form, data, mode, colDef, auth, parsed, fk
                     })}
                 </Form>
             </div>
-            {relationKeys.length > 0 && <Pivot
-            className="base-form-sub"
-                styles={{ itemContainer: { flex: 1, display: 'flex' },  }}
+            {(mode !== 'create' && relationKeys.length > 0) && <Pivot
+                className="base-form-sub"
+                styles={{ itemContainer: { flex: 1, display: 'flex' }, }}
                 style={{ display: 'flex', flex: 1, flexDirection: 'row', borderRight: '1px solid #ececeb', alignItems: 'stretch' }}>
                 {
                     relationKeys.map((e, key) => {

@@ -23,6 +23,7 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
             current: 0,
         },
         loading: false,
+        hasRelation: false,
         form: {}
     });
 
@@ -60,6 +61,7 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
         form={meta.form}
         mode={mode}
         style={headerStyle}
+        hasRelation={meta.hasRelation}
         auth={auth}
         idKey={idKey}
         reload={reload}
@@ -91,6 +93,7 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
                 structure={structure}
                 fkeys={fkeys}
                 data={meta.form}
+                setHasRelation={(v) => meta.hasRelation = v}
                 mode={mode} />
         }
     </div>;
