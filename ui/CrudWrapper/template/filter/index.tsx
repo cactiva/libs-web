@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { observer, useObservable } from 'mobx-react-lite';
-import { Callout, Checkbox, IconButton, Spinner } from 'office-ui-fabric-react';
+import { Callout, Checkbox, IconButton, Spinner, keyframes } from 'office-ui-fabric-react';
 import React, { useEffect, useRef } from 'react';
 import FilterString from './FilterString';
 import FilterInteger from './FilterInteger';
@@ -31,7 +31,7 @@ export default observer((props: any) => {
                     }
                 }
             } else {
-                for (let i in columns) {
+                for (let i = 0; i < columns.length; i++) {
                     const e = columns[i];
                     meta.visibles[e.key] = true;
                 }
