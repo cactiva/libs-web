@@ -23,8 +23,13 @@ export default observer((props: any) => {
 
     useEffect(() => {
         if (!meta.init) {
+<<<<<<< HEAD
             if (columns.length >= 6) {
                 for (let i = 0; i < 6; i++) {
+=======
+            if (columns.length > 1) {
+                for (let i = 0; i < 2; i++) {
+>>>>>>> e11e81aeeb10dd6d6fbfdda450861c7f9bed8378
                     const e = columns[i];
                     if (e) {
                         meta.visibles[e.key] = true;

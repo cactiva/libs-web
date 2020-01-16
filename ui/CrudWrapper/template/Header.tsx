@@ -78,6 +78,20 @@ export default observer(({ parsed, mode, form, structure, setLoading, setMode, a
                     }
                 }
                 break;
+            case "custom":
+                const text = e.props.children.props.children ? e.props.children.props.children : 'Custom';
+                const key = e.props.options && e.props.options.key ? e.props.options.key : 'custom';
+                const icon =  e.props.options && e.props.options.icon ? e.props.options.icon : 'Insert';
+                if (mode == 'edit') {
+                    return {
+                        key: key,
+                        text: text,
+                        primary: true,
+                        iconProps: { iconName: icon },
+                        onClick: e.props.options && e.props.options.onClick ? e.props.options.onClick : ()=>{console.log('custom clicked')}
+                    }
+                }
+                break;
         }
     }).filter(e => !!e);
 
