@@ -10,6 +10,7 @@ import FilterMoney from './FilterMoney';
 import FilterBoolean from './FilterBoolean';
 import FilterDate from './FilterDate';
 import FilterRelation from './FilterRelation';
+import FilterSelect from './FilterSelect';
 
 export default observer((props: any) => {
     const { reload, filter, columns, colDef, fkeys, structure, auth } = props;
@@ -22,10 +23,17 @@ export default observer((props: any) => {
 
     useEffect(() => {
         if (!meta.init) {
+<<<<<<< HEAD
             if (columns.length >= 6) {
                 for (let i = 0; i < 6; i++) {
+=======
+            if (columns.length > 1) {
+                for (let i = 0; i < 2; i++) {
+>>>>>>> 80f3d1123a78e097d45c806d8a89e49c564c6836
                     const e = columns[i];
-                    meta.visibles[e.key] = true;
+                    if (e) {
+                        meta.visibles[e.key] = true;
+                    }
                 }
             } else {
                 for (let i = 0; i < columns.length; i++) {
@@ -36,7 +44,7 @@ export default observer((props: any) => {
             meta.init = true;
         }
     }, []);
-
+    //^ i=0; i < 2; i++ karena jika karena kolom tidak lebih dari / sama dengan i maka error -Iman
     return <div style={{
         display: 'flex',
         flexDirection: 'row',
@@ -51,7 +59,7 @@ export default observer((props: any) => {
 
         {columns.map((e, key) => {
             if (meta.visibles[e.key]) {
-                const type = _.get(colDef, `${e.key}.data_type`);
+                let type = _.get(colDef, `${e.key}.data_type`);
                 const submit = () => {
                     reload();
                 }
@@ -64,6 +72,10 @@ export default observer((props: any) => {
                         delete filter.form[key];
                     } else
                         filter.form[key] = newvalue;
+                }
+
+                if (e.filter) {
+                    type = e.filter.type;
                 }
 
                 if (e.relation) {
@@ -151,6 +163,15 @@ export default observer((props: any) => {
                             submit={submit}
                             key={key}
                             value={filter.form[e.key]}
+                            label={e.name} />
+                    case "select":
+                        return <FilterSelect
+                            setValue={setValue}
+                            submit={submit}
+                            key={key}
+                            value={filter.form[e.key]}
+                            field={e.key}
+                            items={e.filter.items}
                             label={e.name} />
                 }
 

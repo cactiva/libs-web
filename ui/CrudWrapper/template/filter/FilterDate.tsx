@@ -19,7 +19,6 @@ export default observer(({ label, field, value, setValue, submit }: any) => {
             }}
             onSelectDate={(e: any) => {
                 setValue(e);
-                console.log(e);
             }}
             styles={{ root: { padding: 10 } }} />
     </ItemButton>;

@@ -1,24 +1,26 @@
+import { Select } from '@src/libs/ui';
+import { queryAll } from '@src/libs/utils/gql';
+import _ from "lodash";
 import { observer, useObservable } from 'mobx-react-lite';
 import * as React from 'react';
-import ItemButton from './ItemButton';
-import { Select } from '@src/libs/ui';
-import { observable, toJS } from 'mobx';
 import useAsyncEffect from 'use-async-effect';
-import _ from "lodash";
-import { queryAll } from '@src/libs/utils/gql';
-
-const datas = observable({});
+import ItemButton from './ItemButton';
+import { relationDatas } from '../Base';
 
 export default observer(({ label, field, value, setValue, submit, tablename, auth, alias, structure, relation }: any) => {
     const meta = useObservable({
         list: []
     })
     useAsyncEffect(async () => {
-        if (!datas[tablename]) {
+        if (!relationDatas[tablename]) {
             let q = ``;
-            if (relation.filter && relation.filter.table) {
-                tablename = relation.filter.table;
-                q = `${tablename} { ${relation.filter.columns.join('\n')} }`;
+            if (relation.filter) {
+                if (relation.filter.table) {
+                    tablename = relation.filter.table;
+                    q = `${tablename} { ${relation.filter.columns.join('\n')} }`;
+                } else if (relation.filter.query) {
+                    q = relation.filter.query;
+                }
             } else {
                 let col = _.cloneDeep(_.find(structure.fields, { name: alias }));
                 col.name = tablename;
@@ -70,7 +72,6 @@ export default observer(({ label, field, value, setValue, submit, tablename, aut
                 submit();
             }} />
         </div>
-
     </ItemButton>
 });
 

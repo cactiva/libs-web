@@ -8,8 +8,11 @@ import List from './List';
 import reloadList from '../utils/reloadList';
 import useAsyncEffect from 'use-async-effect';
 import _ from 'lodash';
+import { observable } from 'mobx';
 
-export default observer(({ parsed, mode, setMode, structure, auth, idKey }: any) => {
+export const relationDatas = observable({});
+
+export default observer(({ parsed, mode, setMode, structure, auth, idKey, renderHeader, style, headerStyle }: any) => {
     const { table, form } = parsed;
 
     const meta = useObservable({
@@ -23,6 +26,7 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey }: any)
             current: 0,
         },
         loading: false,
+        hasRelation: false,
         form: {}
     });
 
@@ -37,7 +41,6 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey }: any)
             });
         }
     }, []);
-    console.log("iki structure", typeof structure)
 
     const colDef = {};
     _.get(columnDefs, `${structure.name}.columns`, []).map(e => {
@@ -55,17 +58,25 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey }: any)
         });
     };
 
-    return <div style={{ display: "flex", flexDirection: 'column', flex: 1 }}>
-        <Header
-            structure={structure}
-            parsed={parsed}
-            form={meta.form}
-            mode={mode}
-            auth={auth}
-            idKey={idKey}
-            reload={reload}
-            setLoading={(v: boolean) => meta.loading = v}
-            setMode={setMode} />
+    const header = <Header
+        structure={structure}
+        parsed={parsed}
+        form={meta.form}
+        mode={mode}
+        style={headerStyle}
+        hasRelation={meta.hasRelation}
+        auth={auth}
+        idKey={idKey}
+        reload={reload}
+        setLoading={(v: boolean) => meta.loading = v}
+        setMode={setMode} />;
+
+    return <div style={{ display: "flex", flexDirection: 'column', flex: 1, ...style }}>
+        {renderHeader
+            ? renderHeader({
+                header,
+            })
+            : header}
         {mode === ''
             ? <List
                 table={table}
@@ -78,7 +89,15 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey }: any)
                 auth={auth}
                 colDef={colDef}
                 fkeys={fkeys} />
-            : <Form form={form} colDef={colDef} fkeys={fkeys} data={meta.form} mode={mode} />
+            : <Form
+                form={form}
+                colDef={colDef}
+                parsed={parsed}
+                structure={structure}
+                fkeys={fkeys}
+                data={meta.form}
+                setHasRelation={(v) => meta.hasRelation = v}
+                mode={mode} />
         }
     </div>;
 })

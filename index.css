@@ -1,4 +1,52 @@
-.ms-DetailsList > div {
+.base-list {
+  background: red;
   display: flex;
+  flex: 1;
+}
+.base-list > div,
+.base-list .ms-DetailsList,
+.base-list .ms-DetailsList > div,
+.base-list .ms-DetailsList-contentWrapper {
+  display: flex;
+  flex: 1;
   flex-direction: column;
+  position: relative;
+}
+
+.base-list .ms-DetailsList-headerWrapper > div {
+  padding-top: 0;
+  border-top: 1px solid #ececeb;
+}
+
+.base-list .ms-DetailsList > div {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  display: flex;
+  min-width: auto;
+  overflow: scroll;
+}
+
+.base-form-sub > .ms-FocusZone {
+  border-right: 1px solid #ececeb;
+}
+.base-form-sub > .ms-FocusZone .ms-Button {
+  margin-right: 0;
+  border-bottom: 1px solid #ececeb;
+}
+.base-form-sub > .ms-FocusZone .ms-Button::before {
+  left: 0;
+  right: auto;
+  top: 6px;
+  bottom: 6px;
+  height: auto;
+  width: 2px;
+  transition: top 0.267s cubic-bezier(0.1, 0.25, 0.75, 0.9) 0s,
+    bottom 0.267s cubic-bezier(0.1, 0.25, 0.75, 0.9) 0s;
+}
+.base-form-sub > .ms-FocusZone .ms-Button:hover::before {
+  top: 0px;
+  bottom: 0px;
 }

@@ -1,5 +1,5 @@
 import { observer, useObservable } from 'mobx-react-lite';
-import { ActionButton, Callout, PrimaryButton, DefaultButton, IconButton } from 'office-ui-fabric-react';
+import { ActionButton, Callout, PrimaryButton, DefaultButton, IconButton, Label } from 'office-ui-fabric-react';
 import * as React from 'react';
 
 export default observer(({ label, value, onClose, children, setValue }: any) => {
@@ -11,7 +11,12 @@ export default observer(({ label, value, onClose, children, setValue }: any) => 
         <div ref={btnRef}>
             <ActionButton onClick={() => {
                 meta.show = true;
-            }} text={`${label}: ${value || 'All'}`} />
+            }}>
+                {`${label}: `}
+                <Label style={{ marginLeft: '2px' }}>
+                    {value || 'All'}
+                </Label>
+            </ActionButton>
 
         </div>
 

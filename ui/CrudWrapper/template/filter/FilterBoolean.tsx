@@ -8,31 +8,30 @@ export default observer(({ label, field, value, setValue, submit }: any) => {
         oldval: value
     })
     const stackTokens: IStackTokens = { childrenGap: 10 };
-    label={label}
-    field={field}
+    label = { label }
+    field = { field }
     return (
         <Stack
-        tokens={stackTokens}>
+            tokens={stackTokens}>
             <ItemButton
-            label={label}
-            field={field}
-            setValue={setValue}
-            onClose={() => { 
-                setValue(parseFloat(meta.oldval));
-                submit();
-            }}
-            value={value}>
-            <Toggle label={label.label} onText="On" offText="Off" onChange={          
-                (e: any) => {
-                    // console.log("iki label", {label})
-                meta.oldval = e.target.value;
-                setValue=value
-                onclose=submit()
-                value={value}
-                }
-            } />
-        </ItemButton>
-        
+                label={label}
+                field={field}
+                setValue={setValue}
+                onClose={() => {
+                    setValue(parseFloat(meta.oldval));
+                    submit();
+                }}
+                value={value}>
+                <Toggle label={label.label} onText="On" offText="Off" onChange={
+                    (e: any) => {
+                        meta.oldval = e.target.value;
+                        setValue = value
+                        onclose = submit()
+                        value = { value }
+                    }
+                } />
+            </ItemButton>
+
         </Stack>
     );
 });
