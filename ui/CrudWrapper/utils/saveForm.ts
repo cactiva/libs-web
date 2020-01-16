@@ -7,6 +7,7 @@ export default async ({ mode, reload, form, structure, setLoading, setMode, auth
     let q: any = null;
 
     const fdata = toJS(form);
+
     if (structure.overrideForm) {
         for (let i in structure.overrideForm) {
             fdata[i] = structure.overrideForm[i];

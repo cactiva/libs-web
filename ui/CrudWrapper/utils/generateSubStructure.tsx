@@ -17,6 +17,7 @@ export default (metasub, rel, structure, parsed, data) => {
     const fields = _.get(_.find(_.get(structure, `fields`, []), { name: rel.path }), 'fields', []);
     const tcols = (rel.column.props.table || fields).filter(t => { return t.name !== 'id' });
     const fcols = (rel.column.props.form || fields).filter(t => { return t.name !== 'id' });
+    const defaultForm = _.get(rel, 'column.props.options.default');
     return {
         structure: {
             name: relfk.table_name,
@@ -29,8 +30,9 @@ export default (metasub, rel, structure, parsed, data) => {
             }],
             orderBy: [],
             options: {},
-            fkeys: {},
+            fkeys: undefined,
             overrideForm: {
+                ...defaultForm,
                 [relfk.column_name]: id
             }
         },
@@ -47,11 +49,13 @@ export default (metasub, rel, structure, parsed, data) => {
             table: {
                 row: {
                     children: tcols.map(t => {
-                        return <TableColumn path={t.name} title={_.startCase(t.name)} />
+                        return <TableColumn path={t.name} />
                     })
                 }, head: {
                     children: tcols.map(t => {
-                        return <TableColumn path={t.name} title={_.startCase(t.name)} />
+                        let name = t.name;
+                        if (name.indexOf('id') === 0) name = name.substr(3)
+                        return <TableColumn path={t.name} title={_.startCase(name)} />
                     })
                 }, root: {
                     children: []

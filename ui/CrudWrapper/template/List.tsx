@@ -8,7 +8,7 @@ import Filter from './filter';
 export default ({ table, reload, setForm, list, auth, filter, colDef, fkeys, setMode, structure }: any) => {
     if (Object.keys(colDef).length === 0) return <div style={{ width: 150, height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Spinner />
-    </div>;;
+    </div>;
 
     const columns = generateColumns(table, colDef, fkeys);
     return <>

@@ -7,7 +7,7 @@ import saveForm from '../utils/saveForm';
 import { generateDeleteString } from '@src/libs/utils/genDeleteString';
 import { queryAll } from '@src/libs/utils/gql';
 
-export default observer(({ parsed, mode, form, structure, setLoading, setMode, auth, idKey, reload, style, hasRelation }: any) => {
+export default observer(({ parsed, mode, form, setForm, structure, setLoading, setMode, auth, idKey, reload, style, hasRelation }: any) => {
     const title = _.get(parsed, 'title.children');
     const actions = _.get(parsed, 'actions.children', []).map(e => {
         switch (e.props.type) {
@@ -18,7 +18,7 @@ export default observer(({ parsed, mode, form, structure, setLoading, setMode, a
                         text: 'Create',
                         iconProps: { iconName: 'Add' },
                         onClick: () => {
-                            form = {};
+                            setForm({});
                             setMode('create');
                         }
                     }

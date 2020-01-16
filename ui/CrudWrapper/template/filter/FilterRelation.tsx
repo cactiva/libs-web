@@ -5,8 +5,9 @@ import { observer, useObservable } from 'mobx-react-lite';
 import * as React from 'react';
 import useAsyncEffect from 'use-async-effect';
 import ItemButton from './ItemButton';
-import { relationDatas } from '../Base';
+import { observable } from 'mobx';
 
+const relationDatas = observable({});
 export default observer(({ label, field, value, setValue, submit, tablename, auth, alias, structure, relation }: any) => {
     const meta = useObservable({
         list: []
@@ -32,29 +33,30 @@ export default observer(({ label, field, value, setValue, submit, tablename, aut
                 q = struct2gql(col);
             }
             const res = await queryAll(`query { ${q} }`, { auth });
-
-            meta.list = res.map((e) => {
-                let label = '';
-                let labelFunc = relation.label;
-
-                if (relation.filter) {
-                    labelFunc = relation.filter.label;
-                    label = labelFunc(e);
-                } else {
-                    if (typeof labelFunc === 'function') {
-                        label = labelFunc({ [alias]: e });
-                    } else {
-                        const keys = Object.keys(e);
-                        label = e[keys[0]];
-                    }
-                }
-
-                return {
-                    value: e['id'],
-                    label
-                }
-            })
+            relationDatas[tablename] = res;
         }
+
+        meta.list = relationDatas[tablename].map((e) => {
+            let label = '';
+            let labelFunc = relation.label;
+
+            if (relation.filter) {
+                labelFunc = relation.filter.label;
+                label = labelFunc(e);
+            } else {
+                if (typeof labelFunc === 'function') {
+                    label = labelFunc({ [alias]: e });
+                } else {
+                    const keys = Object.keys(e);
+                    label = e[keys[0]];
+                }
+            }
+
+            return {
+                value: e['id'],
+                label
+            }
+        })
     }, [])
 
     const valueLabel = _.get(_.find(meta.list, { value }), "label");

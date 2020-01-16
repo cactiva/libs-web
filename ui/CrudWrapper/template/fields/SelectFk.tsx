@@ -1,13 +1,13 @@
-import * as React from 'react';
-import { observer, useObservable } from 'mobx-react-lite';
-import { relationDatas } from '../Base';
-import useAsyncEffect from 'use-async-effect';
-import { queryAll } from '@src/libs/utils/gql';
 import { Select } from '@src/libs/ui';
-import { columnDefs } from '../..';
 import api from '@src/libs/utils/api';
-import { toJS } from 'mobx';
+import { queryAll } from '@src/libs/utils/gql';
+import { observable } from 'mobx';
+import { observer, useObservable } from 'mobx-react-lite';
+import * as React from 'react';
+import useAsyncEffect from 'use-async-effect';
+import { columnDefs } from '../..';
 
+const relationDatas = observable({});
 export default observer((props: any) => {
     const { tablename, labelField, auth, value, setValue } = props;
     const meta = useObservable({
@@ -56,9 +56,7 @@ export default observer((props: any) => {
                 label: e[lfield]
             };
         });
-        console.log(list, value);
         meta.list = list;
-
     }, [])
 
 

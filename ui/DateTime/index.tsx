@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { DatePicker, MaskedTextField } from 'office-ui-fabric-react';
-import { setHours, setMinutes, getHours, getMinutes } from 'date-fns';
+import { setHours, setMinutes, getHours, getMinutes, parseISO } from 'date-fns';
 import { useObservable, observer } from 'mobx-react-lite';
 import { dateFormat } from '@src/libs/utils/date';
+import _ from "lodash";
 
 export default observer((props: any) => {
     const meta = useObservable({
@@ -13,16 +14,26 @@ export default observer((props: any) => {
 
     React.useEffect(() => {
         if (props.value) {
-            meta.date = props.value;
-            const h = getHours(props.value);
-            const m = getMinutes(props.value);
+            if (typeof props.value === 'string') {
+                meta.date = parseISO(props.value);
+            } else {
+                meta.date = props.value;
+            }
+            const h = getHours(meta.date);
+            const m = getMinutes(meta.date);
             if (h && m) meta.time = `${h < 10 ? '0' + h : h}:${m < 10 ? '0' + m : m}`;
         }
     }, []);
 
     const getValue = () => {
         let date = new Date();
-        if (meta.date) date = meta.date;
+        if (meta.date) {
+            if (typeof meta.date === 'string') {
+                date = parseISO(meta.date);
+            } else {
+                date = meta.date;
+            }
+        }
         const oldDate = date;
 
         const ts = meta.time.split(':');
@@ -34,10 +45,11 @@ export default observer((props: any) => {
         return date;
     }
 
-
-    return <div style={{ display: 'flex', flexDirection: 'row' }}>
+    const rootStyle = _.get(props, 'styles.root');
+    return <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', ...rootStyle }}>
         <DatePicker
-            styles={{ root: { padding: 10, width: '140px' } }}
+            {...props}
+            styles={{ root: { minWidth: '130px', flex: 1 } }}
             value={meta.date}
             formatDate={(date?: Date): string => {
                 if (!date) return "";
@@ -49,15 +61,14 @@ export default observer((props: any) => {
             }}
         />
         <MaskedTextField mask="99:99"
-            styles={{ root: { padding: 10, paddingLeft: 0, width: '65px' } }}
+            styles={{ root: { paddingLeft: 10, width: '65px' }, field: { textAlign: 'center' } }}
             value={meta.time}
             onChange={(e: any) => {
                 meta.time = e.target.value;
-                props.onChange(getValue());
+                if (props.onChange) {
+                    props.onChange(getValue());
+                }
             }}
-
         />
-
-
     </div>
 })

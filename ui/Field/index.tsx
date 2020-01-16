@@ -6,16 +6,20 @@ export default (props: any) => {
     const type = _.get(props, 'children.type');
     const childProps = _.get(props, 'children.props');
 
-    const onChange = (e: any) => {
-        const value = e.target.value;
-        props.setValue(value)
-    }
 
     if (type === Input) {
-        return <Input value={props.value} onChange={onChange} type={props.type} label={props.label} styles={props.styles} />;
+
+        const onChange = (e: any) => {
+            const value = e.target.value;
+            props.setValue(value)
+        }
+        return <Input value={props.value} onChange={onChange} label={props.label} styles={props.styles} {...props} {...props.children.props} children={undefined} />;
     } else {
+        const onChange = (e: any) => {
+            props.setValue(e)
+        }
         const Component = props.children.type;
-        return <Component  styles={props.styles} {...props} {...props.children.props} />;
+        return <Component styles={props.styles} {...props} {...childProps} onChange={onChange} />;
     }
 };
 
