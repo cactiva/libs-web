@@ -4,6 +4,7 @@ import { ColumnActionsMode, DetailsList, DetailsListLayoutMode, IDetailsHeaderPr
 import * as React from 'react';
 import NiceValue from '../../Field/NiceValue';
 import Filter from './filter';
+import { toJS } from 'mobx';
 
 export default ({ table, reload, setForm, list, auth, filter, colDef, fkeys, setMode, structure }: any) => {
     if (Object.keys(colDef).length === 0) return <div style={{ width: 150, height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -63,10 +64,19 @@ const generateColumns = (table, colDef, fkeys) => {
     })
 
     return cols.map((e: any) => {
+        const fk = fkeys[e.path];
+        let relation = e.relation;
+        if (fk && !relation) {
+            relation = {
+                from: {
+                    table: fk.foreign_table_name
+                }
+            }
+        }
         return {
             key: e.path,
             name: e.title,
-            relation: e.relation,
+            relation: relation,
             filter: e.filter,
             maxWidth: 200,
             columnActionsMode: ColumnActionsMode.disabled,
@@ -74,11 +84,11 @@ const generateColumns = (table, colDef, fkeys) => {
                 const cdef = colDef[e.path];
                 const value = _.get(item, e.path);
                 let valueEl: any = null;
-                if (e.relation && e.relation.alias) {
+                if (e.relation) {
                     const alias = e.relation.alias;
                     if (typeof e.relation.label === 'function') {
                         valueEl = formatValue(e.relation.label(item));
-                    } else {
+                    } else if (alias) {
                         valueEl = formatValue(item[alias]);
                     }
                 } else if (cdef) {

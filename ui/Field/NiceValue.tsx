@@ -2,7 +2,6 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import Text from '../Text';
 import _ from 'lodash';
-import { toJS } from 'mobx';
 
 const NiceValue = observer(({ value, style }: any) => {
     let valueEl: any = null;
@@ -10,7 +9,12 @@ const NiceValue = observer(({ value, style }: any) => {
         if (value === null) {
             valueEl = null;
         } else {
-            const keys = Object.keys(value);
+            let keys = Object.keys(value);
+
+            if (keys.indexOf('id') >= 0) {
+                keys.splice(keys.indexOf('id'), 1)
+            }
+
             valueEl = keys.length === 1
                 ? <Text>{
                     typeof value[keys[0]] === "object"
@@ -20,7 +24,6 @@ const NiceValue = observer(({ value, style }: any) => {
                 : <table cellPadding={0} cellSpacing={0} style={{ borderCollapse: 'collapse', ...style }}>
                     <tbody>
                         {keys.map((key: string) => {
-                            if (key.indexOf('id') === 0) return null;
                             return <tr key={key} style={{ verticalAlign: 'top' }}>
                                 <td style={{
                                     border: '1px solid #ddd',
