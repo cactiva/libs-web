@@ -15,8 +15,27 @@ export default (metasub, rel, structure, parsed, data) => {
 
     const id = data[relfk.foreign_column_name];
     const fields = _.get(_.find(_.get(structure, `fields`, []), { name: rel.path }), 'fields', []);
-    const tcols = (rel.column.props.table || fields).filter(t => { return t.name !== 'id' });
+    const table = _.get(rel, 'column.props.table', {});
+    let tcols = (fields).filter(t => {
+        if (Array.isArray(table.hide) && table.hide.indexOf(t.name) >= 0) return false;
+        return t.name !== 'id'
+    });
+    if (table.options) {
+        tcols = tcols.map(t => {
+            if (table.options[t.name]) {
+                return {
+                    ...t,
+                    ...table.options[t.name]
+                }
+            }
+            return t;
+        })
+    }
+
+
+
     const fcols = (rel.column.props.form || fields).filter(t => { return t.name !== 'id' });
+    const defaultForm = _.get(rel, 'column.props.options.default');
     return {
         structure: {
             name: relfk.table_name,
@@ -29,8 +48,9 @@ export default (metasub, rel, structure, parsed, data) => {
             }],
             orderBy: [],
             options: {},
-            fkeys: {},
+            fkeys: undefined,
             overrideForm: {
+                ...defaultForm,
                 [relfk.column_name]: id
             }
         },
@@ -45,13 +65,20 @@ export default (metasub, rel, structure, parsed, data) => {
                 ]
             },
             table: {
-                row: {
+                head: {
                     children: tcols.map(t => {
-                        return <TableColumn path={t.name} title={_.startCase(t.name)} />
+                        let name = t.name;
+                        if (name.indexOf('id') === 0) {
+                            name = name.substr(3)
+                        }
+                        return <TableColumn
+                            path={t.name}
+                            title={_.startCase(name)}
+                            relation={t.relation} />
                     })
-                }, head: {
+                }, row: {
                     children: tcols.map(t => {
-                        return <TableColumn path={t.name} title={_.startCase(t.name)} />
+                        return <TableColumn path={t.name} />
                     })
                 }, root: {
                     children: []

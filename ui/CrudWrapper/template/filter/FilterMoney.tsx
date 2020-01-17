@@ -5,29 +5,31 @@ import { TextField } from 'office-ui-fabric-react';
 
 export default ({ label, field, value, setValue, submit }: any) => {
     const meta = useObservable({
-        oldval: value
+        oldval: parseInt((value || '')).toLocaleString().replace(/,/ig, '.')
     })
     return <ItemButton
         label={label}
         field={field}
         setValue={setValue}
-        onClose={() => submit()}
+        onClose={() => {
+            setValue(parseInt((meta.oldval || '').replace(/\./ig, '')));
+            submit();
+        }}
         value={value}>
-            
-            <TextField
-                value={meta.oldval}
-                onChange={(e: any) => {
-                    meta.oldval = e.target.value.replace(/\D{3}/g,'');
-                }}
-                onKeyDown={(e: any) => {
-                    if (e.which === 13){
-                        meta.oldval = e.target.value.replace(/\D{3}/g,'');
-                        setValue(e.target.value.replace(/\D{3}/g,''));
-                        submit();
-                    }
-                }}
-                styles={{ root: {padding: 15}}}
-            />
-            
+
+        <TextField
+            value={meta.oldval}
+            onChange={(e: any) => {
+                meta.oldval = parseInt((e.target.value || '').replace(/\./ig, '')).toLocaleString().replace(/,/ig, '.');
+            }}
+            onKeyDown={(e: any) => {
+                if (e.which === 13) {
+                    setValue(parseInt((meta.oldval || '').replace(/\./ig, '')));
+                    submit();
+                }
+            }}
+            styles={{ root: { padding: 15 } }}
+        />
+
     </ItemButton>
 }

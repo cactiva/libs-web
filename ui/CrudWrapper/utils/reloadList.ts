@@ -146,7 +146,7 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
     });
 
     const res = await queryAll(query, { auth: structure.auth });
-
+    
     // _.map(res, (e) => {
     //     if (e.aggregate) {
     //         const count = e.aggregate.count

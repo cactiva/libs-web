@@ -1,5 +1,6 @@
 import { columnDefs } from "..";
 import api from "@src/libs/utils/api";
+import { toJS } from "mobx";
 
 export default async (props: {
     structure: any,
@@ -38,6 +39,7 @@ export default async (props: {
             }
         }
     }
+
     if (!columnDefs[structure.name]) {
         const res = await api({ url: `/api/db/columns?table=${structure.name}` }) as any[];
         if (res) {
@@ -47,4 +49,6 @@ export default async (props: {
             };
         }
     }
+
+    return structure.fkeys;
 }

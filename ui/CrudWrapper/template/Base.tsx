@@ -1,16 +1,14 @@
+import _ from 'lodash';
 import { observer, useObservable } from 'mobx-react-lite';
-import React, { useEffect } from 'react';
+import React from 'react';
+import useAsyncEffect from 'use-async-effect';
 import { columnDefs } from '..';
+import reloadList from '../utils/reloadList';
 import reloadStructure from '../utils/reloadStructure';
 import Form from './Form';
 import Header from './Header';
 import List from './List';
-import reloadList from '../utils/reloadList';
-import useAsyncEffect from 'use-async-effect';
-import _ from 'lodash';
-import { observable } from 'mobx';
 
-export const relationDatas = observable({});
 
 export default observer(({ parsed, mode, setMode, structure, auth, idKey, renderHeader, style, headerStyle }: any) => {
     const { table, form } = parsed;
@@ -27,11 +25,11 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
         },
         loading: false,
         hasRelation: false,
+        fkeys: structure.fkeys,
         form: {}
     });
-
     useAsyncEffect(async () => {
-        reloadStructure({ idKey, structure });
+        meta.fkeys = await reloadStructure({ idKey, structure });
         if (meta.list.length === 0) {
             meta.list = await reloadList({
                 structure,
@@ -40,14 +38,13 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
                 paging: meta.paging
             });
         }
-    }, []);
+    }, [structure]);
 
     const colDef = {};
     _.get(columnDefs, `${structure.name}.columns`, []).map(e => {
         colDef[e.column_name] = e;
     })
-    const fkeys = structure.fkeys;
-    if (Object.keys(colDef).length === 0 || !fkeys) return null;
+    if (Object.keys(colDef).length === 0 || !meta.fkeys) return null;
 
     const reload = async () => {
         meta.list = await reloadList({
@@ -62,6 +59,7 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
         structure={structure}
         parsed={parsed}
         form={meta.form}
+        setForm={v => meta.form = v}
         mode={mode}
         style={headerStyle}
         hasRelation={meta.hasRelation}
@@ -88,13 +86,13 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
                 reload={reload}
                 auth={auth}
                 colDef={colDef}
-                fkeys={fkeys} />
+                fkeys={meta.fkeys} />
             : <Form
                 form={form}
                 colDef={colDef}
                 parsed={parsed}
                 structure={structure}
-                fkeys={fkeys}
+                fkeys={meta.fkeys}
                 data={meta.form}
                 setHasRelation={(v) => meta.hasRelation = v}
                 mode={mode} />
