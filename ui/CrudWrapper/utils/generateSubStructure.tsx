@@ -68,9 +68,6 @@ export default (metasub, rel, structure, parsed, data) => {
                 head: {
                     children: tcols.map(t => {
                         let name = t.name;
-                        if (name.indexOf('id') === 0) {
-                            name = name.substr(3)
-                        }
                         return <TableColumn
                             path={t.name}
                             title={_.startCase(name)}

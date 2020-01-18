@@ -11,6 +11,7 @@ import FilterBoolean from './FilterBoolean';
 import FilterDate from './FilterDate';
 import FilterRelation from './FilterRelation';
 import FilterSelect from './FilterSelect';
+import { toJS } from 'mobx';
 
 export default observer((props: any) => {
     const { reload, filter, columns, colDef, fkeys, structure, auth } = props;
@@ -20,6 +21,10 @@ export default observer((props: any) => {
         init: false
     })
     const btnRef = useRef(null);
+
+    if (structure.args) {
+        console.log(structure.args);
+    }
 
     useEffect(() => {
         if (!meta.init) {
@@ -170,7 +175,7 @@ export default observer((props: any) => {
                             label={e.name} />
                 }
 
-                return <Spinner key={key} />;
+                return <Spinner key={key} style={{ marginRight: 5 }} />;
             }
         })}
 

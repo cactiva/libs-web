@@ -96,19 +96,35 @@ export default observer(({ structure, form, data, mode, colDef, auth, parsed, fk
 
 const processFields = (parsedForm: any, structure, colDef, fkeys, auth) => {
     const relations = {};
+    const hidden: any = [];
+
+    const keys = {};
+    _.get(parsedForm, 'props.children', []).forEach(e => {
+        keys[e.props.path] = e;
+    })
     const columns = _.get(parsedForm, 'props.children', []).filter(e => {
         let fk = fkeys[e.props.path];
         if (!fk) fk = fkeys[e.props.path.substr(0, e.props.path.length - 1)];
-        if (fk && !fk.table_schema) {
-            relations[e.props.path] = {
-                path: e.props.path,
-                column: e,
-                fkey: fk
-            };
-            return false;
+        if (fk) {
+            if (!fk.table_schema) {
+                relations[e.props.path] = {
+                    path: e.props.path,
+                    column: e,
+                    fkey: fk
+                };
+                return false;
+            } else {
+                if (fk && fk.table_name === structure.name) {
+                    const tablename = fk.foreign_table_name;
+                    const key: any = keys[tablename] || keys[tablename + 's'];
+                    if (key) {
+                        hidden.push(key.props.path);
+                    }
+                }
+            }
         }
         return true;
-    }).map(e => {
+    }).filter(e => !!e && hidden.indexOf(e.props.path) < 0).map(e => {
         const path = e.props.path;
         const cdef = colDef[path];
         const fk = fkeys[path];

@@ -48,7 +48,11 @@ export default observer(({ label, field, value, setValue, submit, tablename, aut
                     label = labelFunc({ [alias]: e });
                 } else {
                     const keys = Object.keys(e);
-                    label = e[keys[0]];
+                    if (keys.length > 0) {
+                        label = keys.filter(f => f !== 'id').map(f => {
+                            return e[f];
+                        }).join(' • ')
+                    }
                 }
             }
 

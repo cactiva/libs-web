@@ -8,6 +8,7 @@ import reloadStructure from '../utils/reloadStructure';
 import Form from './Form';
 import Header from './Header';
 import List from './List';
+import { toJS } from 'mobx';
 
 
 export default observer(({ parsed, mode, setMode, structure, auth, idKey, renderHeader, style, headerStyle }: any) => {
@@ -38,6 +39,8 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
                 paging: meta.paging
             });
         }
+
+        console.log(toJS(meta.fkeys));
     }, [structure]);
 
     const colDef = {};
@@ -54,6 +57,7 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
             paging: meta.paging
         });
     };
+
 
     const header = <Header
         structure={structure}

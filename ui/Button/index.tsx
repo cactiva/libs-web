@@ -30,8 +30,10 @@ export default (props: any) => {
         }
     }
 
-    let onClick = props.onClick ? props.onClick : () => {};
-
+    let onClick = props.onClick ? props.onClick : () => { };
+    if (props.onPress)
+        onClick = props.onPress;
+        
     if (props.type === 'submit') {
         return <PrimaryButton {...props} styles={styles} onClick={onClick} text={text} children={children} />;
     }

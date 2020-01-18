@@ -80,6 +80,7 @@ const RenderChild = observer((props: any) => {
         const isValid = (value: any) => {
             meta.validate[child.props.path] = value;
         };
+
         if (child.props && child.props.type === "submit") {
             custProps = {
                 ...custProps,

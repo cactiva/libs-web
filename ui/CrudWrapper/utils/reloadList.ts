@@ -22,6 +22,9 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
 
     const filterCols = _.get(filter, 'columns', {});
 
+    if (structure.args) {
+        return [];
+    }
 
     if (!filter.initDefault) {
         Object.keys(filterCols).map(i => {
@@ -146,7 +149,7 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
     });
 
     const res = await queryAll(query, { auth: structure.auth });
-    
+
     // _.map(res, (e) => {
     //     if (e.aggregate) {
     //         const count = e.aggregate.count
