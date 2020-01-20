@@ -6,6 +6,7 @@ import * as React from 'react';
 import useAsyncEffect from 'use-async-effect';
 import ItemButton from './ItemButton';
 import { observable } from 'mobx';
+import { formatRelationLabel } from '../fields/SelectFk';
 
 const relationDatas = observable({});
 export default observer(({ label, field, value, setValue, submit, tablename, auth, alias, structure, relation }: any) => {
@@ -48,7 +49,9 @@ export default observer(({ label, field, value, setValue, submit, tablename, aut
                     label = labelFunc({ [alias]: e });
                 } else {
                     const keys = Object.keys(e);
-                    label = e[keys[0]];
+                    if (keys.length > 0) {
+                        label = formatRelationLabel(keys, e);
+                    }
                 }
             }
 

@@ -24,6 +24,7 @@ export interface ITable {
     cosntraint?: string,
     fields?: ITable[],
     where?: ITableWhere[],
+    args?: any,
     orderBy?: ITableOrderBy[]
     options?: ITableOptions
 }
@@ -45,6 +46,15 @@ const tabs = (level: number) => {
     return res;
 }
 
+
+export const genArgs = (table: ITable) => {
+    if (table.args && Object.keys(table.args).length > 0) {
+        const keys = Object.keys(table.args);
+        return `args: {${keys.map(e => {
+            return `${e}: ${typeof table.args[e] === 'string' ? `"${table.args[e]}"` : table.args[e]}`;
+        }).join(',')}}`;
+    }
+}
 export const genWhere = (where: ITableWhere[], level = 0): string => {
     const result = [] as any;
     (where || []).map((w: ITableWhere) => {
@@ -93,6 +103,11 @@ export const genCounts = (table: ITable, options?: {
 }, level = 1): string => {
     const args: any = [];
 
+    const dargs = genArgs(table);
+    if (dargs) {
+        args.push(dargs);
+    }
+
     if (_.get(options, 'showArgs', true)) {
         if (table.where) {
             const where = genWhere(table.where);
@@ -117,6 +132,11 @@ export const genFields = (table: ITable, options?: {
     const fields = _.get(table, "fields", []) as ITable[];
 
     const args: any = [];
+
+    const dargs = genArgs(table);
+    if (dargs) {
+        args.push(dargs);
+    }
 
     if (_.get(options, 'showArgs', true)) {
         if (table.where) {

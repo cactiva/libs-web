@@ -13,7 +13,7 @@ export default async (props: {
         if (res) {
             const tempfkeys = {};
             res.forEach(e => {
-                if (e.table_name === structure.name) {
+                if (e.table_name === structure.name || e.alias === structure.name) {
                     tempfkeys[e.column_name] = e;
                 } else {
                     if (!tempfkeys[e.table_name]) {

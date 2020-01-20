@@ -1,45 +1,56 @@
 import _ from 'lodash';
 import { observer, useObservable } from 'mobx-react-lite';
-import { Callout, Checkbox, IconButton, Spinner, keyframes } from 'office-ui-fabric-react';
+import { Callout, Checkbox, IconButton, Spinner } from 'office-ui-fabric-react';
 import React, { useEffect, useRef } from 'react';
-import FilterString from './FilterString';
-import FilterInteger from './FilterInteger';
-import FilterDecimal from './FilterDecimal';
-import FilterDateTime from './FilterDateTime';
-import FilterMoney from './FilterMoney';
+import { argsApplyFilter } from '../../utils/argsApplyFilter';
 import FilterBoolean from './FilterBoolean';
 import FilterDate from './FilterDate';
+import FilterDateTime from './FilterDateTime';
+import FilterDecimal from './FilterDecimal';
+import FilterInteger from './FilterInteger';
+import FilterMoney from './FilterMoney';
 import FilterRelation from './FilterRelation';
 import FilterSelect from './FilterSelect';
+import FilterString from './FilterString';
+import { argsLoadFilter } from '../../utils/argsLoadFilter';
+import { argsSetFilter } from '../../utils/argsSetFilter';
+import { toJS } from 'mobx';
 
 export default observer((props: any) => {
     const { reload, filter, columns, colDef, fkeys, structure, auth } = props;
     const meta = useObservable({
         show: false,
         visibles: {},
-        init: false
+        init: false,
+        columns: _.cloneDeep(columns)
     })
     const btnRef = useRef(null);
+    const filterCols = meta.columns;
+    if (structure.args) {
+        argsApplyFilter(structure, filterCols, filter.form);
+    }
 
     useEffect(() => {
         if (!meta.init) {
-            if (columns.length >= 6) {
-                for (let i = 0; i < 6; i++) {
-                    const e = columns[i];
-                    if (e) {
-                        meta.visibles[e.key] = true;
+            if (filterCols.length > 1) {
+                for (let i = 0; i < 4; i++) {
+                    if (i < filterCols.length) {
+                        const e = filterCols[i];
+                        if (e) {
+                            meta.visibles[e.key] = true;
+                        }
                     }
                 }
             } else {
-                for (let i = 0; i < columns.length; i++) {
-                    const e = columns[i];
+                for (let i = 0; i < filterCols.length; i++) {
+                    const e = filterCols[i];
                     meta.visibles[e.key] = true;
                 }
             }
             meta.init = true;
         }
     }, []);
-    //^ i=0; i < 2; i++ karena jika karena kolom tidak lebih dari / sama dengan i maka error -Iman
+
     return <div style={{
         display: 'flex',
         flexDirection: 'row',
@@ -52,21 +63,30 @@ export default observer((props: any) => {
                 iconProps={{ iconName: "GlobalNavButton" }} />
         </div>
 
-        {columns.map((e, key) => {
+        {filterCols.map((e, key) => {
             if (meta.visibles[e.key]) {
                 let type = _.get(colDef, `${e.key}.data_type`);
                 const submit = () => {
                     reload();
                 }
+                let value = filter.form[e.key];
+                if (e._args) {
+                    value = argsLoadFilter(e, filter);
+                }
+
                 const setValue = (newvalue) => {
-                    let key = e.key;
-                    if (!type && !fkeys[e.key] && e.relation && e.relation.alias) {
-                        key = e.relation.alias;
+                    if (e._args) {
+                        argsSetFilter(e, filter, newvalue);
+                    } else {
+                        let key = e.key;
+                        if (!type && !fkeys[e.key] && e.relation && e.relation.alias) {
+                            key = e.relation.alias;
+                        }
+                        if (!newvalue) {
+                            delete filter.form[key];
+                        } else
+                            filter.form[key] = newvalue;
                     }
-                    if (!newvalue) {
-                        delete filter.form[key];
-                    } else
-                        filter.form[key] = newvalue;
                 }
 
                 if (e.filter) {
@@ -107,7 +127,7 @@ export default observer((props: any) => {
                         return <FilterString
                             setValue={setValue}
                             submit={submit}
-                            value={filter.form[e.key]}
+                            value={value}
                             key={key}
                             field={e.key}
                             label={e.name} />
@@ -116,7 +136,7 @@ export default observer((props: any) => {
                             setValue={setValue}
                             submit={submit}
                             key={key}
-                            value={filter.form[e.key]}
+                            value={value}
                             field={e.key}
                             label={e.name} />
                     case "numeric": // money
@@ -124,7 +144,7 @@ export default observer((props: any) => {
                             setValue={setValue}
                             submit={submit}
                             key={key}
-                            value={filter.form[e.key]}
+                            value={value}
                             field={e.key}
                             label={e.name} />
                     case "double precision":
@@ -133,7 +153,7 @@ export default observer((props: any) => {
                             setValue={setValue}
                             submit={submit}
                             key={key}
-                            value={filter.form[e.key]}
+                            value={value}
                             field={e.key}
                             label={e.name} />
                     case "timestamp without time zone":
@@ -142,14 +162,14 @@ export default observer((props: any) => {
                             setValue={setValue}
                             submit={submit}
                             key={key}
-                            value={filter.form[e.key]}
+                            value={value}
                             label={e.name} />
                     case "boolean":
                         return <FilterBoolean
                             setValue={setValue}
                             submit={submit}
                             key={key}
-                            value={filter.form[e.key]}
+                            value={value}
                             label={e.name}
                             field={e.key} />
                     case "date":
@@ -157,20 +177,26 @@ export default observer((props: any) => {
                             setValue={setValue}
                             submit={submit}
                             key={key}
-                            value={filter.form[e.key]}
+                            operator={_.get(e, 'filter.operator')}
+                            setOperator={(op) => {
+                                _.set(e, 'filter.type', 'date');
+                                _.set(e, 'filter.operator', op);
+                            }}
+                            onlyBetween={_.get(e, 'filter.onlyBetween')}
+                            value={value}
                             label={e.name} />
                     case "select":
                         return <FilterSelect
                             setValue={setValue}
                             submit={submit}
                             key={key}
-                            value={filter.form[e.key]}
+                            value={value}
                             field={e.key}
                             items={e.filter.items}
                             label={e.name} />
                 }
 
-                return <Spinner key={key} />;
+                return <Spinner key={key} style={{ marginRight: 5 }} />;
             }
         })}
 
@@ -187,7 +213,7 @@ export default observer((props: any) => {
                     flexWrap: 'wrap',
                     flexDirection: 'row'
                 }}>
-                    {columns.map((e, key) => {
+                    {filterCols.map((e, key) => {
                         return <Checkbox
                             key={e.key}
                             styles={{ root: { marginBottom: 3, marginRight: 3, width: '120px' } }}

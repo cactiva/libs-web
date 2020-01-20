@@ -40,14 +40,17 @@ export default observer((props: any) => {
         const list = relationDatas[tablename].map(e => {
             const keys = Object.keys(e);
 
-            let lfield = keys[1];
+            let lfield = '';
             if (typeof labelField === 'string') {
                 lfield = labelField;
             } else if (typeof labelField === 'function') {
                 lfield = labelField(e);
             } else {
-                if (keys.indexOf('name')) {
-                    lfield = 'name';
+                if (keys.length > 0) {
+                    return {
+                        value: e['id'],
+                        label: formatRelationLabel(keys, e)
+                    }
                 }
             }
 
@@ -61,6 +64,21 @@ export default observer((props: any) => {
 
 
     return <Select styles={props.styles} label={props.label} items={meta.list} selectedKey={value} onChange={(e, item) => {
-        setValue(item.key);
+        setValue(item && item.key);
     }} />
 })
+
+export const formatRelationLabel = (keys, e) => {
+    let list = keys;
+    if (keys.length > 2) {
+        list = keys.filter(f => {
+            if (f.indexOf('name') >= 0) {
+                return true;
+            }
+            return false;
+        })
+    }
+    return list.filter(f => f !== 'id').map(f => {
+        return e[f];
+    }).join(' • ');
+}

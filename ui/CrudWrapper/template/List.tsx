@@ -4,14 +4,14 @@ import { ColumnActionsMode, DetailsList, DetailsListLayoutMode, IDetailsHeaderPr
 import * as React from 'react';
 import NiceValue from '../../Field/NiceValue';
 import Filter from './filter';
-import { toJS } from 'mobx';
+import { formatMoney } from '@src/libs/utils';
 
 export default ({ table, reload, setForm, list, auth, filter, colDef, fkeys, setMode, structure }: any) => {
     if (Object.keys(colDef).length === 0) return <div style={{ width: 150, height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Spinner />
     </div>;
 
-    const columns = generateColumns(table, colDef, fkeys);
+    const columns = generateColumns(structure, table, colDef, fkeys);
     return <>
         <Filter
             filter={filter}
@@ -55,13 +55,40 @@ export default ({ table, reload, setForm, list, auth, filter, colDef, fkeys, set
     </>;
 }
 
-const generateColumns = (table, colDef, fkeys) => {
+const generateColumns = (structure, table, colDef, fkeys) => {
+    const keys = {};
+    _.forEach(table.head.children, e => {
+        keys[e.props.path] = e;
+    });
+    const hidden: any = [];
     const cols = table.head.children.map((e, idx) => {
+        let relation: any = undefined;
+        if (e.props.relation) {
+            relation = e.props.relation;
+        } else if (!e.props.relation && fkeys) {
+            const fk = fkeys[e.props.path];
+            if (fk && fk.table_name === structure.name) {
+                const tablename = fk.foreign_table_name;
+                const key: any = keys[tablename] || keys[tablename + 's'];
+                if (key) {
+                    hidden.push(key.props.path);
+                    relation = {
+                        alias: key.props.path
+                    }
+                }
+            }
+        }
+
+        let title = e.props.title;
+        if (title && title.toLowerCase().indexOf('id') === 0) title = title.substr(3);
+
         return {
             ...e.props,
+            title,
+            relation,
             children: _.get(table, `row.children.${idx}.props.children`)
         }
-    })
+    }).filter(e => !!e && hidden.indexOf(e.path) < 0);
 
     return cols.map((e: any) => {
         const fk = fkeys[e.path];
@@ -92,7 +119,9 @@ const generateColumns = (table, colDef, fkeys) => {
                         valueEl = formatValue(item[alias]);
                     }
                 } else if (cdef) {
-                    if (cdef.data_type.indexOf('timestamp') >= 0 || cdef.data_type === 'date') {
+                    if (cdef.data_type.indexOf('numeric') >= 0) {
+                        valueEl = formatMoney(value);
+                    } else if (cdef.data_type.indexOf('timestamp') >= 0 || cdef.data_type === 'date') {
                         valueEl = dateFormat(value);
                     } else {
                         valueEl = formatValue(value);
