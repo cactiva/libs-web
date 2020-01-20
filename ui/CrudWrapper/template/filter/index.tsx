@@ -92,7 +92,7 @@ export default observer((props: any) => {
                 if (e.filter) {
                     type = e.filter.type;
                 }
-
+                    
                 if (e.relation) {
                     const alias = e.relation.alias;
                     if (alias) {

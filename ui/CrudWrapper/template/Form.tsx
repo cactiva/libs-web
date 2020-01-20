@@ -139,12 +139,19 @@ const processFields = (parsedForm: any, structure, colDef, fkeys, auth) => {
             if (fk) {
                 const tablename = fk.foreign_table_name;
                 if (tablename) {
-                    children = <SelectFk tablename={tablename} labelField={e.props.labelOptions} auth={auth} label={label} styles={{
-                        container: {
-                            width: '32%',
-                            marginRight: '10px'
-                        }
-                    }} />
+                    console.log(e.props);
+                    children = <SelectFk
+                        tablename={tablename}
+                        labelField={e.props.labelOptions}
+                        relation={e.props.relation}
+                        auth={auth}
+                        label={label}
+                        styles={{
+                            container: {
+                                width: '32%',
+                                marginRight: '10px'
+                            }
+                        }} />
                 }
             } else {
                 switch (type) {
