@@ -170,7 +170,7 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
             offset: (currentPage - 1) * paging.itemPerPage
         }
     });
-    console.log(query);
+    // console.log(query);
 
     const res = await queryAll(query, { auth: structure.auth });
 

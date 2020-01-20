@@ -1,10 +1,12 @@
+import { formatMoney } from '@src/libs/utils';
 import { dateFormat } from '@src/libs/utils/date';
 import _ from 'lodash';
 import { ColumnActionsMode, DetailsList, DetailsListLayoutMode, IDetailsHeaderProps, IDetailsRowProps, IRenderFunction, SelectionMode, Spinner } from 'office-ui-fabric-react';
 import * as React from 'react';
 import NiceValue from '../../Field/NiceValue';
+import { formatRelationLabel } from './fields/SelectFk';
 import Filter from './filter';
-import { formatMoney } from '@src/libs/utils';
+import { toJS } from 'mobx';
 
 export default ({ table, reload, setForm, list, auth, filter, colDef, fkeys, setMode, structure }: any) => {
     if (Object.keys(colDef).length === 0) return <div style={{ width: 150, height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -60,11 +62,31 @@ const generateColumns = (structure, table, colDef, fkeys) => {
     _.forEach(table.head.children, e => {
         keys[e.props.path] = e;
     });
+
+    _.forEach(structure.fields, e => {
+        if (!keys[e.name]) {
+            keys[e.name] = {
+                props: { path: e.name }
+            }
+        }
+    })
+
     const hidden: any = [];
     const cols = table.head.children.map((e, idx) => {
         let relation: any = undefined;
         if (e.props.relation) {
             relation = e.props.relation;
+
+            if (!relation.alias && fkeys) {
+                const fk = fkeys[e.props.path];
+                if (fk && fk.table_name === structure.name) {
+                    const tablename = fk.foreign_table_name;
+                    const key: any = keys[tablename] || keys[tablename + 's'];
+                    if (key) {
+                        relation.alias = key.props.path
+                    }
+                }
+            }
         } else if (!e.props.relation && fkeys) {
             const fk = fkeys[e.props.path];
             if (fk && fk.table_name === structure.name) {
@@ -72,8 +94,26 @@ const generateColumns = (structure, table, colDef, fkeys) => {
                 const key: any = keys[tablename] || keys[tablename + 's'];
                 if (key) {
                     hidden.push(key.props.path);
-                    relation = {
-                        alias: key.props.path
+
+                    const sfield = _.find(structure.fields, { name: key.props.path });
+                    if (sfield) {
+                        relation = {
+                            alias: key.props.path,
+                            label: (item) => {
+                                const skeys: any = []
+                                sfield.fields.forEach(k => {
+                                    skeys.push(k.name);
+                                })
+                                return formatRelationLabel(skeys, item[key.props.path]);
+                            }
+                        }
+                    } else {
+                        relation = {
+                            alias: key.props.path,
+                            label: (item) => {
+                                return formatRelationLabel(Object.keys(keys), item);
+                            }
+                        }
                     }
                 }
             }

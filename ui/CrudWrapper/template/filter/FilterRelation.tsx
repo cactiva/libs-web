@@ -5,7 +5,7 @@ import { observer, useObservable } from 'mobx-react-lite';
 import * as React from 'react';
 import useAsyncEffect from 'use-async-effect';
 import ItemButton from './ItemButton';
-import { observable } from 'mobx';
+import { observable, toJS } from 'mobx';
 import { formatRelationLabel } from '../fields/SelectFk';
 
 const relationDatas = observable({});
@@ -33,9 +33,12 @@ export default observer(({ label, field, value, setValue, submit, tablename, aut
 
                 q = struct2gql(col);
             }
+
             const res = await queryAll(`query { ${q} }`, { auth });
             relationDatas[tablename] = res;
+            console.log(`query { ${q} }`, res);
         }
+        console.log(toJS(relationDatas[tablename]));
 
         meta.list = relationDatas[tablename].map((e) => {
             let label = '';
