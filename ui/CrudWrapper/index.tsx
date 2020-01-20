@@ -3,7 +3,8 @@ import { observable } from 'mobx';
 import { observer, useObservable } from 'mobx-react-lite';
 import * as React from 'react';
 import parserChildren from './utils/parserChildren';
-import { Spinner } from 'office-ui-fabric-react';
+import { Spinner, Label, SpinnerSize } from 'office-ui-fabric-react';
+import Loading from './template/Loading';
 
 const Template = require("./template/Base").default;
 export const columnDefs = observable({});
@@ -16,9 +17,7 @@ export default observer((props: any) => {
         }
     });
     const { data, children } = props;
-    if (!data || !children) return <div style={{ width: 150, height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Spinner />
-    </div>;
+    if (!data || !children) return null;
 
     const structure = _.get(props, 'data.structure');
     const auth = _.get(props, 'data.auth');

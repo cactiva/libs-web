@@ -36,9 +36,7 @@ export default observer(({ label, field, value, setValue, submit, tablename, aut
 
             const res = await queryAll(`query { ${q} }`, { auth });
             relationDatas[tablename] = res;
-            console.log(`query { ${q} }`, res);
         }
-        console.log(toJS(relationDatas[tablename]));
 
         meta.list = relationDatas[tablename].map((e) => {
             let label = '';
@@ -76,8 +74,10 @@ export default observer(({ label, field, value, setValue, submit, tablename, aut
         value={valueLabel}>
         <div style={{ padding: 10 }}>
             <Select items={meta.list} selectedKey={value} onChange={(e, item) => {
-                setValue(item.key);
-                submit();
+                if (item && item.key) {
+                    setValue(item.key);
+                    submit();
+                }
             }} />
         </div>
     </ItemButton>

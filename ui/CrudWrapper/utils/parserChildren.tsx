@@ -22,7 +22,7 @@ export default (input: any) => {
         form: null as any
     };
     const castedIdKey = _.startCase(idKey);
-    const colDef = _.get(columnDefs, `${(structure || {}).name}.columns`)
+    const colDef = _.get(columnDefs, `${(structure || {}).name}`)
     children.map((e) => {
         if (e.type === Table) {
             output.table.root = { ...e.props };

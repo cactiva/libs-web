@@ -1,7 +1,7 @@
 import { Select } from '@src/libs/ui';
 import api from '@src/libs/utils/api';
 import { queryAll } from '@src/libs/utils/gql';
-import { observable } from 'mobx';
+import { observable, toJS } from 'mobx';
 import { observer, useObservable } from 'mobx-react-lite';
 import * as React from 'react';
 import useAsyncEffect from 'use-async-effect';
@@ -22,15 +22,13 @@ export default observer((props: any) => {
             if (!columnDefs[tablename]) {
                 const res = await api({ url: `/api/db/columns?table=${tablename}` }) as any[];
                 if (res) {
-                    columnDefs[tablename] = {
-                        columns: res,
-                        data: []
-                    };
+                    columnDefs[tablename] = res;
                 }
             }
 
             if (!relationDatas[tablename]) {
-                const cols = columnDefs[tablename].columns;
+                const cols = columnDefs[tablename];
+                console.log(toJS(columnDefs), tablename);
                 let q = ` ${tablename} {
                     id
                     ${cols

@@ -9,6 +9,8 @@ import Form from './Form';
 import Header from './Header';
 import List from './List';
 import { toJS } from 'mobx';
+import { Spinner, Label, SpinnerSize } from 'office-ui-fabric-react';
+import Loading from './Loading';
 
 
 export default observer(({ parsed, mode, setMode, structure, auth, idKey, renderHeader, style, headerStyle }: any) => {
@@ -26,11 +28,16 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
         },
         loading: false,
         hasRelation: false,
+        loadingInitText: '',
         fkeys: structure.fkeys,
         form: {}
     });
     useAsyncEffect(async () => {
-        meta.fkeys = await reloadStructure({ idKey, structure });
+        meta.fkeys = await reloadStructure({
+            idKey, structure, setLoading: (value) => {
+                meta.loadingInitText = value;
+            }
+        });
         if (meta.list && meta.list.length === 0) {
             meta.list = await reloadList({
                 structure,
@@ -42,10 +49,12 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
     }, [structure]);
 
     const colDef = {};
-    _.get(columnDefs, `${structure.name}.columns`, []).map(e => {
+    _.get(columnDefs, `${structure.name}`, []).map(e => {
         colDef[e.column_name] = e;
     })
-    if (Object.keys(colDef).length === 0 || !meta.fkeys) return null;
+    if (Object.keys(colDef).length === 0 || !meta.fkeys) {
+        return <Loading text={meta.loadingInitText} />;
+    }
 
     const reload = async () => {
         meta.list = await reloadList({

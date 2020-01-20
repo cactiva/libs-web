@@ -5,7 +5,7 @@ import { TextField } from 'office-ui-fabric-react';
 
 export default ({ label, field, value, setValue, submit }: any) => {
     const meta = useObservable({
-        oldval: parseInt((value || '')).toLocaleString().replace(/,/ig, '.')
+        oldval: (parseInt(value || '') || '').toLocaleString().replace(/,/ig, '.')
     })
     return <ItemButton
         label={label}

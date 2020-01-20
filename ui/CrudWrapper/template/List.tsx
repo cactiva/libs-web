@@ -7,13 +7,26 @@ import NiceValue from '../../Field/NiceValue';
 import { formatRelationLabel } from './fields/SelectFk';
 import Filter from './filter';
 import { toJS } from 'mobx';
+import { observer, useObservable } from 'mobx-react-lite';
+import useAsyncEffect from 'use-async-effect';
 
-export default ({ table, reload, setForm, list, auth, filter, colDef, fkeys, setMode, structure }: any) => {
-    if (Object.keys(colDef).length === 0) return <div style={{ width: 150, height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Spinner />
-    </div>;
+export default observer(({ table, reload, setForm, list, auth, filter, colDef, fkeys, setMode, structure }: any) => {
+    const meta = useObservable({
+        columns: []
+    })
+    useAsyncEffect(async () => {
+        meta.columns = generateColumns(structure, table, colDef, fkeys);
+    }, [structure])
 
-    const columns = generateColumns(structure, table, colDef, fkeys);
+    const columns = meta.columns;
+
+
+    if (Object.keys(colDef).length === 0) {
+        return <div style={{ width: 150, height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Spinner />
+        </div>;
+    }
+
     return <>
         <Filter
             filter={filter}
@@ -55,7 +68,7 @@ export default ({ table, reload, setForm, list, auth, filter, colDef, fkeys, set
             </div>
         </div>
     </>;
-}
+});
 
 const generateColumns = (structure, table, colDef, fkeys) => {
     const keys = {};
@@ -74,6 +87,7 @@ const generateColumns = (structure, table, colDef, fkeys) => {
     const hidden: any = [];
     const cols = table.head.children.map((e, idx) => {
         let relation: any = undefined;
+
         if (e.props.relation) {
             relation = e.props.relation;
 
@@ -89,7 +103,7 @@ const generateColumns = (structure, table, colDef, fkeys) => {
             }
         } else if (!e.props.relation && fkeys) {
             const fk = fkeys[e.props.path];
-            if (fk && fk.table_name === structure.name) {
+            if (fk && (fk.table_name === structure.name || fk.alias === structure.name)) {
                 const tablename = fk.foreign_table_name;
                 const key: any = keys[tablename] || keys[tablename + 's'];
                 if (key) {
@@ -151,6 +165,10 @@ const generateColumns = (structure, table, colDef, fkeys) => {
                 const cdef = colDef[e.path];
                 const value = _.get(item, e.path);
                 let valueEl: any = null;
+                if (e.path.indexOf('.') > 0) {
+                    return formatValue(_.get(item, e.path, {}))
+                }
+
                 if (e.relation) {
                     const alias = e.relation.alias;
                     if (typeof e.relation.label === 'function') {
@@ -167,6 +185,8 @@ const generateColumns = (structure, table, colDef, fkeys) => {
                         valueEl = formatValue(value);
                     }
                 }
+
+
                 return valueEl;
             }
         }

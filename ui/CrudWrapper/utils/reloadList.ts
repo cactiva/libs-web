@@ -40,35 +40,14 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
 
     const args = {};
     if (filter && filter.form) {
-        const colDef = _.get(columnDefs, `${structure.name}.columns`);
+        const colDef = _.get(columnDefs, `${structure.name}`);
         for (let i in filter.form) {
             let value = filter.form[i];
             let operator = "";
             let vtype = "";
             let valueType: string = typeof value;
-
-            if (i.indexOf('.') > 0) {
-                const it = i.split(".");
-
-                let obj = {};
-                let cur: any = obj;
-                for (let k in it) {
-                    const t = it[k];
-
-                    cur.name = t;
-                    cur.valueType = "ObjectValue";
-                    cur.value = [{}];
-                    if ((k as any) * 1 < it.length - 1) {
-                        cur = cur.value[0];
-                    }
-                }
-
-                cur.valueType = "IntValue";
-                cur.operator = "_eq";
-                cur.value = value;
-                where.push(obj);
-                continue;
-            }
+            let subdot = null as any;
+            let subdotcur = null as any;
 
             const cold = _.find(colDef, { column_name: i });
             const colType = _.get(cold, 'data_type');
@@ -90,6 +69,29 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
                 }
                 vtype = "";
             } else {
+                if (i.indexOf('.') > 0) {
+                    const it = i.split(".");
+                    let obj = {};
+                    let cur: any = obj;
+                    let cdef1st = {};
+                    colDef.forEach(e => cdef1st[e.column_name] = e);
+                    let cdef = _.get(cdef1st, it.join('.columns.'));
+                    for (let k in it) {
+                        const t = it[k];
+                        cur.name = t;
+                        cur.valueType = "ObjectValue";
+                        cur.value = [{}];
+                        if ((k as any) * 1 < it.length - 1) {
+                            cur = cur.value[0];
+                        }
+                    }
+                    if (cdef) {
+                        valueType = cdef.data_type;
+                        subdotcur = cur;
+                        subdot = obj;
+                    }
+                }
+
                 switch (valueType) {
                     case "object":
                         if (Array.isArray(toJS(value))) {
@@ -150,12 +152,19 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
                 }
             }
             if (vtype) {
-                where.push({
-                    name: i,
-                    operator,
-                    value,
-                    valueType: vtype
-                })
+                if (subdot) {
+                    subdotcur.valueType = vtype;
+                    subdotcur.operator = operator;
+                    subdotcur.value = value;
+                    where.push(subdot);
+                } else {
+                    where.push({
+                        name: i,
+                        operator,
+                        value,
+                        valueType: vtype
+                    })
+                }
             }
         }
     }
@@ -170,7 +179,6 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
             offset: (currentPage - 1) * paging.itemPerPage
         }
     });
-    // console.log(query);
 
     const res = await queryAll(query, { auth: structure.auth });
 
