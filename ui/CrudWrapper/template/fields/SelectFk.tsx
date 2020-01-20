@@ -49,9 +49,7 @@ export default observer((props: any) => {
                 if (keys.length > 0) {
                     return {
                         value: e['id'],
-                        label: keys.filter(f => f !== 'id').map(f => {
-                            return e[f];
-                        }).join(' • ')
+                        label: formatRelationLabel(keys, e)
                     }
                 }
             }
@@ -69,3 +67,18 @@ export default observer((props: any) => {
         setValue(item && item.key);
     }} />
 })
+
+export const formatRelationLabel = (keys, e) => {
+    let list = keys;
+    if (keys.length > 2) {
+        list = keys.filter(f => {
+            if (f.indexOf('name') >= 0) {
+                return true;
+            }
+            return false;
+        })
+    }
+    return list.filter(f => f !== 'id').map(f => {
+        return e[f];
+    }).join(' • ');
+}

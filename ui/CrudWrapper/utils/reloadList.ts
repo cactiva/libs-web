@@ -1,9 +1,9 @@
-import _ from 'lodash';
-import { toJS } from 'mobx';
+import { dateFormat } from '@src/libs/utils/date';
 import { generateQueryString } from '@src/libs/utils/genQueryString';
 import { queryAll } from '@src/libs/utils/gql';
+import _ from 'lodash';
+import { toJS } from 'mobx';
 import { columnDefs } from '..';
-import { dateFormat } from '@src/libs/utils/date';
 
 export default async (opt: { structure: any, paging: any, filter: any, idKey: string }) => {
     const { structure, paging, filter, idKey } = opt;
@@ -21,11 +21,6 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
     }
 
     const filterCols = _.get(filter, 'columns', {});
-
-    if (structure.args) {
-        return [];
-    }
-
     if (!filter.initDefault) {
         Object.keys(filterCols).map(i => {
             if (!filter.form) {
@@ -43,7 +38,7 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
         filter.initDefault = true;
     }
 
-
+    const args = {};
     if (filter && filter.form) {
         const colDef = _.get(columnDefs, `${structure.name}.columns`);
         for (let i in filter.form) {
@@ -87,45 +82,73 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
                 }
             }
 
-            switch (valueType) {
-                case "object":
-                    if (Array.isArray(toJS(value))) {
-                        vtype = "ArrayValue";
-                        operator = "_in";
-                    } else {
-                        vtype = "ObjectValue";
+            if (value && value._mode === 'args') {
+                if (value.value instanceof Date) {
+                    args[i] = dateFormat(value.value, 'yyyy-MM-dd HH:mm:ss')
+                } else {
+                    args[i] = value.value;
+                }
+                vtype = "";
+            } else {
+                switch (valueType) {
+                    case "object":
+                        if (Array.isArray(toJS(value))) {
+                            vtype = "ArrayValue";
+                            operator = "_in";
+                        } else {
+                            vtype = "ObjectValue";
+                            operator = "_eq";
+                        }
+                        break;
+                    case "number":
+                    case "integer":
+                    case "relation":
+                        vtype = "IntValue";
                         operator = "_eq";
-                    }
-                    break;
-                case "number":
-                case "integer":
-                case "relation":
-                    vtype = "IntValue";
-                    operator = "_eq";
-                    break;
-
-                case "timestamp without time zone":
-                case "timestamp with time zone":
-                    if (value) {
+                        break;
+                    case "date":
+                    case "timestamp without time zone":
+                    case "timestamp with time zone":
+                        if (typeof value) {
+                            if (value.from) {
+                                vtype = "";
+                                where.push({
+                                    name: i,
+                                    operator: "_gte",
+                                    value: dateFormat(value.from, 'yyyy-MM-dd HH:mm:ss'),
+                                    valueType: "StringValue"
+                                })
+                                where.push({
+                                    name: '_and',
+                                    valueType: "ObjectValue",
+                                    value: [{
+                                        name: i,
+                                        operator: "_lte",
+                                        value: dateFormat(value.to, 'yyyy-MM-dd HH:mm:ss'),
+                                        valueType: "StringValue"
+                                    }],
+                                })
+                            } else {
+                                vtype = "StringValue";
+                                operator = "_eq";
+                                value = dateFormat(value, 'yyyy-MM-dd HH:mm:ss');
+                            }
+                        }
+                        break;
+                    case "string":
+                    case "character varying":
+                    case "text":
                         vtype = "StringValue";
+                        operator = "_ilike";
+                        value = `%${value}%`;
+                        break;
+                    case "double precision":
+                        vtype = "float8";
                         operator = "_eq";
-                        value = dateFormat(value, 'yyyy-MM-dd HH:mm:ss');
-                    }
-                    break;
-                case "string":
-                case "character varying":
-                case "text":
-                    vtype = "StringValue";
-                    operator = "_ilike";
-                    value = `%${value}%`;
-                    break;
-                case "double precision":
-                    vtype = "float8";
-                    operator = "_eq";
-                    value = `${value}`;
-                    break;
+                        value = `${value}`;
+                        break;
+                }
             }
-
             if (vtype) {
                 where.push({
                     name: i,
@@ -136,17 +159,18 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
             }
         }
     }
-
     const query = generateQueryString({
         ...structure,
         where,
         orderBy,
+        args,
         options: {
             ...structure.options,
             limit: paging.itemPerPage,
             offset: (currentPage - 1) * paging.itemPerPage
         }
     });
+    console.log(query);
 
     const res = await queryAll(query, { auth: structure.auth });
 

@@ -2,22 +2,39 @@ import { observer, useObservable } from 'mobx-react-lite';
 import { ActionButton, Callout, PrimaryButton, DefaultButton, IconButton, Label } from 'office-ui-fabric-react';
 import * as React from 'react';
 
-export default observer(({ label, value, onClose, children, setValue }: any) => {
+export default observer(({ label, style, labelStyle, value, onClose, children, setValue, callout }: any) => {
     const meta = useObservable({
         show: false,
     });
     const btnRef = React.useRef(null);
+    let valueContentEl = <Label style={{ marginLeft: '2px' }}>
+        {value || 'All'}
+    </Label>;
+    let valueNoCalloutEl = React.isValidElement(value) ? value :
+        <ActionButton style={style} onClick={() => {
+            meta.show = true;
+        }}> {valueContentEl}
+        </ActionButton>;
+    const btnContent = <>
+        <Label style={{ fontWeight: 'normal', fontSize: 14, ...labelStyle }}>
+            {typeof label === 'string' ? `${label}: ` : label}
+        </Label>
+        {callout === false ? valueNoCalloutEl : valueContentEl}
+    </>;
     return <>
         <div ref={btnRef}>
-            <ActionButton onClick={() => {
-                meta.show = true;
-            }}>
-                {`${label}: `}
-                <Label style={{ marginLeft: '2px' }}>
-                    {value || 'All'}
-                </Label>
-            </ActionButton>
-
+            {callout === false
+                ? <div style={{
+                    height: 38,
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    ...style
+                }}>{btnContent}</div>
+                : <ActionButton style={style} onClick={() => {
+                    meta.show = true;
+                }}> {btnContent}</ActionButton>
+            }
         </div>
 
         {meta.show && (
