@@ -39,8 +39,6 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
                 paging: meta.paging
             });
         }
-
-        console.log(toJS(meta.fkeys));
     }, [structure]);
 
     const colDef = {};

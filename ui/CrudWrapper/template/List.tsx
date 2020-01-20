@@ -4,6 +4,7 @@ import { ColumnActionsMode, DetailsList, DetailsListLayoutMode, IDetailsHeaderPr
 import * as React from 'react';
 import NiceValue from '../../Field/NiceValue';
 import Filter from './filter';
+import { formatMoney } from '@src/libs/utils';
 
 export default ({ table, reload, setForm, list, auth, filter, colDef, fkeys, setMode, structure }: any) => {
     if (Object.keys(colDef).length === 0) return <div style={{ width: 150, height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -118,7 +119,9 @@ const generateColumns = (structure, table, colDef, fkeys) => {
                         valueEl = formatValue(item[alias]);
                     }
                 } else if (cdef) {
-                    if (cdef.data_type.indexOf('timestamp') >= 0 || cdef.data_type === 'date') {
+                    if (cdef.data_type.indexOf('numeric') >= 0) {
+                        valueEl = formatMoney(value);
+                    } else if (cdef.data_type.indexOf('timestamp') >= 0 || cdef.data_type === 'date') {
                         valueEl = dateFormat(value);
                     } else {
                         valueEl = formatValue(value);
