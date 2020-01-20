@@ -31,7 +31,7 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
     });
     useAsyncEffect(async () => {
         meta.fkeys = await reloadStructure({ idKey, structure });
-        if (meta.list.length === 0) {
+        if (meta.list && meta.list.length === 0) {
             meta.list = await reloadList({
                 structure,
                 idKey,

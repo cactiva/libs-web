@@ -66,6 +66,6 @@ export default observer((props: any) => {
 
 
     return <Select styles={props.styles} label={props.label} items={meta.list} selectedKey={value} onChange={(e, item) => {
-        setValue(item.key);
+        setValue(item && item.key);
     }} />
 })
