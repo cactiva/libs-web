@@ -101,7 +101,7 @@ const processFields = (parsedForm: any, structure, colDef, fkeys, auth, errors) 
     _.get(parsedForm, 'props.children', []).forEach(e => {
         keys[e.props.path] = e;
     })
-    let columns = _.get(parsedForm, 'props.children', []);
+    let columns =  _.cloneDeep(_.get(parsedForm, "props.children",[]));
     const ovrd = structure.overrideForm || {};
     _.map(colDef, (e, k) => {
         if (e.is_nullable === 'NO' && !e.column_default && k !== 'id' && !ovrd[k]) {
