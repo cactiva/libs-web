@@ -20,7 +20,8 @@ export default observer(({ structure, errors, form, data, mode, colDef, auth, pa
     if (typeof form !== 'function') return null;
 
     const parsedForm = form(mode);
-    const fields = processFields(parsedForm, structure, colDef, fkeys, auth, errors);
+    const fields = processFields(parsedForm, structure, colDef, fkeys, auth, errors, meta, data);
+
     const relationKeys = Object.keys(fields.relations);
     if (setHasRelation) {
         setHasRelation(relationKeys.length > 0)
@@ -58,7 +59,8 @@ export default observer(({ structure, errors, form, data, mode, colDef, auth, pa
                     {
                         relationKeys.map((e, key) => {
                             const rel = fields.relations[e];
-                            const sub: any = generateSubStructure(meta.subs, rel, structure, parsed, data);
+                            const sub: any = rel.sub;
+                            if (!sub || (sub && !sub.parsed)) return null;
                             return <PivotItem key={e}
                                 style={{
                                     flex: 1,
@@ -93,15 +95,18 @@ export default observer(({ structure, errors, form, data, mode, colDef, auth, pa
     </div >;
 });
 
-const processFields = (parsedForm: any, structure, colDef, fkeys, auth, errors) => {
+const processFields = (parsedForm: any, structure, colDef, fkeys, auth, errors, meta, data) => {
     const relations = {};
     const hidden: any = [];
 
     const keys = {};
-    _.get(parsedForm, 'props.children', []).forEach(e => {
+    let columns = _.get(parsedForm, 'props.children', []);
+    if (!Array.isArray(columns)) {
+        columns = [columns];
+    }
+    columns.forEach(e => {
         keys[e.props.path] = e;
     })
-    let columns = _.get(parsedForm, 'props.children', []);
     const ovrd = structure.overrideForm || {};
     _.map(colDef, (e, k) => {
         if (e.is_nullable === 'NO' && !e.column_default && k !== 'id' && !ovrd[k]) {
@@ -114,16 +119,60 @@ const processFields = (parsedForm: any, structure, colDef, fkeys, auth, errors) 
         }
     })
 
+    const sub1 = (str) => {
+        return str.substr(0, str.length - 1);
+    }
+
     columns = columns.filter(e => {
-        let fk = fkeys[e.props.path];
-        if (!fk) fk = fkeys[e.props.path.substr(0, e.props.path.length - 1)];
+        let fk: any = null;
+        if (e.props.path.indexOf('.') > 0) {
+            const eks = e.props.path.split('.');
+            let found: any = null;
+            let i: any = 0;
+            for (i in eks) {
+                const tname = eks[i];
+                if (i * 1 === 0) {
+                    found = _.find(fkeys, { foreign_table_name: tname });
+                    if (!found) {
+                        found = _.find(fkeys, { foreign_table_name: sub1(tname) });
+                    }
+                } else {
+                    let tfound = _.find(found, { table_name: tname });
+                    if (!tfound) {
+                        tfound = _.find(found, { table_name: sub1(tname) });
+                    }
+                    if (tfound)
+                        found = tfound;
+                }
+
+                if (found && found.columns) {
+                    found = found.columns;
+                }
+            }
+            if (found) {
+                fk = found;
+            }
+        } else {
+            fk = fkeys[e.props.path];
+            if (!fk) fk = fkeys[sub1(e.props.path)];
+        }
+
         if (fk) {
-            if (!fk.table_schema) {
+            if (e.props.path.indexOf('.') > 0) {
+                relations[e.props.path] = {
+                    path: e.props.path,
+                    column: e,
+                    fkey: fk,
+                };
+                relations[e.props.path].sub = generateSubStructure(meta.subs, relations[e.props.path], structure, data)
+                return false;
+            } else if (!fk.table_schema) {
                 relations[e.props.path] = {
                     path: e.props.path,
                     column: e,
                     fkey: fk
                 };
+                relations[e.props.path].sub = generateSubStructure(meta.subs, relations[e.props.path], structure, data)
                 return false;
             } else {
                 if (fk && fk.table_name === structure.name) {

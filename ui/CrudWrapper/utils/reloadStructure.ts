@@ -5,14 +5,17 @@ import _ from 'lodash';
 
 const structures = {} as any;
 
-const loadStructure = async (name, indexed = false, setLoading?) => {
+export const loadStructure = async (name, indexed = false, setLoading?) => {
     if (structures[name] === undefined) {
-        structures[name] = [];
         if (setLoading) {
             setLoading(`Relation: ${_.upperCase(name)}`);
         }
-        structures[name] = await api({ url: `/api/db/structure?table=${name}` });
+        structures[name] = api({ url: `/api/db/structure?table=${name}` });
     }
+    if (structures[name] instanceof Promise) {
+        structures[name] = await structures[name];
+    }
+
     if (indexed) {
         return _.chain(_.cloneDeep(structures[name]))
             .keyBy('foreign_table_name')
@@ -66,14 +69,15 @@ export default async (props: {
         }
         let res = await api({ url: `/api/db/columns?table=${structure.name}` }) as any[];
         if (res) {
-            if (structure.fields && structure.fkeys) {
-                const sf = await loadSubFields(structure.fields, structure.fkeys, props.setLoading);
-                sf.forEach(e => {
-                    res.push(e);
-                })
-            }
             columnDefs[structure.name] = res;
         }
+    }
+
+    if (structure.fields && structure.fkeys) {
+        const sf = await loadSubFields(structure.fields, structure.fkeys, props.setLoading);
+        sf.forEach(e => {
+            columnDefs[structure.name].push(e);
+        })
     }
 
     return structure.fkeys;
@@ -87,10 +91,13 @@ const loadSubFields = async (fields, fkeys, setLoading?) => {
     const res = [] as any;
     await Promise.all(fields.map(async (field) => {
         const fk = fkeys[field.name];
+
         if (fk) {
             const tname = fk.foreign_table_name;
             const col = keys[tname] || keys[tname + 's'];
             if (col) {
+                const sfkeys = await loadStructure(tname, true, setLoading);
+                fk.columns = await loadStructure(tname);
                 if (!columnDefs[tname]) {
                     if (setLoading) {
                         setLoading(`Structure: ${_.upperCase(tname)}`)
@@ -106,7 +113,7 @@ const loadSubFields = async (fields, fkeys, setLoading?) => {
                 if (col.fields) {
                     await Promise.all(col.fields.map(async subfield => {
                         if (subfield.fields) {
-                            const sfkeys = await loadStructure(tname, true, setLoading);
+
                             if (sfkeys[subfield.name]) {
                                 const subfkeys = await loadStructure(sfkeys[subfield.name].foreign_table_name, true, setLoading);
                                 result.columns[subfield.name] = (await loadSubFields([subfield], subfkeys))[0];
