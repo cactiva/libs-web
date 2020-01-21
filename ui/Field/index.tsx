@@ -16,6 +16,7 @@ interface IFieldProps {
     value?: any
     children?: any
     styles?: any
+    style?: any
     isRequired?: boolean
 }
 

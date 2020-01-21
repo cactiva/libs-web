@@ -100,14 +100,7 @@ const processFields = (parsedForm: any, structure, colDef, fkeys, auth, errors, 
     const hidden: any = [];
 
     const keys = {};
-<<<<<<< HEAD
     let columns = _.cloneDeep(_.get(parsedForm, "props.children",[]));
-=======
-    let columns = [] as any;
-    _.castArray(_.get(parsedForm, 'props.children', [])).forEach(e => {
-        columns.push(e);
-    });
->>>>>>> 1d36baf2873c9e5cac409ba7f7d3ee70b03855ca
     if (!Array.isArray(columns)) {
         columns = [columns];
     }

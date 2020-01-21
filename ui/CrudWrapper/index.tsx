@@ -13,6 +13,8 @@ const idKey = 'id';
 interface ICrudWrapper {
     data: any
     afterQuery?: (list: any[]) => void
+    onChange?: (e:any) => void
+    style?:any
     children: any
 }
 

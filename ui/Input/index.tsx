@@ -1,9 +1,15 @@
 import * as React from 'react';
 import { TextField } from 'office-ui-fabric-react';
 import { useObservable, observer } from 'mobx-react-lite';
+import _ from 'lodash';
 
-export default observer((props: any) => {
+export default observer((iprops: any) => {
+    const props = _.cloneDeep(iprops);
     const meta = useObservable({ oldval: formatValue(props.value, props.type) })
+    if (props.children) {
+        delete props.children;
+    }
+
     if (props.type === "money"
         || props.type === "number"
         || props.type === "decimal") {
