@@ -4,7 +4,15 @@ import { toJS } from "mobx";
 import _ from 'lodash';
 
 const structures = {} as any;
-
+export const loadColDefs = async (name) => {
+    if (columnDefs[name] === undefined) {
+        columnDefs[name] = api({ url: `/api/db/columns?table=${name}` });
+    }
+    if (columnDefs[name] instanceof Promise) {
+        columnDefs[name] = await columnDefs[name];
+    }
+    return columnDefs[name];
+}
 export const loadStructure = async (name, indexed = false, setLoading?) => {
     if (structures[name] === undefined) {
         if (setLoading) {
@@ -63,15 +71,10 @@ export default async (props: {
         }
     }
 
-    if (!columnDefs[structure.name]) {
-        if (props.setLoading) {
-            props.setLoading(`Structure: ${_.upperCase(structure.name)}`)
-        }
-        let res = await api({ url: `/api/db/columns?table=${structure.name}` }) as any[];
-        if (res) {
-            columnDefs[structure.name] = res;
-        }
+    if (props.setLoading) {
+        props.setLoading(`Structure: ${_.upperCase(structure.name)}`)
     }
+    await loadColDefs(structure.name);
 
     if (structure.fields && structure.fkeys) {
         const sf = await loadSubFields(structure.fields, structure.fkeys, props.setLoading);
@@ -98,13 +101,12 @@ const loadSubFields = async (fields, fkeys, setLoading?) => {
             if (col) {
                 const sfkeys = await loadStructure(tname, true, setLoading);
                 fk.columns = await loadStructure(tname);
-                if (!columnDefs[tname]) {
-                    if (setLoading) {
-                        setLoading(`Structure: ${_.upperCase(tname)}`)
-                    }
-                    let res = await api({ url: `/api/db/columns?table=${tname}` }) as any[];
-                    columnDefs[tname] = res;
+
+                if (setLoading) {
+                    setLoading(`Structure: ${_.upperCase(tname)}`)
                 }
+                await loadColDefs(tname);
+                
                 const columns = {};
                 toJS(columnDefs[tname]).forEach(e => {
                     columns[e.column_name] = e;

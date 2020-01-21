@@ -31,6 +31,7 @@ export default observer(({ parsed, mode, setMode, afterQuery, structure, auth, i
         loadingInitText: '',
         fkeys: structure.fkeys,
         form: {},
+        colDefs: [],
         listScroll: { top: 0, left: 0 },
         errors: {}
     });
@@ -51,13 +52,14 @@ export default observer(({ parsed, mode, setMode, afterQuery, structure, auth, i
                 meta.loadingInitText = value;
             }
         });
+        meta.colDefs = _.get(columnDefs, `${structure.name}`, []);
         if (meta.list && meta.list.length === 0) {
             reload()
         }
     }, [structure]);
 
-    const colDef = {};
-    _.get(columnDefs, `${structure.name}`, []).map(e => {
+    const colDef:any = {};
+    meta.colDefs.map((e:any) => {
         colDef[e.column_name] = e;
     })
     if (Object.keys(colDef).length === 0 || !meta.fkeys) {

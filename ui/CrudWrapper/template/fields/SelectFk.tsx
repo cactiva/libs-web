@@ -8,6 +8,7 @@ import useAsyncEffect from 'use-async-effect';
 import { columnDefs } from '../..';
 import _ from 'lodash';
 import { dateFormat } from '@src/libs/utils/date';
+import { loadColDefs } from '../../utils/reloadStructure';
 
 const relationDatas = observable({});
 export default observer((props: any) => {
@@ -20,12 +21,7 @@ export default observer((props: any) => {
         if (relation && relation.query) {
             rawList = await queryAll(relation.query, { auth });
         } else {
-            if (!columnDefs[tablename]) {
-                const res = await api({ url: `/api/db/columns?table=${tablename}` }) as any[];
-                if (res) {
-                    columnDefs[tablename] = res;
-                }
-            }
+            // await loadColDefs(tablename);
 
             if (!relationDatas[tablename]) {
                 const cols = columnDefs[tablename];

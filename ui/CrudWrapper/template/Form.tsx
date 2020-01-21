@@ -21,12 +21,10 @@ export default observer(({ structure, errors, form, data, mode, colDef, auth, pa
 
     const parsedForm = form(mode);
     const fields = processFields(parsedForm, structure, colDef, fkeys, auth, errors, meta, data);
-
     const relationKeys = Object.keys(fields.relations);
     if (setHasRelation) {
         setHasRelation(relationKeys.length > 0)
     }
-
     const formEl = <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, padding: 10, overflow: 'auto' }}>
         <Form data={data} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
             {fields.columns.map((e, idx) => {

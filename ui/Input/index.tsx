@@ -10,6 +10,12 @@ export default observer((iprops: any) => {
         delete props.children;
     }
 
+    if (props.setValue) {
+        props.onChange = (e:any) => {
+            props.setValue(e.target.value)
+        }
+    }
+
     if (props.type === "money"
         || props.type === "number"
         || props.type === "decimal") {
@@ -30,7 +36,8 @@ export default observer((iprops: any) => {
             }}
         />
     }
-    return <TextField {...props} />;
+
+    return <TextField {...props}  />;
 })
 
 const clearValue = (value, type) => {
