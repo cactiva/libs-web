@@ -46,9 +46,14 @@ export default observer((props: any) => {
     }
 
     const rootStyle = _.get(props, 'styles.root');
-    return <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', ...rootStyle }}>
+
+    return <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', ...rootStyle }}>
         <DatePicker
             {...props}
+            isRequired={props.required}
+            textField={{
+                errorMessage: props.errorMessage
+            }}
             styles={{ root: { minWidth: '130px', flex: 1 } }}
             value={meta.date}
             formatDate={(date?: Date): string => {
@@ -63,6 +68,8 @@ export default observer((props: any) => {
         <MaskedTextField mask="99:99"
             styles={{ root: { paddingLeft: 10, width: '65px' }, field: { textAlign: 'center' } }}
             value={meta.time}
+            label={props.label ? '‎' : undefined}
+            errorMessage={props.errorMessage ? '‎' : undefined}
             onChange={(e: any) => {
                 meta.time = e.target.value;
                 if (props.onChange) {

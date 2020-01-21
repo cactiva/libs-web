@@ -10,7 +10,7 @@ import { toJS } from 'mobx';
 import { observer, useObservable } from 'mobx-react-lite';
 import useAsyncEffect from 'use-async-effect';
 
-export default observer(({ table, reload, setForm, list, auth, filter, colDef, fkeys, setMode, structure }: any) => {
+export default observer(({ table, reload, setForm, setErrors, list, auth, filter, colDef, fkeys, setMode, structure }: any) => {
     const meta = useObservable({
         columns: []
     })

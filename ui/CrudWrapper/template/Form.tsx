@@ -9,19 +9,19 @@ import Form from '../../Form';
 import generateSubStructure from '../utils/generateSubStructure';
 import Base from './Base';
 import SelectFk from './fields/SelectFk';
+import { toJS } from 'mobx';
 
-export default observer(({ structure, form, data, mode, colDef, auth, parsed, fkeys, setHasRelation }: any) => {
+export default observer(({ structure, errors, form, data, mode, colDef, auth, parsed, fkeys, setHasRelation }: any) => {
     const meta = useObservable({
         size: localStorage['cactiva-app-split-size'] || '200',
-        subs: {
-
-        }
+        subs: {}
     })
+    console.log(toJS(errors));
 
     if (typeof form !== 'function') return null;
 
     const parsedForm = form(mode);
-    const fields = processFields(parsedForm, structure, colDef, fkeys, auth);
+    const fields = processFields(parsedForm, structure, colDef, fkeys, auth, errors);
     const relationKeys = Object.keys(fields.relations);
     if (setHasRelation) {
         setHasRelation(relationKeys.length > 0)
@@ -94,7 +94,7 @@ export default observer(({ structure, form, data, mode, colDef, auth, parsed, fk
     </div >;
 });
 
-const processFields = (parsedForm: any, structure, colDef, fkeys, auth) => {
+const processFields = (parsedForm: any, structure, colDef, fkeys, auth, errors) => {
     const relations = {};
     const hidden: any = [];
 
@@ -102,7 +102,20 @@ const processFields = (parsedForm: any, structure, colDef, fkeys, auth) => {
     _.get(parsedForm, 'props.children', []).forEach(e => {
         keys[e.props.path] = e;
     })
-    const columns = _.get(parsedForm, 'props.children', []).filter(e => {
+    let columns = _.get(parsedForm, 'props.children', []);
+    const ovrd = structure.overrideForm || {};
+    _.map(colDef, (e, k) => {
+        if (e.is_nullable === 'NO' && k !== 'id' && !ovrd[k]) {
+            const col = _.find(columns, { props: { path: k } });
+            if (!col) {
+                let label = _.startCase(k);
+                if (label.indexOf('Id') === 0) label = label.substr(3);
+                columns.push(<Field path={k} label={label}><Input /></Field>)
+            }
+        }
+    })
+
+    columns = columns.filter(e => {
         let fk = fkeys[e.props.path];
         if (!fk) fk = fkeys[e.props.path.substr(0, e.props.path.length - 1)];
         if (fk) {
@@ -139,7 +152,6 @@ const processFields = (parsedForm: any, structure, colDef, fkeys, auth) => {
             if (fk) {
                 const tablename = fk.foreign_table_name;
                 if (tablename) {
-                    console.log(e.props);
                     children = <SelectFk
                         tablename={tablename}
                         labelField={e.props.labelOptions}
@@ -176,10 +188,12 @@ const processFields = (parsedForm: any, structure, colDef, fkeys, auth) => {
             }
         }
 
-
+        const required = _.get(cdef, 'is_nullable', 'YES') === 'NO';
         return {
             props: {
                 ...e.props,
+                required,
+                errorMessage: errors[e.props.path],
                 label,
                 children
             }

@@ -28,7 +28,6 @@ export default observer((props: any) => {
 
             if (!relationDatas[tablename]) {
                 const cols = columnDefs[tablename];
-                console.log(toJS(columnDefs), tablename);
                 let q = ` ${tablename} {
                     id
                     ${cols
@@ -82,9 +81,16 @@ export default observer((props: any) => {
     }, [])
 
 
-    return <Select styles={props.styles} label={props.label} items={meta.list} selectedKey={value} onChange={(e, item) => {
-        setValue(item && item.key);
-    }} />
+    return <Select
+        styles={props.styles}
+        label={props.label}
+        errorMessage={props.errorMessage}
+        required={props.required}
+        items={meta.list}
+        selectedKey={value}
+        onChange={(e, item) => {
+            setValue(item && item.key);
+        }} />
 })
 
 export const formatRelationLabel = (keys, e) => {

@@ -30,7 +30,8 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
         hasRelation: false,
         loadingInitText: '',
         fkeys: structure.fkeys,
-        form: {}
+        form: {},
+        errors: {}
     });
     useAsyncEffect(async () => {
         meta.fkeys = await reloadStructure({
@@ -65,12 +66,13 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
         });
     };
 
-
     const header = <Header
         structure={structure}
         parsed={parsed}
         form={meta.form}
         setForm={v => meta.form = v}
+        setErrors={v => meta.errors = v}
+        errors={meta.errors}
         mode={mode}
         style={headerStyle}
         hasRelation={meta.hasRelation}
@@ -105,6 +107,7 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
                 structure={structure}
                 fkeys={meta.fkeys}
                 data={meta.form}
+                errors={meta.errors}
                 setHasRelation={(v) => meta.hasRelation = v}
                 mode={mode} />
         }

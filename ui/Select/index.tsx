@@ -7,7 +7,9 @@ interface ISelectProps {
     styles?: any,
     selectedKey?: any,
     onChange?: any,
-    label?:any,
+    label?: any,
+    required?: any,
+    errorMessage?: any,
     items: (string | {
         value: string,
         label: string
@@ -29,6 +31,5 @@ export default observer((props: ISelectProps) => {
             }
         }
     }).filter(e => !!e);
-
-    return <ComboBox {...props} allowFreeform={true}  options={items} />;
+    return <ComboBox {...props} allowFreeform={true} options={items} />;
 });

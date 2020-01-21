@@ -16,9 +16,12 @@ export default observer((props: any) => {
             }
         }
     }, []);
-
     return <DatePicker
         {...props}
+        isRequired={props.required}
+        textField={{
+            errorMessage: props.errorMessage
+        }}
         value={meta.date}
         formatDate={(date?: Date): string => {
             if (!date) return "";

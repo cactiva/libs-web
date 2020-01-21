@@ -168,8 +168,22 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
             }
         }
     }
+
+    const fields = _.cloneDeep(structure.fields);
+    const ovrd = structure.overrideForm || {};
+    _.map(columnDefs[structure.name], (e, k) => {
+        const name = e.column_name;
+        if (e.is_nullable === 'NO' && name !== 'id' && !ovrd[name]) {
+            const col = _.find(fields, { name });
+            if (!col) {
+                fields.push({ name });
+            }
+        }
+    });
+
     const query = generateQueryString({
         ...structure,
+        fields,
         where,
         orderBy,
         args,

@@ -50,3 +50,12 @@
   top: 0px;
   bottom: 0px;
 }
+
+.ms-ComboBox {
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 2px;
+}
+.ms-ComboBox::after {
+  border-width: 0px;
+}
