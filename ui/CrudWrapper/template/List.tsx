@@ -202,8 +202,9 @@ const generateColumns = (structure, table, colDef, fkeys) => {
                     } else {
                         valueEl = formatValue(value);
                     }
+                } else {
+                    return formatValue(value);
                 }
-
 
                 return valueEl;
             }
