@@ -7,6 +7,7 @@ import * as React from 'react';
 import useAsyncEffect from 'use-async-effect';
 import { columnDefs } from '../..';
 import _ from 'lodash';
+import { dateFormat } from '@src/libs/utils/date';
 
 const relationDatas = observable({});
 export default observer((props: any) => {
@@ -93,10 +94,10 @@ export default observer((props: any) => {
         }} />
 })
 
-export const formatRelationLabel = (keys, e) => {
+export const formatRelationLabel = (keys, e, colDef?) => {
     let usedKeys = keys;
 
-    if (keys.length > 2) {
+    if (keys.length > 5) {
         usedKeys = keys.filter(f => {
             if (f.indexOf('name') >= 0) {
                 return true;
@@ -105,12 +106,39 @@ export const formatRelationLabel = (keys, e) => {
         })
     } else {
         if (usedKeys.length === 0) {
-            usedKeys.push(keys[0]);
-            usedKeys.push(keys[1]);
+            for (let i in keys) {
+                if ((i as any) * 1 <= 5)
+                    usedKeys.push(keys[i]);
+            }
         }
     }
 
     return usedKeys.filter(f => f !== 'id').map(f => {
-        return e[f];
+        return formatSingleString(e, f, _.get(colDef, 'columns'));
     }).join(' • ');
+}
+
+const formatSingleString = (e, f, cdef) => {
+    if (typeof e[f] === 'object') {
+        const kef = Object.keys(e[f]);
+        return kef.map(k => {
+            if (typeof e[f][k] === 'object') {
+                return formatSingleString(e[f], k, _.get(cdef, k));
+            }
+            return e[f][k];
+        }).join(' • ');
+    }
+    const cd = _.get(cdef, f)
+    if (cd) {
+        const type = cd.data_type;
+        switch (type) {
+            case "timestamp without time zone":
+            case "timestamp with time zone":
+                return dateFormat(e[f]);
+            case "date":
+                return dateFormat(e[f], 'dd MMM yyyy');
+        }
+    }
+
+    return e[f];
 }

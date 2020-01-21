@@ -64,6 +64,8 @@ export default observer((props: any) => {
                 if (e.key.indexOf('.') > 0) {
                     const eks = e.key.split('.').join('.columns.');
                     type = _.get(colDef, `${eks}.data_type`);
+                    if (!type)
+                        console.log(toJS(colDef), eks);
                 }
 
                 const submit = () => {
@@ -194,7 +196,6 @@ export default observer((props: any) => {
                             items={e.filter.items}
                             label={e.name} />
                 }
-
                 return <Spinner key={key} style={{ marginRight: 5 }} />;
             }
         })}

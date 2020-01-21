@@ -2,19 +2,39 @@ import _ from 'lodash';
 import React from 'react';
 import { TableColumn, Field, Input, Button } from '../..';
 import Form from '../../Form';
+import { toJS } from 'mobx';
 
-export default (metasub, rel, structure, parsed, data) => {
+export default (metasub, rel, structure, data) => {
     if (!rel.fkey || !rel.path) return null;
-    const relfk = rel.fkey[_.keys(rel.fkey)[0]];
+    let idata = data;
+    let istructure = structure;
+    let relfk = rel.fkey[_.keys(rel.fkey)[0]];
+    let relpath = rel.path;
+    if (rel.path.indexOf('.') > 0) {
+        relfk = rel.fkey;
+        const rsplit = relpath.split('.');
+        relpath = rsplit.pop();
+        idata = _.get(data, rsplit.join('.'));
+        let tstruct = structure.fields;
+        for (let name of rsplit) {
+            const found = _.find(tstruct, { name });
+            if (found) {
+                tstruct = found;
+            }
+        }
+        if (!Array.isArray(tstruct)) {
+            istructure = tstruct;
+        }
+    }
 
-    if (!metasub[rel.path]) {
-        metasub[rel.path] = {
+    if (!metasub[relpath]) {
+        metasub[relpath] = {
             mode: ''
         }
     }
 
-    const id = data[relfk.foreign_column_name];
-    const fields = _.get(_.find(_.get(structure, `fields`, []), { name: rel.path }), 'fields', []);
+    const id = idata[relfk.foreign_column_name];
+    const fields = _.get(_.find(_.get(istructure, `fields`, []), { name: relpath }), 'fields', []);
     const table = _.get(rel, 'column.props.table', {});
     let tcols = (fields).filter(t => {
         if (Array.isArray(table.hide) && table.hide.indexOf(t.name) >= 0) return false;
@@ -31,9 +51,6 @@ export default (metasub, rel, structure, parsed, data) => {
             return t;
         })
     }
-
-
-
     const fcols = (rel.column.props.form || fields).filter(t => { return t.name !== 'id' });
     const defaultForm = _.get(rel, 'column.props.options.default');
     return {
@@ -96,8 +113,8 @@ export default (metasub, rel, structure, parsed, data) => {
                     })}</Form>
             }
         },
-        mode: metasub[rel.path].mode,
-        setMode: (newmode) => metasub[rel.path].mode = newmode
+        mode: metasub[relpath].mode,
+        setMode: (newmode) => metasub[relpath].mode = newmode
     }
 
 }

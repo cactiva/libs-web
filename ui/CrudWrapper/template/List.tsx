@@ -131,19 +131,19 @@ const generateColumns = (structure, table, colDef, fkeys) => {
                     if (sfield) {
                         relation = {
                             alias: key.props.path,
-                            label: (item) => {
+                            label: (item, colDef) => {
                                 const skeys: any = []
                                 sfield.fields.forEach(k => {
                                     skeys.push(k.name);
-                                })
-                                return formatRelationLabel(skeys, item[key.props.path]);
+                                });
+                                return formatRelationLabel(skeys, item[key.props.path], colDef);
                             }
                         }
                     } else {
                         relation = {
                             alias: key.props.path,
-                            label: (item) => {
-                                return formatRelationLabel(Object.keys(keys), item);
+                            label: (item, colDef) => {
+                                return formatRelationLabel(Object.keys(keys), item, colDef);
                             }
                         }
                     }
@@ -153,7 +153,6 @@ const generateColumns = (structure, table, colDef, fkeys) => {
 
         let title = e.props.title;
         if (title && title.toLowerCase().indexOf('id') === 0) title = title.substr(3);
-
         return {
             ...e.props,
             title,
@@ -177,20 +176,21 @@ const generateColumns = (structure, table, colDef, fkeys) => {
             name: e.title,
             relation: relation,
             filter: e.filter,
-            maxWidth: 200,
+            maxWidth: e.width || 200,
+            isResizable: !e.width ? true : false,
             columnActionsMode: ColumnActionsMode.disabled,
             onRender: (item: any) => {
                 const cdef = colDef[e.path];
                 const value = _.get(item, e.path);
                 let valueEl: any = null;
                 if (e.path.indexOf('.') > 0) {
-                    return formatValue(_.get(item, e.path, {}))
+                    return formatValue(value);
                 }
 
                 if (e.relation) {
                     const alias = e.relation.alias;
                     if (typeof e.relation.label === 'function') {
-                        valueEl = formatValue(e.relation.label(item));
+                        valueEl = formatValue(e.relation.label(item, colDef[alias]));
                     } else if (alias) {
                         valueEl = formatValue(item[alias]);
                     }
@@ -209,9 +209,7 @@ const generateColumns = (structure, table, colDef, fkeys) => {
             }
         }
     });
-
 }
-
 
 const formatValue = (value) => {
     if (typeof value === 'string') {
