@@ -173,7 +173,7 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
     const ovrd = structure.overrideForm || {};
     _.map(columnDefs[structure.name], (e, k) => {
         const name = e.column_name;
-        if (e.is_nullable === 'NO' && name !== 'id' && !ovrd[name]) {
+        if (e.is_nullable === 'NO' && name !== 'id' && !ovrd[name] && !e.column_default) {
             const col = _.find(fields, { name });
             if (!col) {
                 fields.push({ name });

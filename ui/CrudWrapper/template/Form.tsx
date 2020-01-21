@@ -16,7 +16,6 @@ export default observer(({ structure, errors, form, data, mode, colDef, auth, pa
         size: localStorage['cactiva-app-split-size'] || '200',
         subs: {}
     })
-    console.log(toJS(errors));
 
     if (typeof form !== 'function') return null;
 
@@ -105,7 +104,7 @@ const processFields = (parsedForm: any, structure, colDef, fkeys, auth, errors) 
     let columns = _.get(parsedForm, 'props.children', []);
     const ovrd = structure.overrideForm || {};
     _.map(colDef, (e, k) => {
-        if (e.is_nullable === 'NO' && k !== 'id' && !ovrd[k]) {
+        if (e.is_nullable === 'NO' && !e.column_default && k !== 'id' && !ovrd[k]) {
             const col = _.find(columns, { props: { path: k } });
             if (!col) {
                 let label = _.startCase(k);
@@ -188,7 +187,7 @@ const processFields = (parsedForm: any, structure, colDef, fkeys, auth, errors) 
             }
         }
 
-        const required = _.get(cdef, 'is_nullable', 'YES') === 'NO';
+        const required = _.get(cdef, 'is_nullable', 'YES') === 'NO' && !_.get(cdef, 'column_default', null);
         return {
             props: {
                 ...e.props,

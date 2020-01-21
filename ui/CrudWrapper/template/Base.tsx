@@ -31,6 +31,7 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
         loadingInitText: '',
         fkeys: structure.fkeys,
         form: {},
+        listScroll: { top: 0, left: 0 },
         errors: {}
     });
     useAsyncEffect(async () => {
@@ -82,6 +83,8 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
         setLoading={(v: boolean) => meta.loading = v}
         setMode={setMode} />;
 
+    const scroll = meta.listScroll;
+    const setScroll = (v) => { meta.listScroll = v; };
     return <div style={{ display: "flex", flexDirection: 'column', flex: 1, ...style }}>
         {renderHeader
             ? renderHeader({
@@ -99,6 +102,8 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
                 reload={reload}
                 auth={auth}
                 colDef={colDef}
+                scroll={scroll}
+                setScroll={setScroll}
                 fkeys={meta.fkeys} />
             : <Form
                 form={form}

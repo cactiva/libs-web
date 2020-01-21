@@ -1,13 +1,12 @@
+import { generateDeleteString } from '@src/libs/utils/genDeleteString';
+import { queryAll } from '@src/libs/utils/gql';
 import _ from 'lodash';
 import { observer } from 'mobx-react-lite';
 import { ActionButton } from 'office-ui-fabric-react';
 import * as React from 'react';
+import { columnDefs } from '..';
 import { Text } from '../..';
 import saveForm from '../utils/saveForm';
-import { generateDeleteString } from '@src/libs/utils/genDeleteString';
-import { queryAll } from '@src/libs/utils/gql';
-import { columnDefs } from '..';
-import { toJS } from 'mobx';
 
 export default observer(({ parsed, mode, form, setForm, setErrors, errors, structure, setLoading, setMode, auth, idKey, reload, style, hasRelation }: any) => {
     const title = _.get(parsed, 'title.children');
@@ -38,9 +37,9 @@ export default observer(({ parsed, mode, form, setForm, setErrors, errors, struc
                                 const q = generateDeleteString(structure, {
                                     where: [
                                         {
-                                            name: idKey,
+                                            name: 'id',
                                             operator: '_eq',
-                                            value: form[idKey],
+                                            value: form['id'],
                                             valueType: 'Int'
                                         }
                                     ]
@@ -85,7 +84,7 @@ export default observer(({ parsed, mode, form, setForm, setErrors, errors, struc
                             const newerrs = {};
                             const ovrd = structure.overrideForm || {};
                             _.map(cdef, (f, k) => {
-                                if (f && f.is_nullable === 'NO') {
+                                if (f && f.is_nullable === 'NO' && !f.column_default) {
                                     if (!form[k] && k !== 'id' && !ovrd[k]) {
                                         let name = _.startCase(k);
                                         if (name.indexOf('Id') === 0) {

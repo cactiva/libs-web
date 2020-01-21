@@ -10,16 +10,30 @@ import { toJS } from 'mobx';
 import { observer, useObservable } from 'mobx-react-lite';
 import useAsyncEffect from 'use-async-effect';
 
-export default observer(({ table, reload, setForm, setErrors, list, auth, filter, colDef, fkeys, setMode, structure }: any) => {
+export default observer(({ table, reload, setForm, setScroll, scroll, list, auth, filter, colDef, fkeys, setMode, structure }: any) => {
     const meta = useObservable({
-        columns: []
+        columns: [],
     })
     useAsyncEffect(async () => {
         meta.columns = generateColumns(structure, table, colDef, fkeys);
-    }, [structure])
+    }, [structure]);
 
     const columns = meta.columns;
-
+    const dref = React.useRef(null);
+    React.useEffect(() => {
+        const el = _.get(dref, 'current._root.current');
+        if (el) {
+            const grid = el.children[0];
+            grid.scrollTop = scroll.top;
+            grid.scrollLeft = scroll.left;
+            grid.onscroll = (e) => {
+                setScroll({
+                    top: e.target.scrollTop,
+                    left: e.target.scrollLeft
+                })
+            }
+        }
+    }, [dref.current])
 
     if (Object.keys(colDef).length === 0) {
         return <div style={{ width: 150, height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -39,11 +53,15 @@ export default observer(({ table, reload, setForm, setErrors, list, auth, filter
         <div style={{ flex: 1, position: 'relative', display: 'flex' }}>
             <div className="base-list">
                 <DetailsList
+                    componentRef={dref}
                     selectionMode={SelectionMode.single}
                     items={list || []}
                     onItemInvoked={(e) => {
                         setForm(e);
                         setMode('edit');
+                    }}
+                    onShouldVirtualize={(e: any) => {
+                        return false;
                     }}
                     onRenderDetailsHeader={(detailsHeaderProps?: IDetailsHeaderProps, defaultRender?: IRenderFunction<IDetailsHeaderProps>) => {
                         return (
