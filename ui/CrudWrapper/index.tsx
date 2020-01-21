@@ -10,13 +10,19 @@ const Template = require("./template/Base").default;
 export const columnDefs = observable({});
 const idKey = 'id';
 
-export default observer((props: any) => {
+interface ICrudWrapper {
+    data: any
+    afterQuery?: (list: any[]) => void
+    children: any
+}
+
+export default observer((props: ICrudWrapper) => {
     const meta = useObservable({
         front: {
             mode: ''
         }
     });
-    const { data, children } = props;
+    const { data, children, afterQuery } = props;
     if (!data || !children) return null;
 
     const structure = _.get(props, 'data.structure');
@@ -29,5 +35,6 @@ export default observer((props: any) => {
         auth={auth}
         parsed={parsed}
         mode={meta.front.mode}
+        afterQuery={afterQuery}
         setMode={(newmode) => meta.front.mode = newmode} />;
 })

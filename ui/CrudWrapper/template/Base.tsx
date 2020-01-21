@@ -13,7 +13,7 @@ import { Spinner, Label, SpinnerSize } from 'office-ui-fabric-react';
 import Loading from './Loading';
 
 
-export default observer(({ parsed, mode, setMode, structure, auth, idKey, renderHeader, style, headerStyle }: any) => {
+export default observer(({ parsed, mode, setMode, afterQuery, structure, auth, idKey, renderHeader, style, headerStyle }: any) => {
     const { table, form } = parsed;
 
     const meta = useObservable({
@@ -34,6 +34,17 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
         listScroll: { top: 0, left: 0 },
         errors: {}
     });
+    const reload = async () => {
+        const resultList = await reloadList({
+            structure,
+            idKey,
+            filter: meta.filter,
+            paging: meta.paging
+        });
+
+        if (afterQuery) await afterQuery(resultList)
+        meta.list = resultList;
+    };
     useAsyncEffect(async () => {
         meta.fkeys = await reloadStructure({
             idKey, structure, setLoading: (value) => {
@@ -41,12 +52,7 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
             }
         });
         if (meta.list && meta.list.length === 0) {
-            meta.list = await reloadList({
-                structure,
-                idKey,
-                filter: meta.filter,
-                paging: meta.paging
-            });
+            reload()
         }
     }, [structure]);
 
@@ -58,14 +64,6 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
         return <Loading text={meta.loadingInitText} />;
     }
 
-    const reload = async () => {
-        meta.list = await reloadList({
-            structure,
-            idKey,
-            filter: meta.filter,
-            paging: meta.paging
-        });
-    };
 
     const header = <Header
         structure={structure}
@@ -86,6 +84,7 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
 
     const scroll = meta.listScroll;
     const setScroll = (v) => { meta.listScroll = v; };
+    const list = meta.list;
     return <div style={{ display: "flex", flexDirection: 'column', flex: 1, ...style }}>
         {renderHeader
             ? renderHeader({
@@ -97,7 +96,7 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
                 table={table}
                 setMode={setMode}
                 structure={structure}
-                list={meta.list}
+                list={list}
                 setForm={(v) => meta.form = v}
                 filter={meta.filter}
                 reload={reload}

@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { useObservable } from 'mobx-react-lite';
+import { useObservable, observer } from 'mobx-react-lite';
 import ItemButton from './ItemButton';
 import { TextField } from 'office-ui-fabric-react';
 
-export default ({ label, field, value, setValue, submit }: any) => {
+export default observer(({ label, field, value, setValue, submit }: any) => {
     const meta = useObservable({
-        oldval: (parseInt(value || '') || '').toLocaleString().replace(/,/ig, '.')
+        oldval: (parseInt(value || '') || '').toLocaleString().replace(/,/ig, '.') as any
     })
     return <ItemButton
         label={label}
@@ -15,12 +15,15 @@ export default ({ label, field, value, setValue, submit }: any) => {
             setValue(parseInt((meta.oldval || '').replace(/\./ig, '')));
             submit();
         }}
-        value={value}>
+        value={(parseInt(value || '') || '').toLocaleString().replace(/,/ig, '.')}>
 
         <TextField
             value={meta.oldval}
             onChange={(e: any) => {
                 meta.oldval = parseInt((e.target.value || '').replace(/\./ig, '')).toLocaleString().replace(/,/ig, '.');
+                if (meta.oldval === 'NaN') {
+                    meta.oldval = '';
+                }
             }}
             onKeyDown={(e: any) => {
                 if (e.which === 13) {
@@ -32,4 +35,4 @@ export default ({ label, field, value, setValue, submit }: any) => {
         />
 
     </ItemButton>
-}
+});

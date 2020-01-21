@@ -100,7 +100,10 @@ const processFields = (parsedForm: any, structure, colDef, fkeys, auth, errors, 
     const hidden: any = [];
 
     const keys = {};
-    let columns = _.get(parsedForm, 'props.children', []);
+    let columns = [] as any;
+    _.castArray(_.get(parsedForm, 'props.children', [])).forEach(e => {
+        columns.push(e);
+    });
     if (!Array.isArray(columns)) {
         columns = [columns];
     }
@@ -163,6 +166,7 @@ const processFields = (parsedForm: any, structure, colDef, fkeys, auth, errors, 
                     path: e.props.path,
                     column: e,
                     fkey: fk,
+                    options: e.props.options
                 };
                 relations[e.props.path].sub = generateSubStructure(meta.subs, relations[e.props.path], structure, data)
                 return false;
@@ -170,7 +174,8 @@ const processFields = (parsedForm: any, structure, colDef, fkeys, auth, errors, 
                 relations[e.props.path] = {
                     path: e.props.path,
                     column: e,
-                    fkey: fk
+                    fkey: fk,
+                    options: e.props.options
                 };
                 relations[e.props.path].sub = generateSubStructure(meta.subs, relations[e.props.path], structure, data)
                 return false;
@@ -202,7 +207,7 @@ const processFields = (parsedForm: any, structure, colDef, fkeys, auth, errors, 
                 if (tablename) {
                     children = <SelectFk
                         tablename={tablename}
-                        labelField={e.props.labelOptions}
+                        labelField={e.props.labelField}
                         relation={e.props.relation}
                         auth={auth}
                         label={label}

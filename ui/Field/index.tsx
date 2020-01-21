@@ -2,7 +2,24 @@ import _ from 'lodash';
 import * as React from 'react';
 import Input from '../Input';
 
-export default (props: any) => {
+interface IFieldProps {
+    label?: string
+    path?: string
+    relation?: any
+    options?: {
+        actions?: { type: string }[],
+        default?: {
+            [key: string]: any
+        }
+    }
+    setValue?: any
+    value?: any
+    children?: any
+    styles?: any
+    isRequired?: boolean
+}
+
+export default (props: IFieldProps) => {
     const type = _.get(props, 'children.type');;
     if (type === Input) {
         const onChange = (e: any) => {

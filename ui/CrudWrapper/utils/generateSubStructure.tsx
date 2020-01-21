@@ -33,6 +33,7 @@ export default (metasub, rel, structure, data) => {
         }
     }
 
+    const options = _.get(rel, 'options', {});
     const id = idata[relfk.foreign_column_name];
     const fields = _.get(_.find(_.get(istructure, `fields`, []), { name: relpath }), 'fields', []);
     const table = _.get(rel, 'column.props.table', {});
@@ -74,12 +75,12 @@ export default (metasub, rel, structure, data) => {
         parsed: {
             title: { children: rel.column.props.label },
             actions: {
-                children: [
+                children: _.get(options, 'actions', [
                     <Button type='create' />,
                     <Button type='save' />,
                     <Button type='delete' />,
                     <Button type='cancel' />,
-                ]
+                ])
             },
             table: {
                 head: {

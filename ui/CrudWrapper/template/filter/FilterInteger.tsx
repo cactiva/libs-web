@@ -13,20 +13,21 @@ export default observer(({ label, field, value, setValue, submit }: any) => {
         setValue={setValue}
         onClose={() => submit()}
         value={value}>
-            <TextField
-                value={meta.oldval}
-                onChange={(e: any) => {
-                    meta.oldval = e.target.value.replace(/\D/g,'');
-                }}
-                onKeyDown={(e: any) => {
-                    if (e.which === 13){
-                        meta.oldval = e.target.value.replace(/\D/g,'');
-                        setValue(e.target.value.replace(/\D/g,''));
-                        submit();
-                    }
-                }}
-                styles={{ root: {padding: 15}}}
-            />
-            
+        <TextField
+            value={meta.oldval}
+            onChange={(e: any) => {
+                meta.oldval = e.target.value.replace(/\D/g, '');
+                console.log(meta.oldval);
+            }}
+            onKeyDown={(e: any) => {
+                if (e.which === 13) {
+                    meta.oldval = e.target.value.replace(/\D/g, '');
+                    setValue(e.target.value.replace(/\D/g, ''));
+                    submit();
+                }
+            }}
+            styles={{ root: { padding: 15 } }}
+        />
+
     </ItemButton>
 })
