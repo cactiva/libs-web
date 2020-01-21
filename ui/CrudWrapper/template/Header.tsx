@@ -7,8 +7,9 @@ import * as React from 'react';
 import { columnDefs } from '..';
 import { Text } from '../..';
 import saveForm from '../utils/saveForm';
+import { toJS } from 'mobx';
 
-export default observer(({ parsed, mode, form, setForm, setErrors, errors, structure, setLoading, setMode, auth, idKey, reload, style, hasRelation }: any) => {
+export default observer(({ parsed, mode, form, setForm, colDef, setErrors, errors, structure, setLoading, setMode, auth, idKey, reload, style, hasRelation }: any) => {
     const title = _.get(parsed, 'title.children');
     const actions = _.get(parsed, 'actions.children', []).map(e => {
         switch (e.props.type) {
@@ -46,7 +47,20 @@ export default observer(({ parsed, mode, form, setForm, setErrors, errors, struc
                                 });
 
                                 setLoading(true);
-                                await queryAll(q.query, { auth });
+                                let res = await queryAll(q.query, { auth, raw: true });
+                                console.log(res);
+                                if (res.errors) {
+                                    setLoading(false);
+                                    const msg = res.errors.map(e => {
+                                        if (_.get(e, 'extensions.code') === 'constraint-violation') {
+                                            const table = _.trim(e.message.split('" on table "')[1], '"');
+                                            return `  • Please delete all rows on current ${_.startCase(table)}.`;
+                                        } 
+                                        return `  • ${e.message}`;
+                                    }).filter(e => !!e);
+                                    alert('Delete failed: \n' + msg.join('\n'));
+                                    return false;
+                                }
                                 await reload();
                                 setLoading(false);
                                 setMode('');

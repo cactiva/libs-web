@@ -79,6 +79,7 @@ export default observer(({ parsed, mode, setMode, structure, auth, idKey, render
         hasRelation={meta.hasRelation}
         auth={auth}
         idKey={idKey}
+        colDef={colDef}
         reload={reload}
         setLoading={(v: boolean) => meta.loading = v}
         setMode={setMode} />;
