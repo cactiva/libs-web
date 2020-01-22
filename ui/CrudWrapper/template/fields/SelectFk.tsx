@@ -27,7 +27,7 @@ export default observer((props: any) => {
                 const cols = columnDefs[tablename];
                 let q = ` ${tablename} {
                     id
-                    ${cols
+                    ${cols && cols 
                         .map(e => e.column_name)
                         .filter(e => e != 'id' && e.indexOf('id') !== 0)
                         .join('\n')}

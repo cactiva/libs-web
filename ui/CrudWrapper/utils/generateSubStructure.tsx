@@ -34,7 +34,7 @@ export default (metasub, rel, structure, data) => {
     }
 
     const options = _.get(rel, 'options', {});
-    const id = idata[relfk.foreign_column_name];
+    const id = undefined && idata[relfk.foreign_column_name];
     const fields = _.get(_.find(_.get(istructure, `fields`, []), { name: relpath }), 'fields', []);
     const table = _.get(rel, 'column.props.table', {});
     let tcols = (fields).filter(t => {
