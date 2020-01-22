@@ -1,10 +1,10 @@
 import _ from 'lodash';
 import React from 'react';
-import { TableColumn, Field, Input, Button } from '../..';
-import Form from '../../Form';
+import { TableColumn, Field, Input, Button } from '../../../..';
+import Form from '../../../../Form';
 import { toJS } from 'mobx';
 
-export default (metasub, rel, structure, data) => {
+export default (rel, structure, data) => {
     if (!rel.fkey || !rel.path) return null;
     let idata = data;
     let istructure = structure;
@@ -24,12 +24,6 @@ export default (metasub, rel, structure, data) => {
         }
         if (!Array.isArray(tstruct)) {
             istructure = tstruct;
-        }
-    }
-
-    if (!metasub[relpath]) {
-        metasub[relpath] = {
-            mode: ''
         }
     }
 
@@ -54,6 +48,11 @@ export default (metasub, rel, structure, data) => {
     }
     const fcols = (rel.column.props.form || fields).filter(t => { return t.name !== 'id' });
     const defaultForm = _.get(rel, 'column.props.options.default');
+
+    if (!_.find(fields, { name: 'id' })) {
+        fields.push({ name: 'id' });
+    }
+
     return {
         structure: {
             name: relfk.table_name,
@@ -70,7 +69,7 @@ export default (metasub, rel, structure, data) => {
             overrideForm: {
                 ...defaultForm,
                 [relfk.column_name]: id
-            }
+            },
         },
         parsed: {
             title: { children: rel.column.props.label },
@@ -116,8 +115,6 @@ export default (metasub, rel, structure, data) => {
                     })}</Form>
             }
         },
-        mode: metasub[relpath].mode,
-        setMode: (newmode) => metasub[relpath].mode = newmode
     }
 
 }

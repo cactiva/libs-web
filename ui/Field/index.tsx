@@ -19,11 +19,19 @@ interface IFieldProps {
     children?: any
     styles?: any
     style?: any
+    bypass?: boolean
     isRequired?: boolean
 }
 
 export default observer((iprops: IFieldProps) => {
     const Component = iprops.children.type;
+    if (iprops.bypass) {
+        return <Component
+            {...iprops.children.props}
+            value={iprops.value}
+            setValue={iprops.setValue} />;
+    }
+
     const cprops = _.get(iprops, 'children.props', {});
     const meta = useObservable({
         valueFrom: cprops.value ? 'cprops' : 'iprops',
@@ -34,37 +42,18 @@ export default observer((iprops: IFieldProps) => {
         style: cprops.style || iprops.style,
         styles: cprops.styles || iprops.styles,
         required: iprops.isRequired,
-        value: iprops.value
+        value: iprops.value,
     }
 
-    switch (Component) {
-        case Input:
-            if (!meta.value && meta.value !== '') meta.value = '';
-            props.value = meta.value;
-            props.onChange = (e: any) => {
-                const value = _.get(e, 'target.value', e);
-                meta.value = value;
-            }
-            props.onBlur = (e: any) => {
-                iprops.setValue(meta.value);
-            }
-            break;
-        case SelectFk:
-            props.value = iprops.value;
-            props.setValue = iprops.setValue;
-            for (let i in cprops) {
-                props[i] = cprops[i]
-            }
-            break;
-        default:
-            if (cprops.onChange) {
-                props.onChange = cprops.onChange;
-            } else {
-                props.onChange = (e: any) => {
-                    const value = _.get(e, 'target.value', e);
-                    iprops.setValue(value);
-                }
-            }
+    if (cprops.onChange) {
+        console.log(props);
+        props.setValue = iprops.setValue;
+        props.onChange = cprops.onChange;
+    } else {
+        props.onChange = (e: any) => {
+            const value = _.get(e, 'target.value', e);
+            iprops.setValue(value);
+        }
     }
     return <Component {...props} />;
 });

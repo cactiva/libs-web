@@ -13,7 +13,7 @@ import { loadColDefs } from '../../utils/reloadStructure';
 const queryCache = {};
 
 export default observer((props: any) => {
-    const { value, setValue } = props;
+    const { value, onChange } = props;
 
     const meta = useObservable({
         list: queryCache[getQuery(props)] || [],
@@ -35,7 +35,7 @@ export default observer((props: any) => {
         items={meta.loading ? [{ value: '', label: 'Loading...' }] : meta.list}
         selectedKey={meta.loading ? '' : value}
         onChange={(e, item) => {
-            setValue(item && item.key);
+            onChange(item && item.key);
         }} />
 });
 

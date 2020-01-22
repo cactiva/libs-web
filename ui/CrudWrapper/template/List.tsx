@@ -103,9 +103,12 @@ const generateColumns = (structure, table, colDef, fkeys) => {
     })
 
     const hidden: any = [];
+    const indexed = {};
     const cols = table.head.children.map((e, idx) => {
-        let relation: any = undefined;
+        if (indexed[e.props.path]) return false;
+        indexed[e.props.path] = true;
 
+        let relation: any = undefined;
         if (e.props.relation) {
             relation = e.props.relation;
 

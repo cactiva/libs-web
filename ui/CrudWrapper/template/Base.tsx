@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { observer, useObservable } from 'mobx-react-lite';
-import React, { useEffect } from 'react';
+import React, { useRef } from 'react';
 import useAsyncEffect from 'use-async-effect';
 import { columnDefs } from '..';
 import reloadList from '../utils/reloadList';
@@ -8,15 +8,11 @@ import reloadStructure from '../utils/reloadStructure';
 import Form from './Form';
 import Header from './Header';
 import List from './List';
-import { toJS, observe } from 'mobx';
-import { Spinner, Label, SpinnerSize } from 'office-ui-fabric-react';
 import Loading from './Loading';
-import { deepObserve } from "mobx-utils"
 
 export default observer((props: any) => {
     const { parsed, mode, setMode, afterQuery, structure, auth, idKey, renderHeader, style, headerStyle } = props;
     const { table, form } = parsed;
-
     const meta = useObservable({
         list: [],
         filter: {
@@ -34,7 +30,8 @@ export default observer((props: any) => {
         form: {},
         colDefs: [],
         listScroll: { top: 0, left: 0 },
-        errors: {}
+        errors: {},
+        init: false
     });
     const reload = async () => {
         const resultList = await reloadList({
@@ -43,7 +40,6 @@ export default observer((props: any) => {
             filter: meta.filter,
             paging: meta.paging
         });
-
         if (afterQuery) await afterQuery(resultList)
         meta.list = resultList;
     };
@@ -57,13 +53,15 @@ export default observer((props: any) => {
         if (meta.list && meta.list.length === 0) {
             reload()
         }
+        meta.init = true;
     }, []);
 
     const colDef: any = {};
     meta.colDefs.map((e: any) => {
         colDef[e.column_name] = e;
     })
-    if (Object.keys(colDef).length === 0 || !meta.fkeys) {
+    const formRef = useRef(null as any);
+    if (Object.keys(colDef).length === 0 || !meta.fkeys || !meta.init) {
         return <Loading text={meta.loadingInitText} />;
     }
 
@@ -79,6 +77,9 @@ export default observer((props: any) => {
         hasRelation={meta.hasRelation}
         auth={auth}
         idKey={idKey}
+        getForm={() => {
+            return formRef.current
+        }}
         colDef={colDef}
         reload={reload}
         setLoading={(v: boolean) => meta.loading = v}
@@ -98,7 +99,9 @@ export default observer((props: any) => {
                 setMode={setMode}
                 structure={structure}
                 list={list}
-                setForm={(v) => meta.form = v}
+                setForm={(v) => {
+                    meta.form = v
+                }}
                 filter={meta.filter}
                 reload={reload}
                 auth={auth}
@@ -114,6 +117,7 @@ export default observer((props: any) => {
                 hasRelation={meta.hasRelation}
                 inmeta={meta}
                 setHasRelation={(v) => meta.hasRelation = v}
+                formRef={formRef}
                 mode={mode} />
         }
     </div>;

@@ -9,7 +9,7 @@ import { Text } from '../..';
 import saveForm from '../utils/saveForm';
 import Spinner from '../../Spinner';
 
-export default observer(({ parsed, mode, form, setForm, colDef, setErrors, errors, structure, setLoading, setMode, auth, idKey, reload, style, hasRelation }: any) => {
+export default observer(({ parsed, mode, form, getForm, setForm, colDef, setErrors, errors, structure, setLoading, setMode, auth, idKey, reload, style, hasRelation }: any) => {
     const title = _.get(parsed, 'title.children');
     let actions = _.get(parsed, 'actions.children', []);
     if (!_.find(actions, { props: { type: 'cancel' } })) {
@@ -97,6 +97,7 @@ export default observer(({ parsed, mode, form, setForm, colDef, setErrors, error
                         primary: true,
                         iconProps: { iconName: 'Save' },
                         onClick: () => {
+                            const form = getForm();
                             // validate form
                             const cdef: any = {};
                             columnDefs[structure.name].forEach(e => {
