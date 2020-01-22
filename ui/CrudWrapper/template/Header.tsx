@@ -9,7 +9,7 @@ import { Text } from '../..';
 import saveForm from '../utils/saveForm';
 import Spinner from '../../Spinner';
 
-export default observer(({ parsed, mode, form, getForm, setForm, colDef, setErrors, errors, structure, setLoading, setMode, auth, idKey, reload, style, hasRelation }: any) => {
+export default observer(({ parsed, mode, form, getForm, setForm, colDef, structure, setLoading, setMode, auth, idKey, reload, style, hasRelation }: any) => {
     const title = _.get(parsed, 'title.children');
     let actions = _.get(parsed, 'actions.children', []);
     if (!_.find(actions, { props: { type: 'cancel' } })) {
@@ -29,7 +29,6 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, setErro
                         iconProps: { iconName: 'Add' },
                         onClick: () => {
                             setForm({});
-                            setErrors({});
                             setMode('create');
                         }
                     }
@@ -83,7 +82,6 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, setErro
                         text: '',
                         iconProps: { iconName: 'ChevronLeft' },
                         onClick: () => {
-                            setErrors({});
                             setMode('');
                         }
                     }
@@ -97,7 +95,11 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, setErro
                         primary: true,
                         iconProps: { iconName: 'Save' },
                         onClick: () => {
-                            const form = getForm();
+                            const rawForm = getForm();
+                            const form = rawForm.data;
+                            const errors = rawForm.errors;
+                            const setErrors = (v) => rawForm.errors = v;
+                            
                             // validate form
                             const cdef: any = {};
                             columnDefs[structure.name].forEach(e => {
