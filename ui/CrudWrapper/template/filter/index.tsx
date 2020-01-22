@@ -22,34 +22,30 @@ export default observer((props: any) => {
         show: false,
         visibles: {},
         init: false,
-        columns: _.cloneDeep(columns)
+        columns: [] as any
     })
-    const btnRef = useRef(null);
-    const filterCols = meta.columns;
-    if (structure.args) {
-        argsApplyFilter(structure, filterCols, filter.form);
-    }
-
     useEffect(() => {
-        if (!meta.init) {
-            if (filterCols.length > 1) {
-                for (let i = 0; i < 4; i++) {
-                    if (i < filterCols.length) {
-                        const e = filterCols[i];
-                        if (e) {
-                            meta.visibles[e.key] = true;
-                        }
+        meta.columns = _.cloneDeep(columns);
+        if (structure.args) {
+            argsApplyFilter(structure, meta.columns, filter.form);
+        }
+        if (meta.columns.length > 1) {
+            for (let i = 0; i < 4; i++) {
+                if (i < meta.columns.length) {
+                    const e = meta.columns[i];
+                    if (e) {
+                        meta.visibles[e.key] = true;
                     }
                 }
-            } else {
-                for (let i = 0; i < filterCols.length; i++) {
-                    const e = filterCols[i];
-                    meta.visibles[e.key] = true;
-                }
             }
-            meta.init = true;
+        } else {
+            for (let i = 0; i < meta.columns.length; i++) {
+                const e = meta.columns[i];
+                meta.visibles[e.key] = true;
+            }
         }
-    }, []);
+    }, [columns])
+    const btnRef = useRef(null);
 
     return <div style={{
         display: 'flex',
@@ -62,10 +58,16 @@ export default observer((props: any) => {
                 onClick={() => meta.show = true}
                 iconProps={{ iconName: "GlobalNavButton" }} />
         </div>
-
-        {filterCols.map((e, key) => {
+        {meta.columns.map((e, key) => {
             if (meta.visibles[e.key]) {
                 let type = _.get(colDef, `${e.key}.data_type`);
+                if (e.key.indexOf('.') > 0) {
+                    const eks = e.key.split('.').join('.columns.');
+                    type = _.get(colDef, `${eks}.data_type`);
+                    if (!type)
+                        console.log(toJS(colDef), eks);
+                }
+
                 const submit = () => {
                     reload();
                 }
@@ -92,7 +94,7 @@ export default observer((props: any) => {
                 if (e.filter) {
                     type = e.filter.type;
                 }
-                    
+
                 if (e.relation) {
                     const alias = e.relation.alias;
                     if (alias) {
@@ -120,7 +122,6 @@ export default observer((props: any) => {
                             label={e.name} />
                     }
                 }
-
                 switch (type) {
                     case "character varying":
                     case "text":
@@ -195,8 +196,7 @@ export default observer((props: any) => {
                             items={e.filter.items}
                             label={e.name} />
                 }
-
-                return <Spinner key={key} style={{ marginRight: 5 }} />;
+                return null;
             }
         })}
 
@@ -213,7 +213,7 @@ export default observer((props: any) => {
                     flexWrap: 'wrap',
                     flexDirection: 'row'
                 }}>
-                    {filterCols.map((e, key) => {
+                    {meta.columns.map((e, key) => {
                         return <Checkbox
                             key={e.key}
                             styles={{ root: { marginBottom: 3, marginRight: 3, width: '120px' } }}

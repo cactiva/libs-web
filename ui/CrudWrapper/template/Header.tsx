@@ -1,15 +1,25 @@
-import _ from 'lodash';
-import { observer } from 'mobx-react-lite';
-import { ActionButton } from 'office-ui-fabric-react';
-import * as React from 'react';
-import { Text } from '../..';
-import saveForm from '../utils/saveForm';
 import { generateDeleteString } from '@src/libs/utils/genDeleteString';
 import { queryAll } from '@src/libs/utils/gql';
+import _ from 'lodash';
+import { observer, useObservable } from 'mobx-react-lite';
+import { ActionButton } from 'office-ui-fabric-react';
+import * as React from 'react';
+import { columnDefs } from '..';
+import { Text } from '../..';
+import saveForm from '../utils/saveForm';
+import Spinner from '../../Spinner';
 
-export default observer(({ parsed, mode, form, setForm, structure, setLoading, setMode, auth, idKey, reload, style, hasRelation }: any) => {
+export default observer(({ parsed, mode, form, getForm, setForm, colDef, structure, setLoading, setMode, auth, idKey, reload, style, hasRelation }: any) => {
     const title = _.get(parsed, 'title.children');
-    const actions = _.get(parsed, 'actions.children', []).map(e => {
+    let actions = _.get(parsed, 'actions.children', []);
+    if (!_.find(actions, { props: { type: 'cancel' } })) {
+        actions.push({ props: { type: 'cancel' } });
+    }
+    const meta = useObservable({
+        loading: false,
+    })
+
+    actions = actions.map(e => {
         switch (e.props.type) {
             case "create":
                 if (mode === '') {
@@ -35,16 +45,28 @@ export default observer(({ parsed, mode, form, setForm, structure, setLoading, s
                                 const q = generateDeleteString(structure, {
                                     where: [
                                         {
-                                            name: idKey,
+                                            name: 'id',
                                             operator: '_eq',
-                                            value: form[idKey],
+                                            value: form['id'],
                                             valueType: 'Int'
                                         }
                                     ]
                                 });
 
                                 setLoading(true);
-                                await queryAll(q.query, { auth });
+                                let res = await queryAll(q.query, { auth, raw: true });
+                                if (res.errors) {
+                                    setLoading(false);
+                                    const msg = res.errors.map(e => {
+                                        if (_.get(e, 'extensions.code') === 'constraint-violation') {
+                                            const table = _.trim(e.message.split('" on table "')[1], '"');
+                                            return `  • Please delete all rows on current ${_.startCase(table)}.`;
+                                        }
+                                        return `  • ${e.message}`;
+                                    }).filter(e => !!e);
+                                    alert('Delete failed: \n' + msg.join('\n'));
+                                    return false;
+                                }
                                 await reload();
                                 setLoading(false);
                                 setMode('');
@@ -73,7 +95,45 @@ export default observer(({ parsed, mode, form, setForm, structure, setLoading, s
                         primary: true,
                         iconProps: { iconName: 'Save' },
                         onClick: () => {
-                            saveForm({ mode, form, structure, setLoading, setMode, auth, idKey, reload, hasRelation })
+                            const rawForm = getForm();
+                            const form = rawForm.data;
+                            const errors = rawForm.errors;
+                            const setErrors = (v) => rawForm.errors = v;
+                            
+                            // validate form
+                            const cdef: any = {};
+                            columnDefs[structure.name].forEach(e => {
+                                cdef[e.column_name] = e;
+                            });
+                            const newerrs = {};
+                            const ovrd = structure.overrideForm || {};
+                            _.map(cdef, (f, k) => {
+                                if (f && f.is_nullable === 'NO' && !f.column_default) {
+                                    if (!form[k] && k !== 'id' && !ovrd[k]) {
+                                        let name = _.startCase(k);
+                                        if (name.indexOf('Id') === 0) {
+                                            name = name.substr(3);
+                                        }
+                                        newerrs[k] = `${name} is required.`;
+                                    }
+                                }
+                            })
+
+                            if (Object.keys(newerrs).length !== Object.keys(errors).length) {
+                                if (Object.keys(newerrs).length > 0) {
+                                    setErrors(newerrs);
+                                }
+                            }
+                            if (Object.keys(newerrs).length === 0) {
+                                saveForm({
+                                    mode, form, structure, setLoading: (v) => {
+                                        setLoading(v);
+                                        meta.loading = v;
+                                    }, setMode, auth, idKey, reload, hasRelation
+                                })
+                                setErrors({});
+                            }
+
                         }
                     }
                 }
@@ -81,14 +141,14 @@ export default observer(({ parsed, mode, form, setForm, structure, setLoading, s
             case "custom":
                 const text = e.props.children.props.children ? e.props.children.props.children : 'Custom';
                 const key = e.props.options && e.props.options.key ? e.props.options.key : 'custom';
-                const icon =  e.props.options && e.props.options.icon ? e.props.options.icon : 'Insert';
+                const icon = e.props.options && e.props.options.icon ? e.props.options.icon : 'Insert';
                 if (mode == 'edit') {
                     return {
                         key: key,
                         text: text,
                         primary: true,
                         iconProps: { iconName: icon },
-                        onClick: e.props.options && e.props.options.onClick ? e.props.options.onClick : ()=>{console.log('custom clicked')}
+                        onClick: e.props.options && e.props.options.onClick ? e.props.options.onClick : () => { console.log('custom clicked') }
                     }
                 }
                 break;
@@ -118,12 +178,16 @@ export default observer(({ parsed, mode, form, setForm, structure, setLoading, s
             <Text style={{ padding: 10, fontSize: 21, fontWeight: 200 }}>{title}</Text>
         </div>
         <div>
-            {actions.filter(e => e.key !== 'cancel').map(e => <ActionButton
-                text={e.text}
-                key={e.key}
-                iconProps={e.iconProps}
-                onClick={e.onClick}
-            />)}
+            {
+                meta.loading
+                    ? <Spinner style={{ marginRight: 25 }} />
+                    : actions.filter(e => e.key !== 'cancel').map(e => <ActionButton
+                        text={e.text}
+                        key={e.key}
+                        iconProps={e.iconProps}
+                        onClick={e.onClick}
+                    />)
+            }
         </div>
     </div>;
 })

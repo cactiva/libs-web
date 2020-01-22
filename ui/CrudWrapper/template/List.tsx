@@ -7,13 +7,40 @@ import NiceValue from '../../Field/NiceValue';
 import { formatRelationLabel } from './fields/SelectFk';
 import Filter from './filter';
 import { toJS } from 'mobx';
+import { observer, useObservable } from 'mobx-react-lite';
+import useAsyncEffect from 'use-async-effect';
 
-export default ({ table, reload, setForm, list, auth, filter, colDef, fkeys, setMode, structure }: any) => {
-    if (Object.keys(colDef).length === 0) return <div style={{ width: 150, height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Spinner />
-    </div>;
+export default observer(({ table, reload, setForm, setScroll, scroll, list, auth, filter, colDef, fkeys, setMode, structure }: any) => {
+    const meta = useObservable({
+        columns: [],
+    })
+    useAsyncEffect(async () => {
+        meta.columns = generateColumns(structure, table, colDef, fkeys);
+    }, [structure]);
 
-    const columns = generateColumns(structure, table, colDef, fkeys);
+    const columns = meta.columns;
+    const dref = React.useRef(null);
+    React.useEffect(() => {
+        const el = _.get(dref, 'current._root.current');
+        if (el) {
+            const grid = el.children[0];
+            grid.scrollTop = scroll.top;
+            grid.scrollLeft = scroll.left;
+            grid.onscroll = (e) => {
+                setScroll({
+                    top: e.target.scrollTop,
+                    left: e.target.scrollLeft
+                })
+            }
+        }
+    }, [dref.current])
+
+    if (Object.keys(colDef).length === 0) {
+        return <div style={{ width: 150, height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Spinner />
+        </div>;
+    }
+
     return <>
         <Filter
             filter={filter}
@@ -26,11 +53,15 @@ export default ({ table, reload, setForm, list, auth, filter, colDef, fkeys, set
         <div style={{ flex: 1, position: 'relative', display: 'flex' }}>
             <div className="base-list">
                 <DetailsList
+                    componentRef={dref}
                     selectionMode={SelectionMode.single}
                     items={list || []}
                     onItemInvoked={(e) => {
-                        setForm(e);
+                        setForm(toJS(e));
                         setMode('edit');
+                    }}
+                    onShouldVirtualize={(e: any) => {
+                        return false;
                     }}
                     onRenderDetailsHeader={(detailsHeaderProps?: IDetailsHeaderProps, defaultRender?: IRenderFunction<IDetailsHeaderProps>) => {
                         return (
@@ -41,7 +72,7 @@ export default ({ table, reload, setForm, list, auth, filter, colDef, fkeys, set
                         <>
                             <div onClick={() => {
                                 if (detailsRowProps) {
-                                    setForm(detailsRowProps.item);
+                                    setForm(toJS(detailsRowProps.item));
                                     setMode('edit');
                                 }
                             }}>
@@ -55,7 +86,7 @@ export default ({ table, reload, setForm, list, auth, filter, colDef, fkeys, set
             </div>
         </div>
     </>;
-}
+});
 
 const generateColumns = (structure, table, colDef, fkeys) => {
     const keys = {};
@@ -72,7 +103,11 @@ const generateColumns = (structure, table, colDef, fkeys) => {
     })
 
     const hidden: any = [];
+    const indexed = {};
     const cols = table.head.children.map((e, idx) => {
+        if (indexed[e.props.path]) return false;
+        indexed[e.props.path] = true;
+
         let relation: any = undefined;
         if (e.props.relation) {
             relation = e.props.relation;
@@ -89,7 +124,7 @@ const generateColumns = (structure, table, colDef, fkeys) => {
             }
         } else if (!e.props.relation && fkeys) {
             const fk = fkeys[e.props.path];
-            if (fk && fk.table_name === structure.name) {
+            if (fk && (fk.table_name === structure.name || fk.alias === structure.name)) {
                 const tablename = fk.foreign_table_name;
                 const key: any = keys[tablename] || keys[tablename + 's'];
                 if (key) {
@@ -99,19 +134,19 @@ const generateColumns = (structure, table, colDef, fkeys) => {
                     if (sfield) {
                         relation = {
                             alias: key.props.path,
-                            label: (item) => {
+                            label: (item, colDef) => {
                                 const skeys: any = []
                                 sfield.fields.forEach(k => {
                                     skeys.push(k.name);
-                                })
-                                return formatRelationLabel(skeys, item[key.props.path]);
+                                });
+                                return formatRelationLabel(skeys, item[key.props.path], colDef);
                             }
                         }
                     } else {
                         relation = {
                             alias: key.props.path,
-                            label: (item) => {
-                                return formatRelationLabel(Object.keys(keys), item);
+                            label: (item, colDef) => {
+                                return formatRelationLabel(Object.keys(keys), item, colDef);
                             }
                         }
                     }
@@ -121,7 +156,6 @@ const generateColumns = (structure, table, colDef, fkeys) => {
 
         let title = e.props.title;
         if (title && title.toLowerCase().indexOf('id') === 0) title = title.substr(3);
-
         return {
             ...e.props,
             title,
@@ -145,16 +179,21 @@ const generateColumns = (structure, table, colDef, fkeys) => {
             name: e.title,
             relation: relation,
             filter: e.filter,
-            maxWidth: 200,
+            maxWidth: e.width || 200,
+            isResizable: !e.width ? true : false,
             columnActionsMode: ColumnActionsMode.disabled,
             onRender: (item: any) => {
                 const cdef = colDef[e.path];
                 const value = _.get(item, e.path);
                 let valueEl: any = null;
+                if (e.path.indexOf('.') > 0) {
+                    return formatValue(value);
+                }
+
                 if (e.relation) {
                     const alias = e.relation.alias;
                     if (typeof e.relation.label === 'function') {
-                        valueEl = formatValue(e.relation.label(item));
+                        valueEl = formatValue(e.relation.label(item, colDef[alias]));
                     } else if (alias) {
                         valueEl = formatValue(item[alias]);
                     }
@@ -166,14 +205,15 @@ const generateColumns = (structure, table, colDef, fkeys) => {
                     } else {
                         valueEl = formatValue(value);
                     }
+                } else {
+                    return formatValue(value);
                 }
+
                 return valueEl;
             }
         }
     });
-
 }
-
 
 const formatValue = (value) => {
     if (typeof value === 'string') {

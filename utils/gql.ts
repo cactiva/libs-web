@@ -9,6 +9,7 @@ interface QueryOptions {
   operationName?: any;
   headers?: any;
   auth?: boolean;
+  raw?: boolean;
 }
 
 export const queryAll = async (q: string, options?: QueryOptions) => {
@@ -38,6 +39,10 @@ export const queryAll = async (q: string, options?: QueryOptions) => {
         variables: _.get(options, "variables", {})
       }
     });
+
+    if (_.get(options, 'raw', false)) {
+      return res;
+    }
 
     if (res && res.data) {
       const keys = Object.keys(res.data);

@@ -1,9 +1,27 @@
 import * as React from 'react';
 import { TextField } from 'office-ui-fabric-react';
 import { useObservable, observer } from 'mobx-react-lite';
+import _ from 'lodash';
 
-export default observer((props: any) => {
+export default observer((iprops: any) => {
+    const props = _.cloneDeep(iprops);
     const meta = useObservable({ oldval: formatValue(props.value, props.type) })
+    if (props.children) {
+        delete props.children;
+    }
+    if (!props.value) {
+        props.value = '';
+    }
+    if (iprops.setValue) {
+        props.value = meta.oldval;
+        props.onChange = (e: any) => {
+            meta.oldval = e.target.value;
+        }
+        props.onBlur = (e: any) => {
+            props.setValue(meta.oldval);
+        }
+    }
+
     if (props.type === "money"
         || props.type === "number"
         || props.type === "decimal") {
@@ -24,6 +42,7 @@ export default observer((props: any) => {
             }}
         />
     }
+
     return <TextField {...props} />;
 })
 
@@ -38,4 +57,5 @@ const formatValue = (value, type) => {
     if (type === "money") return clearValue(value, type).toLocaleString().replace(/,/ig, '.')
     if (type === "number") return clearValue(value, type).toString()
     if (type === "decimal") return clearValue(value, type).toString()
+    return value;
 }

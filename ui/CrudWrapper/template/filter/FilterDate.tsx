@@ -71,6 +71,7 @@ export default observer(({ label, field, value, setValue, operator, setOperator,
                     }}
                     onSelectDate={(e: any) => {
                         setValue(e);
+                        submit();
                     }}
                     styles={{ root: { padding: 10 } }} />
             )

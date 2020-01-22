@@ -32,9 +32,16 @@
 .base-form-sub > .ms-FocusZone {
   border-right: 1px solid #ececeb;
 }
+
+.base-form-sub > .ms-FocusZone > .ms-Pivot {
+  display:flex;
+  flex-direction:column;
+}
 .base-form-sub > .ms-FocusZone .ms-Button {
   margin-right: 0;
   border-bottom: 1px solid #ececeb;
+  text-align:left;
+  padding-left:15px;
 }
 .base-form-sub > .ms-FocusZone .ms-Button::before {
   left: 0;
@@ -49,4 +56,13 @@
 .base-form-sub > .ms-FocusZone .ms-Button:hover::before {
   top: 0px;
   bottom: 0px;
+}
+
+.ms-ComboBox {
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 2px;
+}
+.ms-ComboBox::after {
+  border-width: 0px;
 }

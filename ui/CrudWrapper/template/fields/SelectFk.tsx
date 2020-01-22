@@ -1,50 +1,125 @@
 import { Select } from '@src/libs/ui';
 import api from '@src/libs/utils/api';
 import { queryAll } from '@src/libs/utils/gql';
-import { observable } from 'mobx';
+import { observable, toJS } from 'mobx';
 import { observer, useObservable } from 'mobx-react-lite';
 import * as React from 'react';
 import useAsyncEffect from 'use-async-effect';
 import { columnDefs } from '../..';
 import _ from 'lodash';
+import { dateFormat } from '@src/libs/utils/date';
+import { loadColDefs } from '../../utils/reloadStructure';
 
-const relationDatas = observable({});
+const queryCache = {};
+
 export default observer((props: any) => {
-    const { tablename, labelField, auth, value, setValue, label, relation } = props;
+    const { value, onChange } = props;
+
     const meta = useObservable({
-        list: []
+        list: queryCache[getQuery(props)] || [],
+        loading: false
     })
     useAsyncEffect(async () => {
-        let rawList: any = [];
-        if (relation && relation.query) {
-            rawList = await queryAll(relation.query, { auth });
-        } else {
-            if (!columnDefs[tablename]) {
-                const res = await api({ url: `/api/db/columns?table=${tablename}` }) as any[];
-                if (res) {
-                    columnDefs[tablename] = {
-                        columns: res,
-                        data: []
-                    };
-                }
-            }
+        if (meta.list.length === 0) {
+            meta.loading = true;
+            meta.list = await loadList(props);
+            meta.loading = false;
+        }
+    }, []);
 
-            if (!relationDatas[tablename]) {
-                const cols = columnDefs[tablename].columns;
-                let q = ` ${tablename} {
+    return <Select
+        styles={props.styles}
+        label={props.label}
+        errorMessage={props.errorMessage}
+        required={props.required}
+        items={meta.loading ? [{ value: '', label: 'Loading...' }] : meta.list}
+        selectedKey={meta.loading ? '' : value}
+        onChange={(e, item) => {
+            onChange(item && item.key);
+        }} />
+});
+
+export const formatRelationLabel = (keys, e, colDef?) => {
+    let usedKeys = keys;
+
+    if (keys.length > 5) {
+        usedKeys = keys.filter(f => {
+            if (f.indexOf('name') >= 0) {
+                return true;
+            }
+            return false;
+        })
+    } else {
+        if (usedKeys.length === 0) {
+            for (let i in keys) {
+                if ((i as any) * 1 <= 5)
+                    usedKeys.push(keys[i]);
+            }
+        }
+    }
+
+    return _.trim(usedKeys.filter(f => f !== 'id').map(f => {
+        return formatSingleString(e, f, _.get(colDef, 'columns'));
+    }).join(' • ').replace(/ •  • /ig, ' • '), ' • ');
+}
+
+const formatSingleString = (e, f, cdef) => {
+    if (typeof e[f] === 'object' && e[f] !== null) {
+        const kef = Object.keys(e[f]);
+        return kef.map(k => {
+            if (typeof e[f][k] === 'object') {
+                return formatSingleString(e[f], k, _.get(cdef, k));
+            }
+            return e[f][k];
+        }).join(' • ');
+    }
+    const cd = _.get(cdef, f)
+    if (cd) {
+        const type = cd.data_type;
+        switch (type) {
+            case "timestamp without time zone":
+            case "timestamp with time zone":
+                return dateFormat(e[f]);
+            case "date":
+                return dateFormat(e[f], 'dd MMM yyyy');
+        }
+    }
+
+    return e[f];
+}
+
+const getQuery = (props) => {
+    const { tablename, labelField, auth, value, setValue, label, relation } = props;
+    let query = '';
+    if (relation && relation.query) {
+        query = relation.query;
+    } else {
+        query = ':::' + tablename;
+    }
+    return query;
+}
+const loadList = async (props) => {
+    const { tablename, labelField, auth, value, setValue, label, relation } = props;
+    let queryIndex = getQuery(props);
+    let query = queryIndex;
+    if (queryIndex.indexOf(':::') === 0) {
+        await loadColDefs(tablename);
+        const cols = columnDefs[tablename];
+        if (cols) {
+            query = `query { ${tablename} {
                     id
                     ${cols
-                        .map(e => e.column_name)
-                        .filter(e => e != 'id' && e.indexOf('id') !== 0)
-                        .join('\n')}
-                }`;
-                const res = await queryAll(`query { ${q} }`, { auth });
-                relationDatas[tablename] = res;
-            }
-            rawList = relationDatas[tablename];
+                    .map(e => e.column_name)
+                    .filter(e => e != 'id' && e.indexOf('id') !== 0)
+                    .join('\n')}
+                }}`;
         }
+    }
 
-        const list = rawList.map(e => {
+    if (!queryIndex) { return; }
+    if (!queryCache[queryIndex]) {
+        const rawList = await queryAll(query, { auth });
+        queryCache[queryIndex] = rawList.map(e => {
             if (relation && relation.label) {
                 if (typeof relation.label === 'function') {
                     return {
@@ -80,33 +155,7 @@ export default observer((props: any) => {
                 };
             }
         });
-        meta.list = list;
-    }, [])
-
-
-    return <Select styles={props.styles} label={props.label} items={meta.list} selectedKey={value} onChange={(e, item) => {
-        setValue(item && item.key);
-    }} />
-})
-
-export const formatRelationLabel = (keys, e) => {
-    let usedKeys = keys;
-
-    if (keys.length > 2) {
-        usedKeys = keys.filter(f => {
-            if (f.indexOf('name') >= 0) {
-                return true;
-            }
-            return false;
-        })
-    } else {
-        if (usedKeys.length === 0) {
-            usedKeys.push(keys[0]);
-            usedKeys.push(keys[1]);
-        }
     }
 
-    return usedKeys.filter(f => f !== 'id').map(f => {
-        return e[f];
-    }).join(' • ');
+    return queryCache[queryIndex];
 }

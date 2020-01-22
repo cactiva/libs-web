@@ -4,7 +4,14 @@ import _ from 'lodash';
 import Field from '../Field';
 import { uuid } from '@src/libs/utils';
 
-export default observer((props: any) => {
+interface IForm {
+    data?: any,
+    style?: any,
+    setValue?: (value, path) => void
+    onSubmit?: () => void
+    children?: any
+}
+export default observer((props: IForm) => {
     const { children, data, setValue, onSubmit } = props;
     const meta = useObservable({
         initError: false,
