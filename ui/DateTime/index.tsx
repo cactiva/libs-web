@@ -11,17 +11,18 @@ export default observer((props: any) => {
         time: "",
     }) as any;
 
-
     React.useEffect(() => {
         if (props.value) {
             if (typeof props.value === 'string') {
                 meta.date = parseISO(props.value);
+                props.onChange(meta.date);
             } else {
                 meta.date = props.value;
             }
             const h = getHours(meta.date);
             const m = getMinutes(meta.date);
-            if (h && m) meta.time = `${h < 10 ? '0' + h : h}:${m < 10 ? '0' + m : m}`;
+
+            if (h !== undefined && m !== undefined) meta.time = `${h < 10 ? '0' + h : h}:${m < 10 ? '0' + m : m}`;
         }
     }, []);
 

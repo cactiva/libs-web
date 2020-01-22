@@ -1,5 +1,6 @@
 import { ITable, genFields } from "./genQueryString";
 import _ from 'lodash';
+import { dateFormat } from "./date";
 
 export const generateInsertString = (table: ITable, data: any, options?: {
     returnData?: boolean
@@ -10,6 +11,10 @@ export const generateInsertString = (table: ITable, data: any, options?: {
         if (k !== '__insertid') {
             if (typeof data[k] !== 'object') {
                 preparedRow[k] = data[k]
+            } else {
+                if (data[k] instanceof Date) {
+                    preparedRow[k] = dateFormat(data[k], 'sql');
+                }
             }
         }
     })
