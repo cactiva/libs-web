@@ -11,6 +11,7 @@ export default observer((props: any) => {
         if (props.value) {
             if (typeof props.value === 'string') {
                 meta.date = parseISO(props.value);
+                props.onChange(meta.date);
             } else {
                 meta.date = props.value;
             }
