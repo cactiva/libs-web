@@ -20,32 +20,10 @@ export default observer((props: any) => {
         loading: false
     })
     useAsyncEffect(async () => {
-<<<<<<< HEAD
-        let rawList: any = [];
-        if (relation && relation.query) {
-            rawList = await queryAll(relation.query, { auth });
-        } else {
-            // await loadColDefs(tablename);
-
-            if (!relationDatas[tablename]) {
-                const cols = columnDefs[tablename];
-                let q = ` ${tablename} {
-                    id
-                    ${cols && cols 
-                        .map(e => e.column_name)
-                        .filter(e => e != 'id' && e.indexOf('id') !== 0)
-                        .join('\n')}
-                }`;
-                const res = await queryAll(`query { ${q} }`, { auth });
-                relationDatas[tablename] = res;
-            }
-            rawList = relationDatas[tablename];
-=======
         if (meta.list.length === 0) {
             meta.loading = true;
             meta.list = await loadList(props);
             meta.loading = false;
->>>>>>> refs/remotes/origin/master
         }
     }, []);
 
