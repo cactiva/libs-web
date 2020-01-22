@@ -32,9 +32,9 @@ export default async ({ mode, reload, form, structure, setLoading, setMode, auth
             q = generateUpdateString(structure, fdata, {
                 where: [
                     {
-                        name: idKey,
+                        name: idKey || 'id',
                         operator: '_eq',
-                        value: form[idKey],
+                        value: fdata[idKey || 'id'],
                         valueType: 'Int'
                     }
                 ]
@@ -42,9 +42,9 @@ export default async ({ mode, reload, form, structure, setLoading, setMode, auth
 
             setLoading(true);
             await queryAll(q.query, { variables: q.variables, auth });
-            await reload;
             setMode('');
             setLoading(false);
+            reload()
             break;
         default:
             setMode('');

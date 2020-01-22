@@ -57,7 +57,7 @@ export default observer(({ table, reload, setForm, setScroll, scroll, list, auth
                     selectionMode={SelectionMode.single}
                     items={list || []}
                     onItemInvoked={(e) => {
-                        setForm(e);
+                        setForm(toJS(e));
                         setMode('edit');
                     }}
                     onShouldVirtualize={(e: any) => {
@@ -72,7 +72,7 @@ export default observer(({ table, reload, setForm, setScroll, scroll, list, auth
                         <>
                             <div onClick={() => {
                                 if (detailsRowProps) {
-                                    setForm(detailsRowProps.item);
+                                    setForm(toJS(detailsRowProps.item));
                                     setMode('edit');
                                 }
                             }}>
@@ -103,9 +103,12 @@ const generateColumns = (structure, table, colDef, fkeys) => {
     })
 
     const hidden: any = [];
+    const indexed = {};
     const cols = table.head.children.map((e, idx) => {
-        let relation: any = undefined;
+        if (indexed[e.props.path]) return false;
+        indexed[e.props.path] = true;
 
+        let relation: any = undefined;
         if (e.props.relation) {
             relation = e.props.relation;
 

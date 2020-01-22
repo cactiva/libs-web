@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import * as React from 'react';
 import Input from '../Input';
+import { observer, useObservable } from 'mobx-react-lite';
+import SelectFk from '../CrudWrapper/template/fields/SelectFk';
 
 interface IFieldProps {
     label?: string
@@ -17,16 +19,43 @@ interface IFieldProps {
     children?: any
     styles?: any
     style?: any
+    bypass?: boolean
     isRequired?: boolean
 }
 
-export default (props: IFieldProps) => {
-    const childProps = _.get(props, 'children.props')
-    const onChange = (e: any) => {
-        props.setValue(e)
+export default observer((iprops: IFieldProps) => {
+    const Component = iprops.children.type;
+    if (iprops.bypass) {
+        return <Component
+            {...iprops.children.props}
+            value={iprops.value}
+            setValue={iprops.setValue} />;
     }
-    const Component = props.children.type;
-    return <Component styles={props.styles} {...props} {...childProps} onChange={onChange} />;
-};
+
+    const cprops = _.get(iprops, 'children.props', {});
+    const meta = useObservable({
+        valueFrom: cprops.value ? 'cprops' : 'iprops',
+        value: iprops.value
+    })
+    let props: any = {
+        label: iprops.label,
+        style: cprops.style || iprops.style,
+        styles: cprops.styles || iprops.styles,
+        required: iprops.isRequired,
+        value: iprops.value,
+    }
+
+    if (cprops.onChange) {
+        console.log(props);
+        props.setValue = iprops.setValue;
+        props.onChange = cprops.onChange;
+    } else {
+        props.onChange = (e: any) => {
+            const value = _.get(e, 'target.value', e);
+            iprops.setValue(value);
+        }
+    }
+    return <Component {...props} />;
+});
 
 

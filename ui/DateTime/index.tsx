@@ -70,11 +70,13 @@ export default observer((props: any) => {
             value={meta.time}
             label={props.label ? '‎' : undefined}
             errorMessage={props.errorMessage ? '‎' : undefined}
-            onChange={(e: any) => {
-                meta.time = e.target.value;
+            onBlur={() => {
                 if (props.onChange) {
                     props.onChange(getValue());
                 }
+            }}
+            onChange={(e: any) => {
+                meta.time = e.target.value;
             }}
         />
     </div>

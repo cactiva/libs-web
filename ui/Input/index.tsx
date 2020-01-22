@@ -9,10 +9,16 @@ export default observer((iprops: any) => {
     if (props.children) {
         delete props.children;
     }
-
-    if (props.setValue) {
-        props.onChange = (e:any) => {
-            props.setValue(e.target.value)
+    if (!props.value) {
+        props.value = '';
+    }
+    if (iprops.setValue) {
+        props.value = meta.oldval;
+        props.onChange = (e: any) => {
+            meta.oldval = e.target.value;
+        }
+        props.onBlur = (e: any) => {
+            props.setValue(meta.oldval);
         }
     }
 
@@ -37,7 +43,7 @@ export default observer((iprops: any) => {
         />
     }
 
-    return <TextField {...props}  />;
+    return <TextField {...props} />;
 })
 
 const clearValue = (value, type) => {
@@ -51,4 +57,5 @@ const formatValue = (value, type) => {
     if (type === "money") return clearValue(value, type).toLocaleString().replace(/,/ig, '.')
     if (type === "number") return clearValue(value, type).toString()
     if (type === "decimal") return clearValue(value, type).toString()
+    return value;
 }

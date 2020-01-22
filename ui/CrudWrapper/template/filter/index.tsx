@@ -196,7 +196,7 @@ export default observer((props: any) => {
                             items={e.filter.items}
                             label={e.name} />
                 }
-                return <Spinner key={key} style={{ marginRight: 5 }} />;
+                return null;
             }
         })}
 

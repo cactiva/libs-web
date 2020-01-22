@@ -4,35 +4,25 @@ import { IStackTokens, Stack, Toggle } from 'office-ui-fabric-react';
 import { observer, useObservable } from 'mobx-react-lite';
 
 export default observer(({ label, field, value, setValue, submit }: any) => {
-    const meta = useObservable({
-        oldval: value
-    })
-    const stackTokens: IStackTokens = { childrenGap: 10 };
-    label = { label }
-    field = { field }
     return (
-        <Stack
-            tokens={stackTokens}>
-            <ItemButton
-                label={label}
-                field={field}
-                setValue={setValue}
-                onClose={() => {
-                    setValue(parseFloat(meta.oldval));
-                    submit();
-                }}
-                value={value}>
-                <Toggle label={label.label} onText="On" offText="Off" onChange={
+        <ItemButton
+            label={label}
+            field={field}
+            setValue={setValue}
+            onClose={() => {
+                submit();
+            }}
+            value={value}>
+            <div style={{ paddingTop: 10, paddingLeft: 10 }}>
+                <Toggle label={label.label} onText="Yes" offText="No" onChanged={
                     (e: any) => {
-                        meta.oldval = e.target.value;
-                        setValue = value
-                        onclose = submit()
-                        value = { value }
+                        setValue(e ? 'Yes' : 'No');
+                        console.log(e);
+                        submit()
                     }
                 } />
-            </ItemButton>
-
-        </Stack>
+            </div>
+        </ItemButton>
     );
 });
 

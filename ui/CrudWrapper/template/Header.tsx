@@ -1,19 +1,24 @@
 import { generateDeleteString } from '@src/libs/utils/genDeleteString';
 import { queryAll } from '@src/libs/utils/gql';
 import _ from 'lodash';
-import { observer } from 'mobx-react-lite';
+import { observer, useObservable } from 'mobx-react-lite';
 import { ActionButton } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { columnDefs } from '..';
 import { Text } from '../..';
 import saveForm from '../utils/saveForm';
+import Spinner from '../../Spinner';
 
-export default observer(({ parsed, mode, form, setForm, colDef, setErrors, errors, structure, setLoading, setMode, auth, idKey, reload, style, hasRelation }: any) => {
+export default observer(({ parsed, mode, form, getForm, setForm, colDef, setErrors, errors, structure, setLoading, setMode, auth, idKey, reload, style, hasRelation }: any) => {
     const title = _.get(parsed, 'title.children');
     let actions = _.get(parsed, 'actions.children', []);
     if (!_.find(actions, { props: { type: 'cancel' } })) {
         actions.push({ props: { type: 'cancel' } });
     }
+    const meta = useObservable({
+        loading: false,
+    })
+
     actions = actions.map(e => {
         switch (e.props.type) {
             case "create":
@@ -92,6 +97,7 @@ export default observer(({ parsed, mode, form, setForm, colDef, setErrors, error
                         primary: true,
                         iconProps: { iconName: 'Save' },
                         onClick: () => {
+                            const form = getForm();
                             // validate form
                             const cdef: any = {};
                             columnDefs[structure.name].forEach(e => {
@@ -117,7 +123,12 @@ export default observer(({ parsed, mode, form, setForm, colDef, setErrors, error
                                 }
                             }
                             if (Object.keys(newerrs).length === 0) {
-                                saveForm({ mode, form, structure, setLoading, setMode, auth, idKey, reload, hasRelation })
+                                saveForm({
+                                    mode, form, structure, setLoading: (v) => {
+                                        setLoading(v);
+                                        meta.loading = v;
+                                    }, setMode, auth, idKey, reload, hasRelation
+                                })
                                 setErrors({});
                             }
 
@@ -165,12 +176,16 @@ export default observer(({ parsed, mode, form, setForm, colDef, setErrors, error
             <Text style={{ padding: 10, fontSize: 21, fontWeight: 200 }}>{title}</Text>
         </div>
         <div>
-            {actions.filter(e => e.key !== 'cancel').map(e => <ActionButton
-                text={e.text}
-                key={e.key}
-                iconProps={e.iconProps}
-                onClick={e.onClick}
-            />)}
+            {
+                meta.loading
+                    ? <Spinner style={{ marginRight: 25 }} />
+                    : actions.filter(e => e.key !== 'cancel').map(e => <ActionButton
+                        text={e.text}
+                        key={e.key}
+                        iconProps={e.iconProps}
+                        onClick={e.onClick}
+                    />)
+            }
         </div>
     </div>;
 })
