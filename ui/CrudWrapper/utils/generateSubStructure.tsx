@@ -100,6 +100,8 @@ export default (metasub, rel, structure, data) => {
                 }
             },
             form: (mode) => {
+                console.log(mode, toJS(fcols));
+                return null;
                 return <Form>{
                     fcols.map((e, idx) => {
                         return <Field key={idx} path={e.name} label={_.startCase(e.name)}

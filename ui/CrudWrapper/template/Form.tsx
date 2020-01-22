@@ -9,34 +9,45 @@ import Form from '../../Form';
 import generateSubStructure from '../utils/generateSubStructure';
 import Base from './Base';
 import SelectFk from './fields/SelectFk';
-import { toJS } from 'mobx';
+import { toJS, observe } from 'mobx';
 
-export default observer(({ structure, errors, form, data, mode, colDef, auth, parsed, fkeys, setHasRelation }: any) => {
+export default observer((props: any) => {
+    const { structure, form, mode, colDef, auth, inmeta } = props;
+    const { errors, fkeys } = inmeta;
+    const data = inmeta.form;
     const meta = useObservable({
         size: localStorage['cactiva-app-split-size'] || '200',
-        subs: {}
+        subs: {},
+        resizing: false,
+        resizeTimer: 0 as any
     })
 
-    if (typeof form !== 'function') return null;
 
+    if (typeof form !== 'function') return null;
     const parsedForm = form(mode);
     const fields = processFields(parsedForm, structure, colDef, fkeys, auth, errors, meta, data);
     const relationKeys = Object.keys(fields.relations);
-    if (setHasRelation) {
-        setHasRelation(relationKeys.length > 0)
-    }
+    React.useEffect(() => {
+        if (inmeta.hasRelation === undefined) {
+            inmeta.hasRelation = relationKeys.length > 0
+        }
+    }, [])
+    if (inmeta.hasRelation === undefined) return null;
+
     const formEl = <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, padding: 10, overflow: 'auto' }}>
-        <Form data={data} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-            {fields.columns.map((e, idx) => {
-                return <Field key={idx} {...e.props}
-                    styles={{
-                        root: {
-                            width: '32%',
-                            marginRight: '10px'
-                        }
-                    }} />;
-            })}
-        </Form>
+        {meta.resizing ? null :
+            <Form data={data} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                {fields.columns.map((e, idx) => {
+                    return <Field key={idx} {...e.props}
+                        styles={{
+                            root: {
+                                width: '32%',
+                                marginRight: '10px'
+                            }
+                        }} />;
+                })}
+            </Form>
+        }
     </div>;
     return <div style={{ flex: 1, position: 'relative' }}>
         {(mode === 'create' || relationKeys.length === 0) ? formEl :
@@ -45,49 +56,58 @@ export default observer(({ structure, errors, form, data, mode, colDef, auth, pa
                 resizerStyle={{ borderTop: '3px double #ccc', cursor: 'row-resize', }}
                 primary="second"
                 onChange={size => {
+                    if (meta.resizeTimer) {
+                        clearTimeout(meta.resizeTimer);
+                    }
+                    meta.resizing = true;
                     meta.size = size.toString();
-                    localStorage.setItem('cactiva-app-split-size', size.toString())
+                    meta.resizeTimer = setTimeout(() => {
+                        meta.resizing = false
+                        localStorage.setItem('cactiva-app-split-size', meta.size)
+                    }, 300);
                 }}
                 size={meta.size + "px"}>
                 {formEl}
-                <Pivot
-                    className="base-form-sub"
-                    styles={{ itemContainer: { flex: 1, display: 'flex' }, }}
-                    style={{ display: 'flex', flex: 1, flexDirection: 'row', borderRight: '1px solid #ececeb', alignItems: 'stretch' }}>
-                    {
-                        relationKeys.map((e, key) => {
-                            const rel = fields.relations[e];
-                            const sub: any = rel.sub;
-                            if (!sub || (sub && !sub.parsed)) return null;
-                            return <PivotItem key={e}
-                                style={{
-                                    flex: 1,
-                                    display: 'flex',
-                                    flexDirection: 'column'
-                                }}
-                                headerText={rel.column.props.label}
-                                headerButtonProps={{
-                                    'data-order': key,
-                                    'data-title': rel.column.props.label
-                                }}
-                            >
-                                <Base
-                                    structure={sub.structure}
-                                    auth={auth}
-                                    parsed={{ ...sub.parsed, title: { children: sub.mode === '' ? '' : sub.parsed.title.children } }}
-                                    mode={sub.mode}
-                                    style={{ flexDirection: sub.mode === '' ? 'column' : 'row' }}
-                                    headerStyle={sub.mode === '' ? {
-                                        position: 'absolute',
-                                        right: 10,
-                                        top: -5
-                                    } : { flexDirection: 'column', height: '100%', justifyContent: 'flex-start' }}
-                                    setMode={sub.setMode}
-                                />
-                            </PivotItem>
-                        })
-                    }
-                </Pivot>
+                {meta.resizing ? <div></div> :
+                    <Pivot
+                        className="base-form-sub"
+                        styles={{ itemContainer: { flex: 1, display: 'flex' }, }}
+                        style={{ display: 'flex', flex: 1, flexDirection: 'row', borderRight: '1px solid #ececeb', alignItems: 'stretch' }}>
+                        {
+                            relationKeys.map((e, key) => {
+                                const rel = fields.relations[e];
+                                const sub: any = rel.sub;
+                                if (!sub || (sub && !sub.parsed)) return null;
+                                return <PivotItem key={e}
+                                    style={{
+                                        flex: 1,
+                                        display: 'flex',
+                                        flexDirection: 'column'
+                                    }}
+                                    headerText={rel.column.props.label}
+                                    headerButtonProps={{
+                                        'data-order': key,
+                                        'data-title': rel.column.props.label
+                                    }}
+                                >
+                                    <Base
+                                        structure={sub.structure}
+                                        auth={auth}
+                                        parsed={{ ...sub.parsed, title: { children: sub.mode === '' ? '' : sub.parsed.title.children } }}
+                                        mode={sub.mode}
+                                        style={{ flexDirection: sub.mode === '' ? 'column' : 'row' }}
+                                        headerStyle={sub.mode === '' ? {
+                                            position: 'absolute',
+                                            right: 10,
+                                            top: -5
+                                        } : { flexDirection: 'column', height: '100%', justifyContent: 'flex-start' }}
+                                        setMode={sub.setMode}
+                                    />
+                                </PivotItem>
+                            })
+                        }
+                    </Pivot>
+                }
             </SplitPane>
         }
     </div >;
@@ -98,7 +118,7 @@ const processFields = (parsedForm: any, structure, colDef, fkeys, auth, errors, 
     const hidden: any = [];
 
     const keys = {};
-    let columns = _.cloneDeep(_.get(parsedForm, "props.children",[]));
+    let columns = _.cloneDeep(_.get(parsedForm, "props.children", []));
     if (!Array.isArray(columns)) {
         columns = [columns];
     }
@@ -232,6 +252,8 @@ const processFields = (parsedForm: any, structure, colDef, fkeys, auth, errors, 
                     case "date":
                         children = <DateField />
                         break;
+                    default:
+                        children = <Input type="text" />;
                 }
             }
         }
@@ -240,7 +262,7 @@ const processFields = (parsedForm: any, structure, colDef, fkeys, auth, errors, 
         return {
             props: {
                 ...e.props,
-                required,
+                isRequired: required,
                 errorMessage: errors[e.props.path],
                 label,
                 children

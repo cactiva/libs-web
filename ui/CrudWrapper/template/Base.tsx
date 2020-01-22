@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { observer, useObservable } from 'mobx-react-lite';
-import React from 'react';
+import React, { useEffect } from 'react';
 import useAsyncEffect from 'use-async-effect';
 import { columnDefs } from '..';
 import reloadList from '../utils/reloadList';
@@ -8,12 +8,13 @@ import reloadStructure from '../utils/reloadStructure';
 import Form from './Form';
 import Header from './Header';
 import List from './List';
-import { toJS } from 'mobx';
+import { toJS, observe } from 'mobx';
 import { Spinner, Label, SpinnerSize } from 'office-ui-fabric-react';
 import Loading from './Loading';
+import { deepObserve } from "mobx-utils"
 
-
-export default observer(({ parsed, mode, setMode, afterQuery, structure, auth, idKey, renderHeader, style, headerStyle }: any) => {
+export default observer((props: any) => {
+    const { parsed, mode, setMode, afterQuery, structure, auth, idKey, renderHeader, style, headerStyle } = props;
     const { table, form } = parsed;
 
     const meta = useObservable({
@@ -27,7 +28,7 @@ export default observer(({ parsed, mode, setMode, afterQuery, structure, auth, i
             current: 0,
         },
         loading: false,
-        hasRelation: false,
+        hasRelation: undefined,
         loadingInitText: '',
         fkeys: structure.fkeys,
         form: {},
@@ -56,16 +57,15 @@ export default observer(({ parsed, mode, setMode, afterQuery, structure, auth, i
         if (meta.list && meta.list.length === 0) {
             reload()
         }
-    }, [structure]);
+    }, []);
 
-    const colDef:any = {};
-    meta.colDefs.map((e:any) => {
+    const colDef: any = {};
+    meta.colDefs.map((e: any) => {
         colDef[e.column_name] = e;
     })
     if (Object.keys(colDef).length === 0 || !meta.fkeys) {
         return <Loading text={meta.loadingInitText} />;
     }
-
 
     const header = <Header
         structure={structure}
@@ -85,7 +85,6 @@ export default observer(({ parsed, mode, setMode, afterQuery, structure, auth, i
         setMode={setMode} />;
 
     const scroll = meta.listScroll;
-    const setScroll = (v) => { meta.listScroll = v; };
     const list = meta.list;
     return <div style={{ display: "flex", flexDirection: 'column', flex: 1, ...style }}>
         {renderHeader
@@ -105,16 +104,15 @@ export default observer(({ parsed, mode, setMode, afterQuery, structure, auth, i
                 auth={auth}
                 colDef={colDef}
                 scroll={scroll}
-                setScroll={setScroll}
+                setScroll={(v) => { meta.listScroll = v; }}
                 fkeys={meta.fkeys} />
             : <Form
                 form={form}
                 colDef={colDef}
                 parsed={parsed}
                 structure={structure}
-                fkeys={meta.fkeys}
-                data={meta.form}
-                errors={meta.errors}
+                hasRelation={meta.hasRelation}
+                inmeta={meta}
                 setHasRelation={(v) => meta.hasRelation = v}
                 mode={mode} />
         }

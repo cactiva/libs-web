@@ -9,7 +9,9 @@ export default observer((iprops: any) => {
     if (props.children) {
         delete props.children;
     }
-
+    if (!props.value) {
+        props.value = '';
+    }
     if (props.setValue) {
         props.onChange = (e:any) => {
             props.setValue(e.target.value)
