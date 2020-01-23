@@ -64,6 +64,7 @@ export const formatRelationLabel = (keys, e, colDef?) => {
 }
 
 const formatSingleString = (e, f, cdef) => {
+    if (!e) return '';
     if (typeof e[f] === 'object' && e[f] !== null) {
         const kef = Object.keys(e[f]);
         return kef.map(k => {

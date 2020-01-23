@@ -9,7 +9,8 @@ import Filter from './filter';
 import { toJS } from 'mobx';
 import { observer, useObservable } from 'mobx-react-lite';
 import useAsyncEffect from 'use-async-effect';
-
+import { useTable } from 'react-table';
+import ListTable from './list/ListTable';
 export default observer(({ table, reload, setForm, setScroll, scroll, list, auth, filter, colDef, fkeys, setMode, structure }: any) => {
     const meta = useObservable({
         columns: [],
@@ -19,28 +20,25 @@ export default observer(({ table, reload, setForm, setScroll, scroll, list, auth
     }, [structure]);
 
     const columns = meta.columns;
-    const dref = React.useRef(null);
-    React.useEffect(() => {
-        const el = _.get(dref, 'current._root.current');
-        if (el) {
-            const grid = el.children[0];
-            grid.scrollTop = scroll.top;
-            grid.scrollLeft = scroll.left;
-            grid.onscroll = (e) => {
-                e.target.children[0].style.top = e.target.scrollTop + 'px';
-                setScroll({
-                    top: e.target.scrollTop,
-                    left: e.target.scrollLeft
-                })
+    const rtData = React.useMemo(() => toJS(list), [list])
+    const rtColumns = React.useMemo(() => columns.map((e: any) => {
+        if (!e) return false;
+        return {
+            Header: e.name || '',
+            accessor: e.key || '',
+            Cell: (item) => {
+                if (!item.row.values) return null;
+                return e.onRender(item.row.values);
             }
         }
-    }, [dref.current])
+    }).filter(e => !!e), [columns])
 
-    if (Object.keys(colDef).length === 0) {
+    if (Object.keys(colDef).length === 0 || columns.length == 0) {
         return <div style={{ width: 150, height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Spinner />
         </div>;
     }
+
 
     return <>
         <Filter
@@ -53,41 +51,12 @@ export default observer(({ table, reload, setForm, setScroll, scroll, list, auth
             fkeys={fkeys} />
         <div style={{ flex: 1, position: 'relative', display: 'flex' }}>
             <div className="base-list">
-                <DetailsList
-                    componentRef={dref}
-                    selectionMode={SelectionMode.single}
-                    items={list || []}
-                    onItemInvoked={(e) => {
-                        setForm(toJS(e));
-                        setMode('edit');
-                    }}
-                    onShouldVirtualize={(e: any) => {
-                        return true;
-                    }}
-                    onRenderDetailsHeader={(detailsHeaderProps?: IDetailsHeaderProps, defaultRender?: IRenderFunction<IDetailsHeaderProps>) => {
-                        return (
-                            defaultRender ? defaultRender(detailsHeaderProps) : <div></div>
-                        )
-                    }}
-                    onRenderRow={(detailsRowProps?: IDetailsRowProps, defaultRender?: IRenderFunction<IDetailsRowProps>) => (
-                        <>
-                            <div onClick={() => {
-                                if (detailsRowProps) {
-                                    setForm(toJS(detailsRowProps.item));
-                                    setMode('edit');
-                                }
-                            }}>
-                                {defaultRender && defaultRender(detailsRowProps)}
-                            </div>
-                        </>
-                    )}
-                    layoutMode={DetailsListLayoutMode.fixedColumns}
-                    onRenderCheckbox={() => { return null; }}
-                    columns={columns} />
+                <ListTable columns={rtColumns} data={rtData} scroll={scroll} setScroll={setScroll} />
             </div>
         </div>
     </>;
 });
+
 
 const generateColumns = (structure, table, colDef, fkeys) => {
     const keys = {};
@@ -175,6 +144,7 @@ const generateColumns = (structure, table, colDef, fkeys) => {
                 }
             }
         }
+
         return {
             key: e.path,
             name: e.title,
@@ -199,7 +169,9 @@ const generateColumns = (structure, table, colDef, fkeys) => {
                         valueEl = formatValue(item[alias]);
                     }
                 } else if (cdef) {
-                    if (cdef.data_type.indexOf('numeric') >= 0) {
+                    if (cdef.data_type.indexOf('numeric') >= 0 ||
+                        cdef.data_type.indexOf('double precision') >= 0 ||
+                        cdef.data_type.indexOf('decimal') >= 0) {
                         valueEl = formatMoney(value);
                     } else if (cdef.data_type.indexOf('timestamp') >= 0 || cdef.data_type === 'date') {
                         valueEl = dateFormat(value);
@@ -209,6 +181,8 @@ const generateColumns = (structure, table, colDef, fkeys) => {
                 } else {
                     return formatValue(value);
                 }
+
+                console.log(e.path, toJS(cdef), value)
 
                 return valueEl;
             }

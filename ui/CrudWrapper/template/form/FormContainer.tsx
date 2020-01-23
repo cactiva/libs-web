@@ -14,7 +14,9 @@ export default observer(({ mode, fields, formRef, data, auth }: any) => {
     })
     const rels = Object.keys(fields.relations);
     return (mode === 'create' || rels.length === 0)
-        ? <FormBody data={data} fields={fields} formRef={formRef} />
+        ? <div style={{ padding: 10 }}>
+            <FormBody data={data} fields={fields} formRef={formRef} />
+        </div>
         : <SplitPane
             split="horizontal"
             resizerStyle={{ borderTop: '3px double #ccc', cursor: 'row-resize', }}
