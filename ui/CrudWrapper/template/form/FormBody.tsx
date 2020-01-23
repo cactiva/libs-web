@@ -21,8 +21,6 @@ export default observer(({ data, errors, fields, formRef }: any) => {
         }
     })
 
-
-    console.log(sections);
     const renderField = (e, idx, isSection = false) => {
         if (!isSection && e.props.section) return null;
         const Field = e.children.type;
@@ -57,10 +55,11 @@ export default observer(({ data, errors, fields, formRef }: any) => {
                 marginBottom: '30px'
             }}>
                 <Label style={{
-                    fontSize: 24,
+                    fontSize: 18,
                     paddingLeft: 5,
                     fontWeight: 300,
-                    borderBottom: '1px solid #aaa',
+                    color: '#777',
+                    borderBottom: '1px solid #ccc',
                     marginBottom: '5px'
                 }}>
                     {key}
@@ -75,7 +74,7 @@ export default observer(({ data, errors, fields, formRef }: any) => {
         })}
 
         {sectionKeys.length > 0 && <div style={{
-            borderBottom: '1px solid #ececeb',
+            borderBottom: '1px solid #ccc',
             width: '100%',
             marginTop: '20px',
             marginBottom: '20px'

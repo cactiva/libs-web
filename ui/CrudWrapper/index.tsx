@@ -15,6 +15,7 @@ interface ICrudWrapper {
     afterQuery?: (list: any[]) => void
     onChange?: (e:any) => void
     style?:any
+    generateForm?: 'auto' | 'manual'
     children: any
 }
 
@@ -38,5 +39,6 @@ export default observer((props: ICrudWrapper) => {
         parsed={parsed}
         mode={meta.front.mode}
         afterQuery={afterQuery}
+        generateForm={props.generateForm || 'auto'}
         setMode={(newmode) => meta.front.mode = newmode} />;
 })

@@ -5,7 +5,7 @@ import FormContainer from './form/FormContainer';
 import { generateFormField } from './form/utils/generateFormField';
 
 export default observer((props: any) => {
-    const { structure, form, mode, colDef, auth, inmeta, formRef } = props;
+    const { structure, form, mode, colDef, auth, inmeta, formRef, generateForm } = props;
     const { errors, fkeys } = inmeta;
     const data = inmeta.form;
     const meta = useObservable({
@@ -18,7 +18,7 @@ export default observer((props: any) => {
     React.useEffect(() => {
         if (typeof form === 'function' && !meta.fields) {
             const parsedForm = form(mode);
-            meta.fields = generateFormField(parsedForm, structure, colDef, fkeys, auth, errors, meta, data);
+            meta.fields = generateFormField(parsedForm, structure, colDef, fkeys, auth, errors, meta, data, generateForm);
             if (inmeta.hasRelation === undefined) {
                 inmeta.hasRelation = Object.keys(meta.fields.relations).length > 0
             }

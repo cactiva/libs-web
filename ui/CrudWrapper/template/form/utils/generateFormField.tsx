@@ -5,7 +5,7 @@ import DateField from '../../../../DateField';
 import generateSubStructure from './generateSubStructure';
 import SelectFk from '../../fields/SelectFk';
 
-export const generateFormField = (parsedForm: any, structure, colDef, fkeys, auth, errors, meta, data) => {
+export const generateFormField = (parsedForm: any, structure, colDef, fkeys, auth, errors, meta, data, generateForm) => {
     const relations = {};
     const hidden: any = [];
 
@@ -21,7 +21,7 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
     _.map(colDef, (e, k) => {
         if (e.is_nullable === 'NO' && !e.column_default && k !== 'id' && !ovrd[k]) {
             const col = _.find(columns, { props: { path: k } });
-            if (!col) {
+            if (!col && generateForm === 'auto') {
                 let label = _.startCase(k);
                 if (label.indexOf('Id') === 0) label = label.substr(3);
                 columns.push(<Field path={k} label={label}><Input /></Field>)

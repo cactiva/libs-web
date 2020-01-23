@@ -11,7 +11,7 @@ import List from './List';
 import Loading from './Loading';
 
 export default observer((props: any) => {
-    const { parsed, mode, setMode, afterQuery, structure, auth, idKey, renderHeader, style, headerStyle } = props;
+    const { parsed, mode, setMode, afterQuery, structure, generateForm, auth, idKey, renderHeader, style, headerStyle } = props;
     const { table, form } = parsed;
     const meta = useObservable({
         list: [],
@@ -112,6 +112,7 @@ export default observer((props: any) => {
             : <Form
                 form={form}
                 colDef={colDef}
+                generateForm={generateForm}
                 parsed={parsed}
                 structure={structure}
                 hasRelation={meta.hasRelation}
