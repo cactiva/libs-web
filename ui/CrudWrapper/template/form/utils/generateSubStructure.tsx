@@ -28,7 +28,7 @@ export default (rel, structure, data) => {
     }
 
     const options = _.get(rel, 'options', {});
-    const id = undefined && idata[relfk.foreign_column_name];
+    const id = idata[relfk.foreign_column_name];
     const fields = _.get(_.find(_.get(istructure, `fields`, []), { name: relpath }), 'fields', []);
     const table = _.get(rel, 'column.props.table', {});
     let tcols = (fields).filter(t => {
@@ -99,8 +99,6 @@ export default (rel, structure, data) => {
                 }
             },
             form: (mode) => {
-                console.log(mode, toJS(fcols));
-                return null;
                 return <Form>{
                     fcols.map((e, idx) => {
                         return <Field key={idx} path={e.name} label={_.startCase(e.name)}

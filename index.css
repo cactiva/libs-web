@@ -1,5 +1,4 @@
 .base-list {
-  background: red;
   display: flex;
   flex: 1;
 }
@@ -11,6 +10,13 @@
   flex: 1;
   flex-direction: column;
   position: relative;
+}
+
+.base-list .ms-DetailsList-headerWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
 }
 
 .base-list .ms-DetailsList-headerWrapper > div {
@@ -27,6 +33,7 @@
   display: flex;
   min-width: auto;
   overflow: scroll;
+  padding-top: 45px;
 }
 
 .base-form-sub > .ms-FocusZone {
@@ -34,14 +41,14 @@
 }
 
 .base-form-sub > .ms-FocusZone > .ms-Pivot {
-  display:flex;
-  flex-direction:column;
+  display: flex;
+  flex-direction: column;
 }
 .base-form-sub > .ms-FocusZone .ms-Button {
   margin-right: 0;
   border-bottom: 1px solid #ececeb;
-  text-align:left;
-  padding-left:15px;
+  text-align: left;
+  padding-left: 15px;
 }
 .base-form-sub > .ms-FocusZone .ms-Button::before {
   left: 0;

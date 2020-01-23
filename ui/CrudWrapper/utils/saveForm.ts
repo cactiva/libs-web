@@ -39,7 +39,6 @@ export default async ({ mode, reload, form, structure, setLoading, setMode, auth
                     }
                 ]
             });
-
             setLoading(true);
             await queryAll(q.query, { variables: q.variables, auth });
             setMode('');

@@ -10,7 +10,9 @@ export const dateParse = (value: any) => {
 };
 export const dateFormat = (value: any, format?: string) => {
   const locale = "en";
-  const inputFormat = format ? format : "dd MMM yyyy - HH:mm";
+  const inputFormat = format
+    ? (format === 'sql' ? 'yyyy-MM-dd HH:mm:ss' : format)
+    : "dd MMM yyyy - HH:mm";
   if (typeof value === "string") {
     return formatFNS(parseISO(value), inputFormat, {
       locale: locale === "en" ? enUS : id

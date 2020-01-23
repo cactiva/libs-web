@@ -8,6 +8,7 @@ import { columnDefs } from '..';
 import { Text } from '../..';
 import saveForm from '../utils/saveForm';
 import Spinner from '../../Spinner';
+import { toJS } from 'mobx';
 
 export default observer(({ parsed, mode, form, getForm, setForm, colDef, structure, setLoading, setMode, auth, idKey, reload, style, hasRelation }: any) => {
     const title = _.get(parsed, 'title.children');
@@ -99,7 +100,6 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
                             const form = rawForm.data;
                             const errors = rawForm.errors;
                             const setErrors = (v) => rawForm.errors = v;
-                            
                             // validate form
                             const cdef: any = {};
                             columnDefs[structure.name].forEach(e => {

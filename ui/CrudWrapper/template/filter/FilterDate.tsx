@@ -5,17 +5,17 @@ import { DatePicker, Dropdown, Label } from 'office-ui-fabric-react';
 import { dateFormat } from '@src/libs/utils/date';
 import Monthly from './Date/Monthly';
 import _ from 'lodash';
+import { DateTime } from '@src/libs/ui';
 
 export default observer(({ label, field, value, setValue, operator, setOperator, onlyBetween, submit }: any) => {
     let op = operator || 'date';
-    const ops = onlyBetween ? ['monthly'] : ['date', 'monthly'];
+    const ops = onlyBetween ? ['monthly'] : ['date', 'datetime', 'monthly'];
     const opsItems = ops.map(r => {
         return {
             key: r,
             text: _.startCase(r)
         }
     })
-
     return <ItemButton
         label={<Dropdown
             styles={{
@@ -34,17 +34,20 @@ export default observer(({ label, field, value, setValue, operator, setOperator,
                 }
             }}
             onRenderTitle={() => {
-                return <div style={{}}>
-                    <Label style={{ fontWeight: 'normal', fontSize: 14, marginTop: -5 }}>{`${label}:`}</Label>
+                return <div>
+                    <Label style={{
+                        fontWeight: 'normal',
+                        fontSize: 14,
+                        marginTop: -5
+                    }}>{`${label}:`}</Label>
                 </div>;
             }}
             selectedKey={op}
-            options={opsItems} onChange={(e, item: any) => {
+            options={opsItems}
+            onChange={(e, item: any) => {
                 setOperator(item.key);
-                if (item.key === 'date') {
-                    if (value && value.from) {
-                        setValue(value.from);
-                    }
+                if (item.key === 'date' || item.key === 'datetime') {
+                    setValue(undefined);
                     submit();
                 }
             }} />}
@@ -56,12 +59,23 @@ export default observer(({ label, field, value, setValue, operator, setOperator,
             monthly: (
                 <Monthly value={value} setValue={setValue} submit={submit} />
             ),
+            datetime: (
+                value instanceof Date ? dateFormat(value) : (typeof value === 'object' && value.from) ? dateFormat(value.from, "dd MMM yyyy") : undefined
+            ),
             date: (
                 value instanceof Date ? dateFormat(value, "dd MMM yyyy") : (typeof value === 'object' && value.from) ? dateFormat(value.from, "dd MMM yyyy") : undefined
             )
         } as any)[op]}>
         {({
             monthly: null,
+            datetime: (
+                <DateTime
+                    value={value instanceof Date ? value : (typeof value === 'object' && value.from) ? value.from : undefined}
+                    onChange={(e: any) => {
+                        setValue(e);
+                        submit();
+                    }}
+                    styles={{ root: { padding: 10 } }} />),
             date: (
                 <DatePicker
                     value={value instanceof Date ? value : (typeof value === 'object' && value.from) ? value.from : undefined}

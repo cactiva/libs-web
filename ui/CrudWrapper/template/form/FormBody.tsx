@@ -21,7 +21,6 @@ export default observer(({ data, errors, fields, formRef }: any) => {
         <div
             style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
 
-
             {fields.columns.map((e, idx) => {
                 const Field = e.children.type;
                 return <Field

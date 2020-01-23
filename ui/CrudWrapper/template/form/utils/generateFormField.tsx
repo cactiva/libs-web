@@ -134,8 +134,6 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                         children = <Input type="number" />;
                         break;
                     case "numeric": // money
-                        children = <Input type="money" />;
-                        break;
                     case "double precision":
                     case "decimal":
                         children = <Input type="money" />;

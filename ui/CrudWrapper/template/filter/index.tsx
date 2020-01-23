@@ -5,7 +5,6 @@ import React, { useEffect, useRef } from 'react';
 import { argsApplyFilter } from '../../utils/argsApplyFilter';
 import FilterBoolean from './FilterBoolean';
 import FilterDate from './FilterDate';
-import FilterDateTime from './FilterDateTime';
 import FilterDecimal from './FilterDecimal';
 import FilterInteger from './FilterInteger';
 import FilterMoney from './FilterMoney';
@@ -159,10 +158,16 @@ export default observer((props: any) => {
                             label={e.name} />
                     case "timestamp without time zone":
                     case "timestamp with time zone":
-                        return <FilterDateTime
+                        return <FilterDate
                             setValue={setValue}
                             submit={submit}
                             key={key}
+                            operator={'datetime'}
+                            setOperator={(op) => {
+                                _.set(e, 'filter.type', 'date');
+                                _.set(e, 'filter.operator', op);
+                            }}
+                            onlyBetween={_.get(e, 'filter.onlyBetween')}
                             value={value}
                             label={e.name} />
                     case "boolean":

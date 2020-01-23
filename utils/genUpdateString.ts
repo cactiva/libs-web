@@ -1,5 +1,6 @@
 import { ITable, genFields, genWhere, ITableWhere } from "./genQueryString";
 import _ from 'lodash';
+import { dateFormat } from "./date";
 
 export const generateUpdateString = (table: ITable, data: any, options: {
     where: ITableWhere[],
@@ -13,6 +14,10 @@ export const generateUpdateString = (table: ITable, data: any, options: {
         const d: any = data[key];
         if (typeof d !== 'object') {
             dataWithoutChildren[key] = d;
+        } else {
+            if (d instanceof Date) {
+                dataWithoutChildren[key] = dateFormat(d, 'sql');
+            }
         }
     })
     return {
