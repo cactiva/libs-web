@@ -39,6 +39,7 @@ export default (rel, structure, data) => {
         table.addColumns.forEach(r => {
             const col = {
                 name: r.path,
+                title: r.title,
                 content: r.content
             }
 
