@@ -24,7 +24,7 @@ export default observer((props: any) => {
             }
         }
     }, []);
-    
+
     if (!meta.fields || inmeta.hasRelation === undefined || typeof form !== 'function') return null;
     return <div style={{ flex: 1, position: 'relative' }}>
         <FormContainer

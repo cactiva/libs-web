@@ -4,6 +4,8 @@ import { DateTime, Field, Input } from '../../../..';
 import DateField from '../../../../DateField';
 import generateSubStructure from './generateSubStructure';
 import SelectFk from '../../fields/SelectFk';
+import { toJS } from 'mobx';
+import pluralize from '@src/libs/utils/pluralize';
 
 export const generateFormField = (parsedForm: any, structure, colDef, fkeys, auth, errors, meta, data, generateForm) => {
     const relations = {};
@@ -29,10 +31,6 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
         }
     })
 
-    const sub1 = (str) => {
-        return str.substr(0, str.length - 1);
-    }
-
     const indexed = {};
     columns = columns.filter(e => {
         let fk: any = null;
@@ -47,12 +45,12 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                 if (i * 1 === 0) {
                     found = _.find(fkeys, { foreign_table_name: tname });
                     if (!found) {
-                        found = _.find(fkeys, { foreign_table_name: sub1(tname) });
+                        found = _.find(fkeys, { foreign_table_name: pluralize.singular(tname) });
                     }
                 } else {
                     let tfound = _.find(found, { table_name: tname });
                     if (!tfound) {
-                        tfound = _.find(found, { table_name: sub1(tname) });
+                        tfound = _.find(found, { table_name: pluralize.singular(tname) });
                     }
                     if (tfound)
                         found = tfound;
@@ -67,7 +65,7 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
             }
         } else {
             fk = fkeys[e.props.path];
-            if (!fk) fk = fkeys[sub1(e.props.path)];
+            if (!fk) fk = fkeys[pluralize.singular(e.props.path)];
         }
 
         if (fk) {
