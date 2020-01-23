@@ -98,6 +98,7 @@ export default observer((props: any) => {
                     const alias = e.relation.alias;
                     if (alias) {
                         let tablename = "";
+                        let relSetValue = setValue;
                         let key: any = [e.key];
                         if (!type && !fkeys[e.key] && e.relation && e.relation.alias) {
                             key = e.relation.alias;
@@ -105,10 +106,19 @@ export default observer((props: any) => {
 
                         if (fkeys[e.key]) {
                             tablename = fkeys[e.key].foreign_table_name;
+                        } else if (colDef[e.key] && colDef[e.key].fk) {
+                            tablename = colDef[e.key].fk.foreign_table_name;
+                            key = colDef[e.key].fk.column_name;
+                            relSetValue = (newvalue) => {
+                                if (!newvalue) {
+                                    delete filter.form[key];
+                                } else
+                                    filter.form[key] = newvalue;
+                            }
                         }
 
                         return <FilterRelation
-                            setValue={setValue}
+                            setValue={relSetValue}
                             submit={submit}
                             value={filter.form[key]}
                             key={key}
