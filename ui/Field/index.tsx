@@ -9,7 +9,7 @@ interface IFieldProps {
         actions?: { type: string }[],
         relation?: {
             query: string,
-            label: (item:any) => string
+            label: (item:any) => string | Promise<string>
         },
         table?: {
             addColumns?: {
