@@ -86,7 +86,7 @@ const formatSingleString = (e, f, cdef) => {
         }
     }
 
-    return e[f];
+    return e && e[f];
 }
 
 const getQuery = (props) => {
