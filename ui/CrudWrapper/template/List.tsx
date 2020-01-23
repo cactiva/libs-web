@@ -208,6 +208,11 @@ const generateColumns = (structure, table, colDef, fkeys) => {
             isResizable: !e.width ? true : false,
             columnActionsMode: ColumnActionsMode.disabled,
             onRender: (item: any) => {
+                if (typeof e.content === 'function') {
+                    return e.content(item);
+                }
+
+
                 const cdef = colDef[e.path];
                 const value = _.get(item, e.path);
                 let valueEl: any = null;

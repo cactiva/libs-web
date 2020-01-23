@@ -12,6 +12,10 @@
   position: relative;
 }
 
+.Pane.horizontal.Pane1 { 
+  min-height:30px;
+}
+
 .base-list .ms-DetailsList-headerWrapper {
   position: absolute;
   top: 0;
