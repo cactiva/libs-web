@@ -106,16 +106,15 @@ const loadSubFields = async (fields, fkeys, setLoading?) => {
                     setLoading(`Structure: ${_.upperCase(tname)}`)
                 }
                 await loadColDefs(tname);
-                
+
                 const columns = {};
                 toJS(columnDefs[tname]).forEach(e => {
                     columns[e.column_name] = e;
                 })
-                const result = { column_name: col.name, data_type: 'relations', columns };
+                const result = { column_name: col.name, data_type: 'relations', columns, fk };
                 if (col.fields) {
                     await Promise.all(col.fields.map(async subfield => {
                         if (subfield.fields) {
-
                             if (sfkeys[subfield.name]) {
                                 const subfkeys = await loadStructure(sfkeys[subfield.name].foreign_table_name, true, setLoading);
                                 result.columns[subfield.name] = (await loadSubFields([subfield], subfkeys))[0];

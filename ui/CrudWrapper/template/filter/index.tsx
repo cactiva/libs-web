@@ -5,7 +5,6 @@ import React, { useEffect, useRef } from 'react';
 import { argsApplyFilter } from '../../utils/argsApplyFilter';
 import FilterBoolean from './FilterBoolean';
 import FilterDate from './FilterDate';
-import FilterDateTime from './FilterDateTime';
 import FilterDecimal from './FilterDecimal';
 import FilterInteger from './FilterInteger';
 import FilterMoney from './FilterMoney';
@@ -99,6 +98,7 @@ export default observer((props: any) => {
                     const alias = e.relation.alias;
                     if (alias) {
                         let tablename = "";
+                        let relSetValue = setValue;
                         let key: any = [e.key];
                         if (!type && !fkeys[e.key] && e.relation && e.relation.alias) {
                             key = e.relation.alias;
@@ -106,10 +106,19 @@ export default observer((props: any) => {
 
                         if (fkeys[e.key]) {
                             tablename = fkeys[e.key].foreign_table_name;
+                        } else if (colDef[e.key] && colDef[e.key].fk) {
+                            tablename = colDef[e.key].fk.foreign_table_name;
+                            key = colDef[e.key].fk.column_name;
+                            relSetValue = (newvalue) => {
+                                if (!newvalue) {
+                                    delete filter.form[key];
+                                } else
+                                    filter.form[key] = newvalue;
+                            }
                         }
 
                         return <FilterRelation
-                            setValue={setValue}
+                            setValue={relSetValue}
                             submit={submit}
                             value={filter.form[key]}
                             key={key}
@@ -159,10 +168,16 @@ export default observer((props: any) => {
                             label={e.name} />
                     case "timestamp without time zone":
                     case "timestamp with time zone":
-                        return <FilterDateTime
+                        return <FilterDate
                             setValue={setValue}
                             submit={submit}
                             key={key}
+                            operator={'datetime'}
+                            setOperator={(op) => {
+                                _.set(e, 'filter.type', 'date');
+                                _.set(e, 'filter.operator', op);
+                            }}
+                            onlyBetween={_.get(e, 'filter.onlyBetween')}
                             value={value}
                             label={e.name} />
                     case "boolean":

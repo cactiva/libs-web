@@ -41,6 +41,7 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
     const args = {};
     if (filter && filter.form) {
         const colDef = _.get(columnDefs, `${structure.name}`);
+
         for (let i in filter.form) {
             let value = filter.form[i];
             let operator = "";
@@ -193,6 +194,7 @@ export default async (opt: { structure: any, paging: any, filter: any, idKey: st
             offset: (currentPage - 1) * paging.itemPerPage
         }
     });
+
 
     const res = await queryAll(query, { auth: structure.auth });
 

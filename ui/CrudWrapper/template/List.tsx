@@ -1,7 +1,7 @@
 import { formatMoney } from '@src/libs/utils';
 import { dateFormat } from '@src/libs/utils/date';
 import _ from 'lodash';
-import { ColumnActionsMode, DetailsList, DetailsListLayoutMode, IDetailsHeaderProps, IDetailsRowProps, IRenderFunction, SelectionMode, Spinner } from 'office-ui-fabric-react';
+import { ColumnActionsMode, DetailsList, DetailsListLayoutMode, IDetailsHeaderProps, IDetailsRowProps, IRenderFunction, SelectionMode, Spinner, ConstrainMode } from 'office-ui-fabric-react';
 import * as React from 'react';
 import NiceValue from '../../Field/NiceValue';
 import { formatRelationLabel } from './fields/SelectFk';
@@ -10,6 +10,8 @@ import { toJS } from 'mobx';
 import { observer, useObservable } from 'mobx-react-lite';
 import useAsyncEffect from 'use-async-effect';
 
+
+export const DEFAULT_COLUMN_WIDTH = 160;
 export default observer(({ table, reload, setForm, setScroll, scroll, list, auth, filter, colDef, fkeys, setMode, structure }: any) => {
     const meta = useObservable({
         columns: [],
@@ -26,12 +28,33 @@ export default observer(({ table, reload, setForm, setScroll, scroll, list, auth
             const grid = el.children[0];
             grid.scrollTop = scroll.top;
             grid.scrollLeft = scroll.left;
+
+            let trycount = 0;
+            let tryset: any = setInterval(() => {
+                grid.scrollTop = scroll.top;
+                grid.scrollLeft = scroll.left;
+                trycount++;
+
+                if (trycount > 100 || (scroll.top === grid.scrollTop && scroll.left === grid.scrollLeft))
+                    clearInterval(tryset);
+            }, 10);
+
             grid.onscroll = (e) => {
+                if (tryset) {
+                    clearInterval(tryset);
+                    tryset = undefined;
+                }
+                e.target.children[0].style.top = e.target.scrollTop + 'px';
                 setScroll({
                     top: e.target.scrollTop,
                     left: e.target.scrollLeft
                 })
             }
+
+
+
+
+
         }
     }, [dref.current])
 
@@ -53,6 +76,8 @@ export default observer(({ table, reload, setForm, setScroll, scroll, list, auth
         <div style={{ flex: 1, position: 'relative', display: 'flex' }}>
             <div className="base-list">
                 <DetailsList
+                    constrainMode={ConstrainMode.horizontalConstrained}
+                    disableSelectionZone={true}
                     componentRef={dref}
                     selectionMode={SelectionMode.single}
                     items={list || []}
@@ -61,7 +86,7 @@ export default observer(({ table, reload, setForm, setScroll, scroll, list, auth
                         setMode('edit');
                     }}
                     onShouldVirtualize={(e: any) => {
-                        return false;
+                        return true;
                     }}
                     onRenderDetailsHeader={(detailsHeaderProps?: IDetailsHeaderProps, defaultRender?: IRenderFunction<IDetailsHeaderProps>) => {
                         return (
@@ -179,7 +204,7 @@ const generateColumns = (structure, table, colDef, fkeys) => {
             name: e.title,
             relation: relation,
             filter: e.filter,
-            maxWidth: e.width || 200,
+            maxWidth: e.width || DEFAULT_COLUMN_WIDTH,
             isResizable: !e.width ? true : false,
             columnActionsMode: ColumnActionsMode.disabled,
             onRender: (item: any) => {
@@ -198,7 +223,9 @@ const generateColumns = (structure, table, colDef, fkeys) => {
                         valueEl = formatValue(item[alias]);
                     }
                 } else if (cdef) {
-                    if (cdef.data_type.indexOf('numeric') >= 0) {
+                    if (cdef.data_type.indexOf('numeric') >= 0
+                        || cdef.data_type.indexOf('double precision') >= 0
+                        || cdef.data_type.indexOf('decimal') >= 0) {
                         valueEl = formatMoney(value);
                     } else if (cdef.data_type.indexOf('timestamp') >= 0 || cdef.data_type === 'date') {
                         valueEl = dateFormat(value);

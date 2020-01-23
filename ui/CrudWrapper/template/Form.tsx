@@ -14,6 +14,7 @@ export default observer((props: any) => {
         fields: null as any,
         resizeTimer: 0 as any
     })
+
     React.useEffect(() => {
         if (typeof form === 'function' && !meta.fields) {
             const parsedForm = form(mode);
@@ -22,7 +23,8 @@ export default observer((props: any) => {
                 inmeta.hasRelation = Object.keys(meta.fields.relations).length > 0
             }
         }
-    }, [])
+    }, []);
+    
     if (!meta.fields || inmeta.hasRelation === undefined || typeof form !== 'function') return null;
     return <div style={{ flex: 1, position: 'relative' }}>
         <FormContainer

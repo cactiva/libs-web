@@ -19,7 +19,7 @@ export default observer(({ label, field, value, setValue, submit, tablename, aut
             if (relation.filter) {
                 if (relation.filter.table) {
                     tablename = relation.filter.table;
-                    q = `${tablename} { ${relation.filter.columns.join('\n')} }`;
+                    q = `query {  ${tablename} { ${relation.filter.columns.join('\n')} }}`;
                 } else if (relation.filter.query) {
                     q = relation.filter.query;
                 }
@@ -31,12 +31,12 @@ export default observer(({ label, field, value, setValue, submit, tablename, aut
                     col.fields.push({ name: 'id' });
                 }
 
-                q = struct2gql(col);
+                q = `query { ${struct2gql(col)} }`;
             }
-
-            const res = await queryAll(`query { ${q} }`, { auth });
+            const res = await queryAll(q, { auth });
             relationDatas[tablename] = res;
         }
+
 
         meta.list = relationDatas[tablename].map((e) => {
             let label = '';
@@ -62,7 +62,6 @@ export default observer(({ label, field, value, setValue, submit, tablename, aut
             }
         })
     }, [])
-
     const valueLabel = _.get(_.find(meta.list, { value }), "label");
     return <ItemButton
         label={label}
