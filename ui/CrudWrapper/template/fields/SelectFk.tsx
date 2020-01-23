@@ -120,12 +120,17 @@ const loadList = async (props) => {
     if (!queryIndex) { return; }
     if (!queryCache[queryIndex]) {
         const rawList = await queryAll(query, { auth });
-        queryCache[queryIndex] = rawList.map(e => {
+        queryCache[queryIndex] = await Promise.all(rawList.map(async e => {
             if (relation && relation.label) {
                 if (typeof relation.label === 'function') {
+                    let labelResult = relation.label(e);
+                    if (labelResult instanceof Promise) {
+                        labelResult = await labelResult;
+                    }
+                    
                     return {
                         value: relation.id ? e[relation.id] : e['id'],
-                        label: relation.label(e)
+                        label: labelResult
                     };
                 } else {
                     return {
@@ -155,7 +160,8 @@ const loadList = async (props) => {
                     label: e[lfield]
                 };
             }
-        });
+        }));
+        
     }
 
     return queryCache[queryIndex];
