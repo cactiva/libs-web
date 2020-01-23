@@ -118,7 +118,7 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                     children = <SelectFk
                         tablename={tablename}
                         labelField={e.props.labelField}
-                        relation={e.props.relation}
+                        relation={_.get(e, 'props.options.relation')}
                         auth={auth}
                         styles={{
                             container: {

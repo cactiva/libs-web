@@ -1,15 +1,16 @@
 import _ from 'lodash';
-import * as React from 'react';
-import Input from '../Input';
 import { observer, useObservable } from 'mobx-react-lite';
-import SelectFk from '../CrudWrapper/template/fields/SelectFk';
+import * as React from 'react';
 
 interface IFieldProps {
     label?: string
     path?: string
-    relation?: any
     options?: {
         actions?: { type: string }[],
+        relation?: {
+            query: string,
+            label: (item:any) => string
+        },
         table?: {
             addColumns?: {
                 path: string,
