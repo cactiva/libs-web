@@ -33,6 +33,20 @@ export default observer(({ table, reload, setForm, setScroll, scroll, list, auth
                     left: e.target.scrollLeft
                 })
             }
+
+
+            let trycount = 0;
+            const tryset = setInterval(() => {
+                grid.scrollTop = scroll.top;
+                grid.scrollLeft = scroll.left;
+                trycount++;
+
+                if (trycount > 100 || (scroll.top === grid.scrollTop && scroll.left === grid.scrollLeft))
+                    clearInterval(tryset);
+            }, 10);
+
+
+
         }
     }, [dref.current])
 
