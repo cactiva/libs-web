@@ -30,7 +30,7 @@ export default (rel, structure, data) => {
     const options = _.get(rel, 'options', {});
     const id = idata[relfk.foreign_column_name];
     const fields = _.get(_.find(_.get(istructure, `fields`, []), { name: relpath }), 'fields', []);
-    const table = options.table;
+    const table = options.table || {};
     let tcols = (fields).filter(t => {
         if (Array.isArray(table.removeColumns) && table.removeColumns.indexOf(t.name) >= 0) return false;
         return t.name !== 'id'
