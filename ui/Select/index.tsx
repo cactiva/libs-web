@@ -10,6 +10,7 @@ interface ISelectProps {
     label?: any,
     required?: any,
     errorMessage?: any,
+    placeholder?:string,
     items: (string | {
         value: string,
         label: string
