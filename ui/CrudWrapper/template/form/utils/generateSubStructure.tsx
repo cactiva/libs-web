@@ -30,11 +30,29 @@ export default (rel, structure, data) => {
     const options = _.get(rel, 'options', {});
     const id = idata[relfk.foreign_column_name];
     const fields = _.get(_.find(_.get(istructure, `fields`, []), { name: relpath }), 'fields', []);
-    const table = _.get(rel, 'column.props.table', {});
+    const table = options.table;
     let tcols = (fields).filter(t => {
-        if (Array.isArray(table.hide) && table.hide.indexOf(t.name) >= 0) return false;
+        if (Array.isArray(table.removeColumns) && table.removeColumns.indexOf(t.name) >= 0) return false;
         return t.name !== 'id'
     });
+    if (Array.isArray(table.addColumns)) {
+        table.addColumns.forEach(r => {
+            const col = {
+                name: r.path,
+                content: r.content
+            }
+
+            const pos = r.position || 'last';
+            if (pos === 'first') {
+                tcols.unshift(col);
+            } else if (pos === 'last') {
+                tcols.push(col);
+            } else if (typeof pos === 'number') {
+                tcols.splice(pos, 0, col);
+            }
+        })
+    }
+
     if (table.options) {
         tcols = tcols.map(t => {
             if (table.options[t.name]) {
@@ -88,11 +106,8 @@ export default (rel, structure, data) => {
                         return <TableColumn
                             path={t.name}
                             title={_.startCase(name)}
+                            content={t.content}
                             relation={t.relation} />
-                    })
-                }, row: {
-                    children: tcols.map(t => {
-                        return <TableColumn path={t.name} />
                     })
                 }, root: {
                     children: []

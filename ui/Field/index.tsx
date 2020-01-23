@@ -10,6 +10,15 @@ interface IFieldProps {
     relation?: any
     options?: {
         actions?: { type: string }[],
+        table?: {
+            addColumns?: {
+                path: string,
+                title: string,
+                content: (row:any) => React.ReactElement
+                position?: 'first' | 'last' | number
+            }[],
+            removeColumns?: string[]
+        },
         default?: {
             [key: string]: any
         }

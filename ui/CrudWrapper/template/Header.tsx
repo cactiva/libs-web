@@ -18,6 +18,7 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
     }
     const meta = useObservable({
         loading: false,
+        shouldRefresh: false
     })
 
     actions = actions.map(e => {
@@ -84,6 +85,9 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
                         iconProps: { iconName: 'ChevronLeft' },
                         onClick: () => {
                             setMode('');
+                            if (meta.shouldRefresh) {
+                                reload();
+                            }
                         }
                     }
                 }

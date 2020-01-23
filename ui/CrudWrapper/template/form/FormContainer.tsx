@@ -19,6 +19,7 @@ export default observer(({ mode, fields, formRef, data, auth }: any) => {
         </div>
         : <SplitPane
             split="horizontal"
+            maxSize={0}
             resizerStyle={{ borderTop: '3px double #ccc', cursor: 'row-resize', }}
             primary="second"
             onChange={size => {
