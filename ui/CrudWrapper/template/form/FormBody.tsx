@@ -22,7 +22,7 @@ export default observer(({ data, errors, fields, formRef }: any) => {
     })
 
     const renderField = (e, idx, isSection = false) => {
-        if (!isSection && e.props.section) return null;
+        if (isSection === false && e.props.section) return null;
         const Field = e.children.type;
         return <Field
             {...e.props}
@@ -68,7 +68,7 @@ export default observer(({ data, errors, fields, formRef }: any) => {
                     display: 'flex', flex: 1, flexDirection: 'row', flexWrap: 'wrap',
                     paddingLeft: '15px',
                 }}>
-                    {sections[key].map(renderField)}
+                    {sections[key].map((e, idx) => renderField(e, idx, true))}
                 </div>
             </div>
         })}
@@ -87,7 +87,7 @@ export default observer(({ data, errors, fields, formRef }: any) => {
                 paddingLeft: sectionKeys.length > 0 ? 15 : 0,
                 flexWrap: 'wrap'
             }}>
-            {fields.columns.map((e, idx) => renderField(e, idx, true))}
+            {fields.columns.map((e, idx) => renderField(e, idx, false))}
         </div>
         <div style={{ height: 300 }}> </div>
     </>
