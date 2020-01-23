@@ -27,6 +27,7 @@ interface IFieldProps {
     setValue?: any
     value?: any
     children?: any
+    section?: string
     styles?: any
     style?: any
     bypass?: boolean
