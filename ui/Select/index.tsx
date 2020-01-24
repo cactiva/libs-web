@@ -1,16 +1,18 @@
 import * as React from 'react';
 import { observer } from 'mobx-react-lite';
-import { ComboBox } from 'office-ui-fabric-react';
+import { ComboBox, IComboBoxStyles } from 'office-ui-fabric-react';
 import { toJS } from 'mobx';
 
 interface ISelectProps {
-    styles?: any,
+    style?: any
+    styles?: Partial<IComboBoxStyles>,
     selectedKey?: any,
     onChange?: any,
     label?: any,
     required?: any,
     errorMessage?: any,
-    placeholder?:string,
+    placeholder?: string,
+    className?: string,
     items: (string | {
         value: string,
         label: string

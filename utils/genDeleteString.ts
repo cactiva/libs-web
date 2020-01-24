@@ -11,9 +11,6 @@ export const generateDeleteString = (table: ITable, options: {
         query: `mutation Delete {
     delete_${table.name}(${where}) {
         affected_rows
-        ${_.get(options, 'returnData', true) ? `returning {
-${genFields(table, { showArgs: false, withFirstTable: false }, 2)}
-        }` : ''}
     }  
 }`
     };

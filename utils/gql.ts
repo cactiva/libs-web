@@ -1,6 +1,9 @@
 import api from "./api";
 import session from "@src/stores/session";
 import _ from "lodash";
+import { generateUpdateString } from "./genUpdateString";
+import { generateInsertString } from "./genInsertString";
+import { generateDeleteString } from "./genDeleteString";
 
 const config = require("../../settings.json");
 interface QueryOptions {
@@ -10,6 +13,7 @@ interface QueryOptions {
   headers?: any;
   auth?: boolean;
   raw?: boolean;
+  withChildren?: boolean;
 }
 
 export const queryAll = async (q: string, options?: QueryOptions) => {
@@ -63,8 +67,6 @@ export const queryAll = async (q: string, options?: QueryOptions) => {
       if (keys.length === 1) {
         return res.data[keys[0]];
       }
-
-
       return res.data;
     } else {
       if (options && options.onError) {
@@ -95,3 +97,56 @@ export const querySingle = async (q: string, options: QueryOptions = {}) => {
   }
   return res;
 };
+
+export const queryInsert = async (tablename: string, data: any, options?: QueryOptions) => {
+
+  const fields = _.map(data, (e, key) => { return { name: key } });
+  if (!_.find(fields, { name: 'id' })) {
+    fields.push({ name: 'id' });
+  }
+  const q = generateInsertString({
+    name: tablename,
+    fields
+  }, data, {
+    withChildren: _.get(options, 'withChildren')
+  });
+
+  const res = await queryAll(q.query, { ...options, variables: q.variables });
+  return res;
+}
+
+export const queryDelete = async (tablename: string, data: any, options?: QueryOptions) => {
+  const q = generateDeleteString({
+    name: tablename,
+    fields: _.map(data, (e, key) => { return { name: key } })
+  }, {
+    where: [
+      ..._.get(options, 'where', []), {
+        name: 'id',
+        operator: '_eq',
+        value: data['id'],
+        valueType: 'IntValue'
+      }]
+  });
+
+  return await queryAll(q.query, { ...options, raw: true });
+}
+
+export const queryUpdate = async (tablename: string, data: any, options?: QueryOptions) => {
+  const q = generateUpdateString({
+    name: tablename,
+    fields: _.map(data, (e, key) => { return { name: key } })
+  }, data, {
+    withChildren: _.get(options, 'withChildren'),
+    where: [
+      ..._.get(options, 'where', []), {
+        name: 'id',
+        operator: '_eq',
+        value: data['id'],
+        valueType: 'IntValue'
+      }]
+  });
+
+  const res = await queryAll(q.query, { ...options, variables: q.variables });
+  return res;
+}
