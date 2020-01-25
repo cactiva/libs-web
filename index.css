@@ -12,8 +12,8 @@
   position: relative;
 }
 
-.Pane.horizontal.Pane1 { 
-  min-height:30px;
+.Pane.horizontal.Pane1 {
+  min-height: 30px;
 }
 
 .base-list .ms-DetailsList-headerWrapper {
@@ -73,7 +73,20 @@
   border-width: 1px;
   border-style: solid;
   border-radius: 2px;
+  display: flex;
+  flex-direction: row;
+  padding-right: 0px;
 }
+
+.ms-ComboBox > input {
+  flex: 1;
+}
+.ms-ComboBox > button {
+  flex-basis: 30px;
+  border-radius: 0;
+  position: relative;
+}
+
 .ms-ComboBox::after {
   border-width: 0px;
 }

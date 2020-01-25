@@ -10,17 +10,18 @@ export const generateUpdateString = (table: ITable, data: any, options: {
 
     const where = genWhere(options.where) || `where: {}`;
 
-    const dataWithoutChildren: any = {};
+    const preparedData: any = {};
     Object.keys(data).map((key: any) => {
         const d: any = data[key];
         if (_.get(options, 'withChildren', false) || typeof d !== 'object') {
-            dataWithoutChildren[key] = d;
+            preparedData[key] = d;
         } else {
             if (d instanceof Date) {
-                dataWithoutChildren[key] = dateFormat(d, 'sql');
+                preparedData[key] = dateFormat(d, 'sql');
             }
         }
     })
+
     return {
         key: `update_${table.name}`,
         query: `mutation Update($data:${table.name}_set_input) {
@@ -32,7 +33,7 @@ ${genFields(table, { showArgs: false, withFirstTable: false }, 2)}
     }  
 }`,
         variables: {
-            data: dataWithoutChildren
+            data: preparedData
         }
     };
 }
