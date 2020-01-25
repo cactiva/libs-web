@@ -79,8 +79,8 @@ export default observer((props: ISelectProps) => {
             const el = <div style={{
                 borderLeft: '1px solid #999',
                 display: 'flex',
-                paddingLeft: 5,
                 flexDirection: 'row',
+                cursor: 'default',
                 alignItems: 'center'
             }} />;
             const div = document.createElement('div')
@@ -128,7 +128,9 @@ export default observer((props: ISelectProps) => {
                             return <IconButton
                                 onClick={onClick}
                                 key={m}
-                                styles={mbtnStyles('#529c62')}
+                                styles={mbtnStyles('#529c62', {
+                                    marginLeft: 3,
+                                })}
                                 iconProps={{ iconName: "Add", }} />
                         case "view":
                             return <IconButton
@@ -143,8 +145,9 @@ export default observer((props: ISelectProps) => {
         )}
     </>;
 });
-const mbtnStyles = (color) => ({
+const mbtnStyles = (color, root?: any) => ({
     root: {
+        ...root,
         width: 25,
         height: 25
     },
@@ -157,7 +160,8 @@ const mbtnStyles = (color) => ({
         opacity: .4
     },
     rootDisabled: {
-        background: 'transparent'
+        background: 'transparent',
+        cursor: 'pointer'
     },
     rootHovered: {
         background: 'transparent'

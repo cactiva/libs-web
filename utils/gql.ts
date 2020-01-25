@@ -129,7 +129,19 @@ export const queryDelete = async (tablename: string, data: any, options?: QueryO
       }]
   });
 
-  return await queryAll(q.query, { ...options, raw: true });
+  const res = await queryAll(q.query, { ...options, raw: true });
+  if (res.errors) {
+    const msg = res.errors.map(e => {
+      if (_.get(e, 'extensions.code') === 'constraint-violation') {
+        const table = _.trim(e.message.split('" on table "')[1], '"');
+        return `  • Please delete all rows on current ${_.startCase(table)}.`;
+      }
+      return `  • ${e.message}`;
+    }).filter(e => !!e);
+    alert('Delete failed: \n' + msg.join('\n'));
+    return false;
+  }
+  return res;
 }
 
 export const queryUpdate = async (tablename: string, data: any, options?: QueryOptions) => {
