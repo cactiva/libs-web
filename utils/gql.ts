@@ -145,9 +145,14 @@ export const queryDelete = async (tablename: string, data: any, options?: QueryO
 }
 
 export const queryUpdate = async (tablename: string, data: any, options?: QueryOptions) => {
+  const fields = [] as any;
+  Object.keys(data).forEach((e: any) => {
+    fields.push({ name: e });
+  })
+
   const q = generateUpdateString({
     name: tablename,
-    fields: _.map(data, (e, key) => { return { name: key } })
+    fields
   }, data, {
     withChildren: _.get(options, 'withChildren'),
     where: [
