@@ -6,8 +6,18 @@ import { dateFormat } from '@src/libs/utils/date';
 import Monthly from './Date/Monthly';
 import _ from 'lodash';
 import { DateTime } from '@src/libs/ui';
-
-export default observer(({ label, field, value, setValue, operator, setOperator, onlyBetween, submit }: any) => {
+interface IFilterDate {
+    label
+    field?
+    value
+    setValue
+    operator
+    setOperator
+    onlyBetween
+    submit
+}
+export default observer((props: IFilterDate) => {
+    const { label, field, value, setValue, operator, setOperator, onlyBetween, submit } = props;
     let op = operator || 'date';
     const ops = onlyBetween ? ['monthly'] : ['date', 'datetime', 'monthly'];
     const opsItems = ops.map(r => {

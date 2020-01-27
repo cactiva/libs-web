@@ -24,6 +24,13 @@ export default observer((props: any) => {
             meta.loading = true;
             meta.list = await loadList(props);
             meta.loading = false;
+
+            if (queryCache[getQuery(props)].length === 0 && value) {
+                delete queryCache[getQuery(props)];
+                meta.loading = true;
+                meta.list = await loadList(props);
+                meta.loading = false;
+            }
         }
     }, []);
 
@@ -127,7 +134,7 @@ const loadList = async (props) => {
                     if (labelResult instanceof Promise) {
                         labelResult = await labelResult;
                     }
-                    
+
                     return {
                         value: relation.id ? e[relation.id] : e['id'],
                         label: labelResult
@@ -161,7 +168,7 @@ const loadList = async (props) => {
                 };
             }
         }));
-        
+
     }
 
     return queryCache[queryIndex];
