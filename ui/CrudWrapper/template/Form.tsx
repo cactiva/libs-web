@@ -17,7 +17,7 @@ export default observer((props: any) => {
 
     React.useEffect(() => {
         if (typeof form === 'function' && !meta.fields) {
-            const parsedForm = form(mode);
+            const parsedForm = form(mode, data);
             meta.fields = generateFormField(parsedForm, structure, colDef, fkeys, auth, errors, meta, data, generateForm);
             if (inmeta.hasRelation === undefined) {
                 inmeta.hasRelation = Object.keys(meta.fields.relations).length > 0
