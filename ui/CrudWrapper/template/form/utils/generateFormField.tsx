@@ -1,11 +1,10 @@
+import pluralize from '@src/libs/utils/pluralize';
 import _ from 'lodash';
 import * as React from 'react';
 import { DateTime, Field, Input } from '../../../..';
 import DateField from '../../../../DateField';
-import generateSubStructure from './generateSubStructure';
 import SelectFk from '../../fields/SelectFk';
-import { toJS } from 'mobx';
-import pluralize from '@src/libs/utils/pluralize';
+import generateSubStructure from './generateSubStructure';
 
 export const generateFormField = (parsedForm: any, structure, colDef, fkeys, auth, errors, meta, data, generateForm) => {
     const relations = {};
@@ -109,7 +108,7 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
         }
 
         if (cdef || fk) {
-            const type = cdef.data_type;
+            const type = _.get(e, 'e.props.options.type', cdef.data_type);
             if (fk) {
                 const tablename = fk.foreign_table_name;
                 if (tablename) {
@@ -145,6 +144,7 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                         break;
                     case "readonly":
                         children = <Input disabled type="text" />;
+                        break;
                     default:
                         children = <Input type="text" />;
                 }

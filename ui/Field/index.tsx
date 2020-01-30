@@ -11,6 +11,7 @@ interface IFieldProps {
             query: string,
             label: (item:any) => string | Promise<string>
         },
+        type?: string,
         table?: {
             addColumns?: {
                 path: string,

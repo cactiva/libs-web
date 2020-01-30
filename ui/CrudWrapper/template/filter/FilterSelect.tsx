@@ -1,8 +1,7 @@
-import * as React from 'react';
-import ItemButton from './ItemButton';
-import { useObservable } from 'mobx-react-lite';
 import { Select } from '@src/libs/ui';
 import _ from 'lodash';
+import * as React from 'react';
+import ItemButton from './ItemButton';
 
 export default ((props: any) => {
     const { label, field, value, setValue, submit, items } = props;
