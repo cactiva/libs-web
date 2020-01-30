@@ -4,6 +4,7 @@ import _ from "lodash";
 import { generateUpdateString } from "./genUpdateString";
 import { generateInsertString } from "./genInsertString";
 import { generateDeleteString } from "./genDeleteString";
+import { toJS } from "mobx";
 
 const config = require("../../settings.json");
 interface QueryOptions {
@@ -145,10 +146,18 @@ export const queryDelete = async (tablename: string, data: any, options?: QueryO
 }
 
 export const queryUpdate = async (tablename: string, data: any, options?: QueryOptions) => {
-  const fields = [] as any;
-  Object.keys(data).forEach((e: any) => {
-    fields.push({ name: e });
-  })
+  const pushFields = (data) => {
+    const fields = [] as any;
+    Object.keys(data).forEach((e: any) => {
+      const res = { name: e } as any;
+      if (typeof data[e] === 'object') {
+        return
+      }
+      fields.push(res);
+    })
+    return fields;
+  }
+  const fields = pushFields(data);
 
   const q = generateUpdateString({
     name: tablename,

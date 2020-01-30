@@ -21,6 +21,7 @@ export interface ITableOptions {
 
 export interface ITable {
     name: string,
+    originalName?: string,
     cosntraint?: string,
     fields?: ITable[],
     where?: ITableWhere[],
@@ -161,17 +162,29 @@ export const genFields = (table: ITable, options?: {
             if (f.fields) {
                 return `${genFields(f, { ...options, withFirstTable: true }, level + 1)}`;
             }
-            return `${tabs(level + 1)}${f.name}`;
+            let name = f.name;
+            if (f.originalName) {
+                name = `${f.name}:${f.originalName}`
+            }
+            return `${tabs(level + 1)}${name}`;
         }).join('\n');
 
     }
 
-    return `${tabs(level)}${table.name}${args.length > 0 ? `(${args.join(', ')})` : ''} {
+    let name = table.name;
+    if (table.originalName) {
+        name = `${table.name}:${table.originalName}`
+    }
+    return `${tabs(level)}${name}${args.length > 0 ? `(${args.join(', ')})` : ''} {
 ${fields.map((f: any) => {
         if (f.fields) {
             return `${genFields(f, options, level + 1)}`;
         }
-        return `${tabs(level + 1)}${f.name}`;
+        let name = f.name;
+        if (f.originalName) {
+            name = `${f.name}:${f.originalName}`
+        }
+        return `${tabs(level + 1)}${name}`;
     }).join('\n')}
 ${tabs(level)}}`;
 }
