@@ -3,6 +3,7 @@ import { observer, useObservable } from 'mobx-react-lite';
 import * as React from 'react';
 import FormContainer from './form/FormContainer';
 import { generateFormField } from './form/utils/generateFormField';
+import _ from 'lodash';
 
 export default observer((props: any) => {
     const { structure, form, mode, colDef, auth, inmeta, formRef, generateForm } = props;
@@ -12,12 +13,18 @@ export default observer((props: any) => {
         size: localStorage['cactiva-app-split-size'] || '200',
         resizing: false,
         fields: null as any,
-        resizeTimer: 0 as any
+        resizeTimer: 0 as any,
+        events: {}
     })
 
     React.useEffect(() => {
         if (typeof form === 'function' && !meta.fields) {
-            const parsedForm = form(mode, data);
+            const parsedForm = form(mode, meta.events);
+            const afterLoad = _.get(meta, 'events.afterLoad');
+            if (afterLoad) {
+                afterLoad(data);
+            }
+
             meta.fields = generateFormField(parsedForm, structure, colDef, fkeys, auth, errors, meta, data, generateForm);
             if (inmeta.hasRelation === undefined) {
                 inmeta.hasRelation = Object.keys(meta.fields.relations).length > 0
@@ -32,6 +39,7 @@ export default observer((props: any) => {
             data={data}
             auth={auth}
             mode={mode}
+            events={meta.events}
             fields={toJS(meta.fields)} />
     </div>;
 });

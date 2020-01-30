@@ -72,6 +72,8 @@ export default (rel, structure, data) => {
         fields.push({ name: 'id' });
     }
 
+    const onLoad = _.get(rel, 'columns.props.options.form.onLoad');
+
     return {
         structure: {
             name: relfk.table_name,

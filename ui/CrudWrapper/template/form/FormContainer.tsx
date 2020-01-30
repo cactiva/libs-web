@@ -5,7 +5,7 @@ import FormBody from './FormBody';
 import SubForm from './SubForm';
 import { toJS } from 'mobx';
 
-export default observer(({ mode, fields, formRef, data, auth }: any) => {
+export default observer(({ mode, fields, formRef, data, auth, events }: any) => {
     const meta = useObservable({
         size: localStorage['cactiva-app-split-size'] || '200',
         subs: {},
@@ -15,7 +15,7 @@ export default observer(({ mode, fields, formRef, data, auth }: any) => {
     const rels = Object.keys(fields.relations);
     return (mode === 'create' || rels.length === 0)
         ? <div style={{ padding: 10 }}>
-            <FormBody data={data} fields={fields} formRef={formRef} />
+            <FormBody data={data} fields={fields} formRef={formRef} events={events} />
         </div>
         : <SplitPane
             split="horizontal"
@@ -35,7 +35,7 @@ export default observer(({ mode, fields, formRef, data, auth }: any) => {
             }}
             size={meta.size + "px"}>
             <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, padding: 10, overflow: 'auto' }}>
-                <FormBody data={data} fields={fields} formRef={formRef} />
+                <FormBody data={data} fields={fields} formRef={formRef} events={events} />
             </div>
             <SubForm fields={fields} auth={auth} />
         </SplitPane>;

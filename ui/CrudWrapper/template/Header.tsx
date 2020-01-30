@@ -6,9 +6,8 @@ import { ActionButton } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { columnDefs } from '..';
 import { Text } from '../..';
-import saveForm from '../utils/saveForm';
 import Spinner from '../../Spinner';
-import { toJS } from 'mobx';
+import saveForm from '../utils/saveForm';
 
 export default observer(({ parsed, mode, form, getForm, setForm, colDef, structure, setLoading, setMode, auth, idKey, reload, style, hasRelation }: any) => {
     const title = _.get(parsed, 'title.children');
@@ -103,7 +102,10 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
                             const rawForm = getForm();
                             const form = rawForm.data;
                             const errors = rawForm.errors;
+                            const afterSubmit = rawForm.afterSubmit;
+                            const beforeSubmit = rawForm.beforeSubmit;
                             const setErrors = (v) => rawForm.errors = v;
+
                             // validate form
                             const cdef: any = {};
                             columnDefs[structure.name].forEach(e => {
@@ -128,12 +130,28 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
                                     setErrors(newerrs);
                                 }
                             }
+
+                            //beforeSubmit
+                            if (beforeSubmit !== undefined) {
+                                if (beforeSubmit(form, rawForm.errors) !== true) {
+                                    return;
+                                }
+                            }
                             if (Object.keys(newerrs).length === 0) {
                                 saveForm({
-                                    mode, form, structure, setLoading: (v) => {
+                                    mode,
+                                    form,
+                                    afterSubmit,
+                                    structure,
+                                    setLoading: (v) => {
                                         setLoading(v);
                                         meta.loading = v;
-                                    }, setMode, auth, idKey, reload, hasRelation
+                                    },
+                                    setMode,
+                                    auth,
+                                    idKey,
+                                    reload,
+                                    hasRelation
                                 })
                                 setErrors({});
                             }
@@ -153,7 +171,9 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
                         text: text,
                         primary: true,
                         iconProps: { iconName: icon },
-                        onClick: e.props.options && e.props.options.onClick ? e.props.options.onClick : () => { console.log('custom clicked') }
+                        onClick: e.props.options && e.props.options.onClick ? e.props.options.onClick : () => {
+                            console.log('custom clicked')
+                        }
                     }
                 }
                 break;

@@ -3,13 +3,14 @@ import { toJS } from 'mobx';
 import { observer, useObservable } from 'mobx-react-lite';
 import * as React from 'react';
 import { MessageBar, MessageBarType, Label } from 'office-ui-fabric-react';
-export default observer(({ data, errors, fields, formRef }: any) => {
+export default observer(({ data, errors, fields, formRef, events }: any) => {
     const meta = useObservable({
         data: toJS(data),
-        errors: toJS(errors) || {}
+        errors: toJS(errors) || {},
+        beforeSubmit: _.get(events, 'beforeSubmit'),
+        afterSubmit: _.get(events, 'afterSubmit'),
     });
     const errorLen = Object.keys(meta.errors).length;
-
     const sections = {};
     fields.columns.forEach(e => {
         if (e.props.section) {
@@ -19,7 +20,7 @@ export default observer(({ data, errors, fields, formRef }: any) => {
 
             sections[e.props.section].push(e);
         }
-    })
+    });
 
     const renderField = (e, idx, isSection = false) => {
         if (isSection === false && e.props.section) return null;

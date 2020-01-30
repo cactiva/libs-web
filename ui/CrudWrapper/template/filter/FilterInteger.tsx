@@ -17,7 +17,6 @@ export default observer(({ label, field, value, setValue, submit }: any) => {
             value={meta.oldval}
             onChange={(e: any) => {
                 meta.oldval = e.target.value.replace(/\D/g, '');
-                console.log(meta.oldval);
             }}
             onKeyDown={(e: any) => {
                 if (e.which === 13) {

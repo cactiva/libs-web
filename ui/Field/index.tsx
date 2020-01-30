@@ -21,6 +21,10 @@ interface IFieldProps {
             }[],
             removeColumns?: string[]
         },
+        form?: {
+            onLoad?: (mode, form) => void,
+            onSubmit?: (mode, form) => void
+        },
         default?: {
             [key: string]: any
         }
@@ -45,10 +49,10 @@ export default observer((iprops: IFieldProps) => {
     }
 
     const cprops = _.get(iprops, 'children.props', {});
-    const meta = useObservable({
-        valueFrom: cprops.value ? 'cprops' : 'iprops',
-        value: iprops.value
-    })
+    // const meta = useObservable({
+    //     valueFrom: cprops.value ? 'cprops' : 'iprops',
+    //     value: iprops.value
+    // })
     let props: any = {
         label: iprops.label,
         style: cprops.style || iprops.style,
@@ -58,7 +62,6 @@ export default observer((iprops: IFieldProps) => {
     }
 
     if (cprops.onChange) {
-        console.log(props);
         props.setValue = iprops.setValue;
         props.onChange = cprops.onChange;
     } else {

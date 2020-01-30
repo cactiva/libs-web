@@ -43,8 +43,6 @@ export default observer((iprops: any) => {
         />
     }
 
-    console.log(iprops);
-
     return <TextField {...props} />;
 })
 

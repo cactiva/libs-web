@@ -17,7 +17,6 @@ export default observer(({ label, field, value, setValue, submit }: any) => {
                 <Toggle label={label.label} onText="Yes" offText="No" onChanged={
                     (e: any) => {
                         setValue(e ? 'Yes' : 'No');
-                        console.log(e);
                         submit()
                     }
                 } />

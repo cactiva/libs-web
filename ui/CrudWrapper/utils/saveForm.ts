@@ -4,7 +4,18 @@ import { queryAll } from "@src/libs/utils/gql";
 import { generateUpdateString } from "@src/libs/utils/genUpdateString";
 import session from "@src/stores/session";
 
-export default async ({ mode, reload, form, structure, setLoading, setMode, auth, idKey, hasRelation }: any) => {
+export default async ({
+    mode,
+    reload,
+    beforeSubmit,
+    afterSubmit,
+    form,
+    structure,
+    setLoading,
+    setMode,
+    auth,
+    idKey,
+    hasRelation }: any) => {
     let q: any = null;
 
     const fdata = toJS(form);
@@ -20,11 +31,21 @@ export default async ({ mode, reload, form, structure, setLoading, setMode, auth
 
     switch (mode) {
         case 'create':
-            if(typeof fdata.created_by !== 'undefined') fdata.created_by = id_user;
-            if(typeof fdata.created_date !== 'undefined') fdata.created_date = current_date;    
+            if (typeof fdata.created_by !== 'undefined') fdata.created_by = id_user;
+            if (typeof fdata.created_date !== 'undefined') fdata.created_date = current_date;
             q = generateInsertString(structure, fdata);
             setLoading(true);
             const res = await queryAll(q.query, { variables: q.variables, auth });
+            if (afterSubmit !== undefined) {
+                if (hasRelation) {
+                    setMode('edit');
+                }
+                if (afterSubmit(form, res[idKey]) !== true) {
+                    setLoading(false)
+                    return;
+                }
+            }
+
             if (!hasRelation) {
                 await reload()
                 setMode('');
@@ -33,10 +54,11 @@ export default async ({ mode, reload, form, structure, setLoading, setMode, auth
             }
             form[idKey] = res[idKey];
             setLoading(false)
+
             break;
         case 'edit':
-            if(typeof fdata.updated_by !== 'undefined') fdata.updated_by = id_user;
-            if(typeof fdata.updated_date !== 'undefined') fdata.updated_date = current_date;           
+            if (typeof fdata.updated_by !== 'undefined') fdata.updated_by = id_user;
+            if (typeof fdata.updated_date !== 'undefined') fdata.updated_date = current_date;
             q = generateUpdateString(structure, fdata, {
                 where: [
                     {
@@ -49,6 +71,13 @@ export default async ({ mode, reload, form, structure, setLoading, setMode, auth
             });
             setLoading(true);
             await queryAll(q.query, { variables: q.variables, auth });
+            if (afterSubmit !== undefined) {
+                if (afterSubmit(form, form[idKey]) !== true) {
+                    setLoading(false)
+                    return;
+                }
+            }
+            // afterSubmit
             setMode('');
             setLoading(false);
             reload()
