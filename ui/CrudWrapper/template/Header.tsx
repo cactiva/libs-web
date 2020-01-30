@@ -146,7 +146,8 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
                 const text = e.props.children.props.children ? e.props.children.props.children : 'Custom';
                 const key = e.props.options && e.props.options.key ? e.props.options.key : 'custom';
                 const icon = e.props.options && e.props.options.icon ? e.props.options.icon : 'Insert';
-                if (mode == 'edit') {
+                const _mode = e.props.options && e.props.options.mode ? e.props.options.mode : 'edit';
+                if (mode == _mode) {
                     return {
                         key: key,
                         text: text,

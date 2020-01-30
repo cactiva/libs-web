@@ -2,6 +2,7 @@ import { toJS } from "mobx";
 import { generateInsertString } from "@src/libs/utils/genInsertString";
 import { queryAll } from "@src/libs/utils/gql";
 import { generateUpdateString } from "@src/libs/utils/genUpdateString";
+import session from "@src/stores/session";
 
 export default async ({ mode, reload, form, structure, setLoading, setMode, auth, idKey, hasRelation }: any) => {
     let q: any = null;
@@ -14,8 +15,13 @@ export default async ({ mode, reload, form, structure, setLoading, setMode, auth
         }
     }
 
+    const id_user = session.user.id;
+    const current_date = new Date();
+
     switch (mode) {
         case 'create':
+            if(typeof fdata.created_by !== 'undefined') fdata.created_by = id_user;
+            if(typeof fdata.created_date !== 'undefined') fdata.created_date = current_date;    
             q = generateInsertString(structure, fdata);
             setLoading(true);
             const res = await queryAll(q.query, { variables: q.variables, auth });
@@ -29,6 +35,8 @@ export default async ({ mode, reload, form, structure, setLoading, setMode, auth
             setLoading(false)
             break;
         case 'edit':
+            if(typeof fdata.updated_by !== 'undefined') fdata.updated_by = id_user;
+            if(typeof fdata.updated_date !== 'undefined') fdata.updated_date = current_date;           
             q = generateUpdateString(structure, fdata, {
                 where: [
                     {
