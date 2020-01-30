@@ -106,9 +106,11 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
         if (label.indexOf('Id') === 0) {
             label = e.props.label.substr(3);
         }
-
-        if (cdef || fk) {
-            const type = _.get(e, 'e.props.options.type', cdef.data_type);
+        let type = _.get(e, 'props.options.type');
+        if (cdef || fk || type) {
+            if (!type && cdef.data_type) {
+                type = cdef.data_type;
+            }
             if (fk) {
                 const tablename = fk.foreign_table_name;
                 if (tablename) {
@@ -143,7 +145,7 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                         children = <DateField />
                         break;
                     case "readonly":
-                        children = <Input disabled type="text" />;
+                        children = <Input type="text" readOnly />;
                         break;
                     default:
                         children = <Input type="text" />;
