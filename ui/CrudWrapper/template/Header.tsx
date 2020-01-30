@@ -98,7 +98,7 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
                         text: 'Save',
                         primary: true,
                         iconProps: { iconName: 'Save' },
-                        onClick: () => {
+                        onClick: async () => {
                             const rawForm = getForm();
                             const form = rawForm.data;
                             const errors = rawForm.errors;
@@ -133,7 +133,7 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
 
                             //beforeSubmit
                             if (beforeSubmit !== undefined) {
-                                if (beforeSubmit(form, rawForm.errors) !== true) {
+                                if (await beforeSubmit(form, rawForm.errors) !== true) {
                                     return;
                                 }
                             }

@@ -214,7 +214,7 @@ const generateColumns = (structure, table, colDef, fkeys) => {
                     return e.content(item);
                 }
                 const value = _.get(item, e.path);
-                const labelFunc = _.get(e, 'props.options.label');
+                const labelFunc = _.get(e, 'options.label');
                 if (typeof labelFunc === 'function') {
                     return labelFunc(value, item, { path: e.path, idx: k });
                 }

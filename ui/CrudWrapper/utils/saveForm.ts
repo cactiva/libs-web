@@ -40,7 +40,7 @@ export default async ({
                 if (hasRelation) {
                     setMode('edit');
                 }
-                if (afterSubmit(form, res[idKey]) !== true) {
+                if (await afterSubmit(form, res[idKey]) !== true) {
                     setLoading(false)
                     return;
                 }
@@ -72,7 +72,7 @@ export default async ({
             setLoading(true);
             await queryAll(q.query, { variables: q.variables, auth });
             if (afterSubmit !== undefined) {
-                if (afterSubmit(form, form[idKey]) !== true) {
+                if (await afterSubmit(form, form[idKey]) !== true) {
                     setLoading(false)
                     return;
                 }
