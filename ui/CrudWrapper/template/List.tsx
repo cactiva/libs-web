@@ -189,7 +189,7 @@ const generateColumns = (structure, table, colDef, fkeys) => {
         }
     }).filter(e => !!e && hidden.indexOf(e.path) < 0);
 
-    return cols.map((e: any) => {
+    return cols.map((e: any, k: any) => {
         const fk = fkeys[e.path];
         let relation = e.relation;
         if (fk && !relation) {
@@ -214,10 +214,8 @@ const generateColumns = (structure, table, colDef, fkeys) => {
                 const value = _.get(item, e.path);
                 const labelFunc = _.get(e, 'props.options.label');
                 if (typeof labelFunc === 'function') {
-                    return labelFunc(value, item);
+                    return labelFunc(value, item, { path: e.path, idx: k });
                 }
-
-
 
                 const cdef = colDef[e.path];
                 let valueEl: any = null;
