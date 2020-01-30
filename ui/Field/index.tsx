@@ -9,21 +9,22 @@ interface IFieldProps {
         actions?: { type: string }[],
         relation?: {
             query: string,
-            label: (item:any) => string | Promise<string>
+            label: (item: any) => string | Promise<string>
         },
         type?: string,
         table?: {
             addColumns?: {
                 path: string,
                 title: string,
-                content: (row:any) => React.ReactElement
+                content: (row: any) => React.ReactElement
                 position?: 'first' | 'last' | number
             }[],
             removeColumns?: string[]
         },
-        form?: {
-            onLoad?: (mode, form) => void,
-            onSubmit?: (mode, form) => void
+        form?: { 
+            afterLoad?: (form) => void,
+            beforeSubmit?: (form, errors) => void,
+            afterSubmit?: (form, lastInsertId) => void,
         },
         default?: {
             [key: string]: any

@@ -72,7 +72,9 @@ export default (rel, structure, data) => {
         fields.push({ name: 'id' });
     }
 
-    const onLoad = _.get(rel, 'columns.props.options.form.onLoad');
+    const afterLoad = _.get(rel, 'column.props.options.form.afterLoad');
+    const afterSubmit = _.get(rel, 'column.props.options.form.afterSubmit');
+    const beforeSubmit = _.get(rel, 'column.props.options.form.beforeSubmit');
 
     return {
         structure: {
@@ -116,7 +118,11 @@ export default (rel, structure, data) => {
                     children: []
                 }
             },
-            form: (mode) => {
+            form: (mode, events) => {
+                if (afterLoad) events.afterLoad = afterLoad
+                if (beforeSubmit) events.beforeSubmit = beforeSubmit
+                if (afterSubmit) events.afterSubmit = afterSubmit
+
                 return <Form>{
                     fcols.map((e, idx) => {
                         return <Field key={idx} path={e.name} label={_.startCase(e.name)}
