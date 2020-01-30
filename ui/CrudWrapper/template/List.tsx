@@ -139,7 +139,8 @@ const generateColumns = (structure, table, colDef, fkeys) => {
 
             if (!relation.alias && fkeys) {
                 const fk = fkeys[e.props.path];
-                if (fk && fk.table_name === structure.name) {
+                const sname = structure.originalName || structure.name;
+                if (fk && fk.table_name === sname) {
                     const tablename = fk.foreign_table_name;
                     const key: any = keys[tablename] || keys[tablename + 's'];
                     if (key) {
@@ -149,7 +150,8 @@ const generateColumns = (structure, table, colDef, fkeys) => {
             }
         } else if (!e.props.relation && fkeys) {
             const fk = fkeys[e.props.path];
-            if (fk && (fk.table_name === structure.name || fk.alias === structure.name)) {
+            const sname = structure.originalName || structure.name;
+            if (fk && (fk.table_name === sname || fk.alias === sname)) {
                 const tablename = fk.foreign_table_name;
                 const key: any = keys[tablename] || keys[tablename + 's'];
                 if (key) {

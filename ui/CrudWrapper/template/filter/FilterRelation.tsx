@@ -89,5 +89,6 @@ const struct2gql = (struct: any) => {
         fields = struct.fields.map(e => struct2gql(e));
     }
 
-    return `${struct.name} ${fields.length > 0 ? `{ ${fields.join('\n')}}` : ''}`;
+    const sname = struct.originalName || struct.name;
+    return `${sname} ${fields.length > 0 ? `{ ${fields.join('\n')}}` : ''}`;
 }
