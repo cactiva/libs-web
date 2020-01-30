@@ -211,10 +211,15 @@ const generateColumns = (structure, table, colDef, fkeys) => {
                 if (typeof e.content === 'function') {
                     return e.content(item);
                 }
+                const value = _.get(item, e.path);
+                const labelFunc = _.get(e, 'props.options.label');
+                if (typeof labelFunc === 'function') {
+                    return labelFunc(value, item);
+                }
+
 
 
                 const cdef = colDef[e.path];
-                const value = _.get(item, e.path);
                 let valueEl: any = null;
                 if (e.path.indexOf('.') > 0) {
                     return formatValue(value);

@@ -143,6 +143,8 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                     case "date":
                         children = <DateField />
                         break;
+                    case "readonly":
+                        children = <Input disabled type="text" />;
                     default:
                         children = <Input type="text" />;
                 }
