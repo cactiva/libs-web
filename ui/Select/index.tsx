@@ -15,6 +15,7 @@ interface ISelectProps {
     errorMessage?: any,
     placeholder?: string,
     className?: string,
+    readonly?: boolean,
     modifier?: {
         add?: (item, list) => Promise<any>,
         edit?: (item, list) => Promise<any>,
@@ -99,6 +100,7 @@ export default observer((props: ISelectProps) => {
             componentRef={cref}
             autoComplete={'on'}
             allowFreeform={true}
+            disabled={props.readonly}
             options={items} />
         {(modifierList.length > 0 && meta.portal) && (
             createPortal(<>

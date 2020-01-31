@@ -39,6 +39,7 @@ export default observer((props: any) => {
         label={props.label}
         errorMessage={props.errorMessage}
         required={props.required}
+        readonly={props.readonly}
         items={meta.loading ? [{ value: '', label: 'Loading...' }] : meta.list}
         selectedKey={meta.loading ? '' : value}
         onChange={(e, item) => {

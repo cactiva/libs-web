@@ -115,9 +115,11 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
             if (fk) {
                 const tablename = fk.foreign_table_name;
                 if (tablename) {
+                    const readonly = type === 'readonly'
                     children = <SelectFk
                         tablename={tablename}
                         labelField={e.props.labelField}
+                        readonly={readonly}
                         relation={_.get(e, 'props.options.relation')}
                         auth={auth}
                         styles={{
