@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-export const startCase = (str) => (str).replace(/\w+/g, (string) => {
+export const startCase = (str) => (str || '').replace(/\w+/g, (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 });
 
