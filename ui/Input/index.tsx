@@ -22,6 +22,23 @@ export default observer((iprops: any) => {
         }
     }
 
+    if (props.onEnter) {
+        const oldKeyDown = props.onKeyDown;
+        const onKeyDown = (e) => {
+            if (e.which === 13) {
+                if (iprops.setValue) {
+                    props.setValue(meta.oldval);
+                }
+                props.onEnter();
+            }
+            if (oldKeyDown)
+                oldKeyDown()
+        }
+
+        props.onKeyDown = onKeyDown;
+
+    }
+
     if (props.type === "money"
         || props.type === "number"
         || props.type === "decimal") {

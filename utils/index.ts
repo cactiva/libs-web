@@ -1,8 +1,11 @@
 import _ from "lodash";
 
-export const startCase = (str) => (str || '').replace(/\w+/g, (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-});
+export const startCase = (str) => (str || '')
+  .replace(/_/ig, ' ')
+  .replace(/\w+/g, (string) => {
+    if (string.length <= 2) return string;
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  });
 
 const uuid = (prefix: string = randString()) =>
   `${prefix ? prefix + "-" : ""}${new Date().getTime()}${Math.floor(

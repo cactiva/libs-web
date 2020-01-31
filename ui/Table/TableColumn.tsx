@@ -6,8 +6,9 @@ interface ITableColumn {
     options?: {
         label?: (val, item) => any
     },
+    suffix?: string
+    prefix?: string
     children?: any
-    content?: any
     relation?: any
 }
 

@@ -6,7 +6,7 @@ import { generateFormField } from './form/utils/generateFormField';
 import _ from 'lodash';
 
 export default observer((props: any) => {
-    const { structure, form, mode, colDef, auth, inmeta, formRef, generateForm } = props;
+    const { structure, form, mode, colDef, auth, inmeta, parsed, formRef, generateForm } = props;
     const { errors, fkeys } = inmeta;
     const data = inmeta.form;
     const meta = useObservable({
@@ -39,6 +39,7 @@ export default observer((props: any) => {
             data={data}
             auth={auth}
             mode={mode}
+            parsed={parsed}
             events={meta.events}
             fields={toJS(meta.fields)} />
     </div>;

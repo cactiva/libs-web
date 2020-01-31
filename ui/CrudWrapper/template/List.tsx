@@ -187,7 +187,7 @@ const generateColumns = (structure, table, colDef, fkeys) => {
             ...e.props,
             title,
             relation,
-            children: _.get(table, `row.children.${idx}.props.children`)
+            children: _.get(table, `row.children.${idx}.props.children`, _.get(table, `head.children.${idx}.props.children`))
         }
     }).filter(e => !!e && hidden.indexOf(e.path) < 0);
 
@@ -210,43 +210,68 @@ const generateColumns = (structure, table, colDef, fkeys) => {
             isResizable: !e.width ? true : false,
             columnActionsMode: ColumnActionsMode.disabled,
             onRender: (item: any) => {
-                if (typeof e.content === 'function') {
-                    return e.content(item);
-                }
-                const value = _.get(item, e.path);
-                const labelFunc = _.get(e, 'options.label');
-                if (typeof labelFunc === 'function') {
-                    return labelFunc(value, item, { path: e.path, idx: k });
-                }
-
-                const cdef = colDef[e.path];
-                let valueEl: any = null;
-                if (e.path.indexOf('.') > 0) {
-                    return formatValue(value);
-                }
-
-                if (e.relation) {
-                    const alias = e.relation.alias;
-                    if (typeof e.relation.label === 'function') {
-                        valueEl = formatValue(e.relation.label(item, colDef[alias]));
-                    } else if (alias) {
-                        valueEl = formatValue(item[alias]);
+                const renderValue = () => {
+                    if (typeof e.children === 'function') {
+                        return e.children(_.get(item, e.path), item);
                     }
-                } else if (cdef) {
-                    if (cdef.data_type.indexOf('numeric') >= 0
-                        || cdef.data_type.indexOf('double precision') >= 0
-                        || cdef.data_type.indexOf('decimal') >= 0) {
-                        valueEl = formatMoney(value);
-                    } else if (cdef.data_type.indexOf('timestamp') >= 0 || cdef.data_type === 'date') {
-                        valueEl = dateFormat(value);
+                    const value = _.get(item, e.path);
+                    const labelFunc = _.get(e, 'options.label');
+                    if (typeof labelFunc === 'function') {
+                        return labelFunc(value, item, { path: e.path, idx: k });
+                    }
+
+                    const cdef = colDef[e.path];
+                    let valueEl: any = null;
+                    if (e.path.indexOf('.') > 0) {
+                        return formatValue(value);
+                    }
+
+                    if (e.relation) {
+                        const alias = e.relation.alias;
+                        if (typeof e.relation.label === 'function') {
+                            valueEl = formatValue(e.relation.label(item, colDef[alias]));
+                        } else if (alias) {
+                            valueEl = formatValue(item[alias]);
+                        }
+                    } else if (cdef) {
+                        if (cdef.data_type.indexOf('numeric') >= 0
+                            || cdef.data_type.indexOf('double precision') >= 0
+                            || cdef.data_type.indexOf('decimal') >= 0) {
+                            valueEl = formatMoney(value);
+                        } else if (cdef.data_type.indexOf('timestamp') >= 0 || cdef.data_type === 'date') {
+                            valueEl = dateFormat(value);
+                        } else {
+                            valueEl = formatValue(value);
+                        }
                     } else {
-                        valueEl = formatValue(value);
+                        return formatValue(value);
                     }
-                } else {
-                    return formatValue(value);
+
+                    return valueEl;
+                }
+                
+                const value = _.get(item, e.path);
+                if (value && (e.prefix || e.suffix)) {
+                    return <div style={{
+                        display: 'flex',
+                        width: '100%',
+                        border: '1px solid #ddd',
+                        padding: 5,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                    }}>
+                        {e.prefix && <div style={{ marginRight: 5, fontSize: 12 }}>
+                            {e.prefix}
+                        </div>}
+                        {renderValue()}
+                        {e.suffix && <div style={{ marginLeft: 5, fontSize: 12 }}>
+                            {e.suffix}
+                        </div>}
+                    </div>
                 }
 
-                return valueEl;
+                return renderValue();
             }
         }
     });

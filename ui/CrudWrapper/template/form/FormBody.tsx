@@ -3,7 +3,7 @@ import { toJS } from 'mobx';
 import { observer, useObservable } from 'mobx-react-lite';
 import * as React from 'react';
 import { MessageBar, MessageBarType, Label } from 'office-ui-fabric-react';
-export default observer(({ data, errors, fields, formRef, events }: any) => {
+export default observer(({ parsed, data, errors, fields, formRef, events }: any) => {
     const meta = useObservable({
         data: toJS(data),
         errors: toJS(errors) || {},
@@ -21,13 +21,17 @@ export default observer(({ data, errors, fields, formRef, events }: any) => {
             sections[e.props.section].push(e);
         }
     });
+    const presuf = _.map(_.get(parsed, 'table.head.children'), 'props')
 
     const renderField = (e, idx, isSection = false) => {
         if (isSection === false && e.props.section) return null;
         const Field = e.children.type;
+        const ps = _.find(presuf, { path: e.props.path });
         return <Field
             {...e.props}
             {...e.children.props}
+            prefix={_.get(ps, 'prefix')}
+            suffix={_.get(ps, 'suffix')}
             value={_.get(meta.data, e.props.path)}
             errorMessage={meta.errors[e.props.path]}
             onChange={(v) => {

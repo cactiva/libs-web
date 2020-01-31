@@ -16,12 +16,13 @@ interface IFieldProps {
             addColumns?: {
                 path: string,
                 title: string,
-                content: (row: any) => React.ReactElement
+                children: (row: any) => React.ReactElement
                 position?: 'first' | 'last' | number
             }[],
+            modifyColumns?: (columns: { name, title, children, relation, suffix, prefix }[]) => any,
             removeColumns?: string[]
         },
-        form?: { 
+        form?: {
             afterLoad?: (form) => void,
             beforeSubmit?: (form, errors) => void,
             afterSubmit?: (form, lastInsertId) => void,
@@ -50,10 +51,7 @@ export default observer((iprops: IFieldProps) => {
     }
 
     const cprops = _.get(iprops, 'children.props', {});
-    // const meta = useObservable({
-    //     valueFrom: cprops.value ? 'cprops' : 'iprops',
-    //     value: iprops.value
-    // })
+    
     let props: any = {
         label: iprops.label,
         style: cprops.style || iprops.style,

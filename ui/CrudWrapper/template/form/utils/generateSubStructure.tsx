@@ -36,12 +36,13 @@ export default (rel, structure, data) => {
         if (Array.isArray(table.removeColumns) && table.removeColumns.indexOf(t.name) >= 0) return false;
         return t.name !== 'id'
     });
+
     if (Array.isArray(table.addColumns)) {
         table.addColumns.forEach(r => {
             const col = {
                 name: r.path,
                 title: r.title,
-                content: r.content
+                children: r.children
             }
 
             const pos = r.position || 'last';
@@ -53,6 +54,13 @@ export default (rel, structure, data) => {
                 tcols.splice(pos, 0, col);
             }
         })
+    }
+
+    if (typeof table.modifyColumns === 'function') {
+        tcols = table.modifyColumns(tcols.map(e => ({
+            ...toJS(e),
+            title: startCase(e.name)
+        })));
     }
 
     if (table.options) {
@@ -111,8 +119,10 @@ export default (rel, structure, data) => {
                         let name = t.name;
                         return <TableColumn
                             path={t.name}
-                            title={startCase(name)}
-                            content={t.content}
+                            suffix={t.suffix}
+                            prefix={t.prefix}
+                            title={t.title || startCase(name)}
+                            children={t.children}
                             relation={t.relation} />
                     })
                 }, root: {
@@ -126,7 +136,12 @@ export default (rel, structure, data) => {
 
                 return <Form>{
                     fcols.map((e, idx) => {
-                        return <Field key={idx} path={e.name} label={startCase(e.name)}
+                        let label = startCase(e.name)
+                        if (label.indexOf('id ') === 0) label = label.substr(3);
+                        return <Field
+                            key={idx}
+                            path={e.name}
+                            label={label}
                             styles={{
                                 root: {
                                     width: '32%',
