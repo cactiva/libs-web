@@ -109,9 +109,6 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
         }
         let type = _.get(e, 'props.options.type');
         if (cdef || fk || type) {
-            if (!type && cdef.data_type) {
-                type = cdef.data_type;
-            }
             if (fk) {
                 const tablename = fk.foreign_table_name;
                 if (tablename) {
@@ -131,6 +128,9 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                     />
                 }
             } else {
+                if (!type && cdef.data_type) {
+                    type = cdef.data_type;
+                }
                 switch (type) {
                     case "integer":
                         children = <Input type="number" />;
