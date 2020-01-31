@@ -5,6 +5,7 @@ import { generateUpdateString } from "./genUpdateString";
 import { generateInsertString } from "./genInsertString";
 import { generateDeleteString } from "./genDeleteString";
 import { toJS } from "mobx";
+import { startCase } from ".";
 
 const config = require("../../settings.json");
 interface QueryOptions {
@@ -135,7 +136,7 @@ export const queryDelete = async (tablename: string, data: any, options?: QueryO
     const msg = res.errors.map(e => {
       if (_.get(e, 'extensions.code') === 'constraint-violation') {
         const table = _.trim(e.message.split('" on table "')[1], '"');
-        return `  • Please delete all rows on current ${_.startCase(table)}.`;
+        return `  • Please delete all rows on current ${startCase(table)}.`;
       }
       return `  • ${e.message}`;
     }).filter(e => !!e);

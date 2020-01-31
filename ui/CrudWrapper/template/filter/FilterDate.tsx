@@ -6,6 +6,7 @@ import { dateFormat } from '@src/libs/utils/date';
 import Monthly from './Date/Monthly';
 import _ from 'lodash';
 import { DateTime } from '@src/libs/ui';
+import { startCase } from '@src/libs/utils';
 interface IFilterDate {
     label
     field?
@@ -23,7 +24,7 @@ export default observer((props: IFilterDate) => {
     const opsItems = ops.map(r => {
         return {
             key: r,
-            text: _.startCase(r)
+            text: startCase(r)
         }
     })
     return <ItemButton

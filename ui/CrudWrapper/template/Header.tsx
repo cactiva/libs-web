@@ -8,6 +8,7 @@ import { columnDefs } from '..';
 import { Text } from '../..';
 import Spinner from '../../Spinner';
 import saveForm from '../utils/saveForm';
+import { startCase } from '@src/libs/utils';
 
 export default observer(({ parsed, mode, form, getForm, setForm, colDef, structure, setLoading, setMode, auth, idKey, reload, style, hasRelation }: any) => {
     const title = _.get(parsed, 'title.children');
@@ -61,7 +62,7 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
                                     const msg = res.errors.map(e => {
                                         if (_.get(e, 'extensions.code') === 'constraint-violation') {
                                             const table = _.trim(e.message.split('" on table "')[1], '"');
-                                            return `  • Please delete all rows on current ${_.startCase(table)}.`;
+                                            return `  • Please delete all rows on current ${startCase(table)}.`;
                                         }
                                         return `  • ${e.message}`;
                                     }).filter(e => !!e);
@@ -116,7 +117,7 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
                             _.map(cdef, (f, k) => {
                                 if (f && f.is_nullable === 'NO' && !f.column_default) {
                                     if (!form[k] && k !== 'id' && !ovrd[k]) {
-                                        let name = _.startCase(k);
+                                        let name = startCase(k);
                                         if (name.indexOf('Id') === 0) {
                                             name = name.substr(3);
                                         }

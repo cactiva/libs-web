@@ -3,6 +3,7 @@ import React from 'react';
 import { TableColumn, Field, Input, Button } from '../../../..';
 import Form from '../../../../Form';
 import { toJS } from 'mobx';
+import { startCase } from '@src/libs/utils';
 
 export default (rel, structure, data) => {
     if (!rel.fkey || !rel.path) return null;
@@ -110,7 +111,7 @@ export default (rel, structure, data) => {
                         let name = t.name;
                         return <TableColumn
                             path={t.name}
-                            title={_.startCase(name)}
+                            title={startCase(name)}
                             content={t.content}
                             relation={t.relation} />
                     })
@@ -125,7 +126,7 @@ export default (rel, structure, data) => {
 
                 return <Form>{
                     fcols.map((e, idx) => {
-                        return <Field key={idx} path={e.name} label={_.startCase(e.name)}
+                        return <Field key={idx} path={e.name} label={startCase(e.name)}
                             styles={{
                                 root: {
                                     width: '32%',

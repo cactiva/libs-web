@@ -5,6 +5,7 @@ import { Text, View } from '../..';
 import Table from '../../Table';
 import TableHead from '../../Table/TableHead';
 import TableRow from '../../Table/TableRow';
+import { startCase } from '@src/libs/utils';
 
 export default (input: any) => {
     const { children, idKey, data, relations } = input;
@@ -21,7 +22,7 @@ export default (input: any) => {
         },
         form: null as any
     };
-    const castedIdKey = _.startCase(idKey);
+    const castedIdKey = startCase(idKey);
     const colDef = _.get(columnDefs, `${(structure || {}).name}`)
     children.map((e) => {
         if (e.type === Table) {

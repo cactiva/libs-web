@@ -4,6 +4,7 @@ import Text from '../Text';
 import _ from 'lodash';
 import { Label } from 'office-ui-fabric-react';
 import EmptyCell from './EmptyCell';
+import { startCase } from '@src/libs/utils';
 
 const NiceValue = observer(({ value, style }: any) => {
     let valueEl: any = null;
@@ -52,7 +53,7 @@ const NiceValue = observer(({ value, style }: any) => {
                                             padding: 6, paddingTop: 2, paddingBottom: 2
                                         }}>
                                             <Text style={{ fontSize: 13 }}>
-                                                {_.startCase(key)}
+                                                {startCase(key)}
                                             </Text>
                                         </td>
                                         <td style={{

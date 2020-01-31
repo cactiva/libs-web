@@ -1,5 +1,6 @@
 import { lastDayOfMonth, startOfMonth } from 'date-fns';
 import _ from 'lodash';
+import { startCase } from '@src/libs/utils';
 
 export const argsApplyFilter = (structure, filterCols, form) => {
     Object.keys(structure.args).map(key => {
@@ -36,7 +37,7 @@ export const argsApplyFilter = (structure, filterCols, form) => {
                 } else {
                     filterCols.unshift({
                         key: name,
-                        name: _.startCase(name),
+                        name: startCase(name),
                         _args: {
                             type: 'date',
                             operator,
