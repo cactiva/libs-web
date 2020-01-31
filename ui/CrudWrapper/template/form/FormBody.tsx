@@ -10,6 +10,11 @@ export default observer(({ parsed, data, errors, fields, formRef, events }: any)
         beforeSubmit: _.get(events, 'beforeSubmit'),
         afterSubmit: _.get(events, 'afterSubmit'),
     });
+
+    React.useEffect(() => {
+        meta.data = data
+    }, [data]);
+
     const errorLen = Object.keys(meta.errors).length;
     const sections = {};
     fields.columns.forEach(e => {
@@ -42,6 +47,7 @@ export default observer(({ parsed, data, errors, fields, formRef, events }: any)
         />;
     }
 
+
     formRef.current = meta;
     const sectionKeys = Object.keys(sections);
     return <>
@@ -51,7 +57,6 @@ export default observer(({ parsed, data, errors, fields, formRef, events }: any)
         </MessageBar>
         </div>
         }
-
         {sectionKeys.map((key) => {
             return <div key={key} style={{
                 display: 'flex',

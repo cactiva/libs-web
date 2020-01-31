@@ -148,7 +148,9 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
                                         setLoading(v);
                                         meta.loading = v;
                                     },
+                                    setForm,
                                     setMode,
+                                    meta,
                                     auth,
                                     idKey,
                                     reload,

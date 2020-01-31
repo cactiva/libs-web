@@ -6,16 +6,13 @@ export const generateInsertString = (table: ITable, data: any, options?: {
     returnData?: boolean,
     withChildren?: boolean
 }): { query: string, variables: any, key } => {
-
     const preparedRow = {} as any;
     Object.keys(data).map(k => {
         if (k !== '__insertid') {
-            if (_.get(options, 'withChildren', false) || typeof data[k] !== 'object') {
-                preparedRow[k] = data[k]
-            }
-        } else {
             if (data[k] instanceof Date) {
                 preparedRow[k] = dateFormat(data[k], 'sql');
+            } else if (_.get(options, 'withChildren', false) || typeof data[k] !== 'object') {
+                preparedRow[k] = data[k]
             }
         }
     })

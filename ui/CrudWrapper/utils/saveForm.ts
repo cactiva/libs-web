@@ -7,10 +7,11 @@ import session from "@src/stores/session";
 export default async ({
     mode,
     reload,
-    beforeSubmit,
+    setForm,
     afterSubmit,
     form,
     structure,
+    meta,
     setLoading,
     setMode,
     auth,
@@ -36,6 +37,7 @@ export default async ({
             q = generateInsertString(structure, fdata);
             setLoading(true);
             const res = await queryAll(q.query, { variables: q.variables, auth });
+            form[idKey] = res[idKey];
             if (afterSubmit !== undefined) {
                 if (hasRelation) {
                     setMode('edit');
@@ -47,12 +49,13 @@ export default async ({
             }
 
             if (!hasRelation) {
-                await reload()
+                await reload();
                 setMode('');
             } else {
                 setMode('edit');
+                meta.shouldRefresh = true;
+                setForm(toJS(form));
             }
-            form[idKey] = res[idKey];
             setLoading(false)
 
             break;
