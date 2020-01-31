@@ -52,7 +52,9 @@ export default (input: any) => {
                                                 ...r, props: {
                                                     ...r.props,
                                                     children: (c, params) => {
-                                                        return <Text>{c.toLocaleString().replace(/,/ig, '.')}</Text>
+                                                        if (c) {
+                                                            return <Text>{c.toLocaleString().replace(/,/ig, '.')}</Text>
+                                                        }
                                                     }
                                                 }
                                             };
