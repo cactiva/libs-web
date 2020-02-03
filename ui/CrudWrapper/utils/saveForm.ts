@@ -32,8 +32,8 @@ export default async ({
 
     switch (mode) {
         case 'create':
-            if (typeof fdata.created_by !== 'undefined') fdata.created_by = id_user;
-            if (typeof fdata.created_date !== 'undefined') fdata.created_date = current_date;
+            if (typeof fdata.created_by !== 'undefined' || fdata.created_by !== undefined) fdata.created_by = id_user;
+            if (typeof fdata.created_date !== 'undefined' || fdata.created_date !== undefined) fdata.created_date = current_date;
             q = generateInsertString(structure, fdata);
             setLoading(true);
             const res = await queryAll(q.query, { variables: q.variables, auth });
@@ -60,8 +60,8 @@ export default async ({
 
             break;
         case 'edit':
-            if (typeof fdata.updated_by !== 'undefined') fdata.updated_by = id_user;
-            if (typeof fdata.updated_date !== 'undefined') fdata.updated_date = current_date;
+            if (typeof fdata.updated_by !== 'undefined' || fdata.updated_by !== undefined) fdata.updated_by = id_user;
+            if (typeof fdata.updated_date !== 'undefined' || fdata.updated_date !== undefined) fdata.updated_date = current_date;
             q = generateUpdateString(structure, fdata, {
                 where: [
                     {
