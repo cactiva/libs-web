@@ -58,6 +58,7 @@ export default observer((iprops: IFieldProps) => {
         styles: cprops.styles || iprops.styles,
         required: iprops.isRequired,
         value: iprops.value,
+        multiline: cprops.multiline || false
     }
 
     if (cprops.onChange) {

@@ -150,6 +150,9 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                     case "readonly":
                         children = <Input type="text" readOnly />;
                         break;
+                    case "textarea":
+                        children = <Input type="text" multiline={true} />;
+                        break;
                     default:
                         children = <Input type="text" />;
                 }
