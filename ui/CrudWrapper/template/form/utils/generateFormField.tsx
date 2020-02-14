@@ -148,7 +148,7 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                         children = <DateField />
                         break;
                     case "readonly":
-                        children = <Input type="text" readOnly />;
+                        children = <Input type="text" readOnly disabled={true}/>;
                         break;
                     case "textarea":
                         children = <Input type="text" multiline={true} />;
