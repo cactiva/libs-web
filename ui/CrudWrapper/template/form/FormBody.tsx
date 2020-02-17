@@ -47,9 +47,9 @@ export default observer(({ parsed, data, errors, fields, formRef, events }: any)
         />;
     }
 
-
     formRef.current = meta;
     const sectionKeys = Object.keys(sections);
+    const columns = fields.columns;
     return <>
         {errorLen > 0 && <div style={{ flex: 1, width: '100%', marginBottom: 20 }}>
             <MessageBar messageBarType={MessageBarType.error} isMultiline={false}>
@@ -97,7 +97,7 @@ export default observer(({ parsed, data, errors, fields, formRef, events }: any)
                 paddingLeft: sectionKeys.length > 0 ? 15 : 0,
                 flexWrap: 'wrap'
             }}>
-            {fields.columns.map((e, idx) => renderField(e, idx, false))}
+            {columns.map((e, idx) => renderField(e, idx, false))}
         </div>
         <div style={{ height: 300 }}> </div>
     </>
