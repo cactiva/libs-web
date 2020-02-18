@@ -51,7 +51,7 @@ export default observer((iprops: IFieldProps) => {
     }
 
     const cprops = _.get(iprops, 'children.props', {});
-    
+
     let props: any = {
         label: iprops.label,
         style: cprops.style || iprops.style,

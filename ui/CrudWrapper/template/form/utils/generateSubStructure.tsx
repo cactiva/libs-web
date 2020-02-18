@@ -85,6 +85,7 @@ export default (rel, structure, data) => {
     const afterSubmit = _.get(rel, 'column.props.options.form.afterSubmit');
     const beforeSubmit = _.get(rel, 'column.props.options.form.beforeSubmit');
 
+
     return {
         structure: {
             name: relfk.table_name,
@@ -133,6 +134,10 @@ export default (rel, structure, data) => {
                 if (afterLoad) events.afterLoad = afterLoad
                 if (beforeSubmit) events.beforeSubmit = beforeSubmit
                 if (afterSubmit) events.afterSubmit = afterSubmit
+
+                if (rel.children && rel.children.type.type === (Form as any).type) {
+                    return rel.children;
+                }
 
                 return <Form>{
                     fcols.map((e, idx) => {

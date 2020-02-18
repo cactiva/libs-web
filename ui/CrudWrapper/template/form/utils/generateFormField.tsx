@@ -74,7 +74,8 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                     path: e.props.path,
                     column: e,
                     fkey: fk,
-                    options: e.props.options
+                    options: e.props.options,
+                    children: e.props.children
                 };
                 relations[e.props.path].sub = generateSubStructure(relations[e.props.path], structure, data)
                 return false;
@@ -83,7 +84,8 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                     path: e.props.path,
                     column: e,
                     fkey: fk,
-                    options: e.props.options
+                    options: e.props.options,
+                    children: e.props.children
                 };
                 relations[e.props.path].sub = generateSubStructure(relations[e.props.path], structure, data)
                 return false;
@@ -108,6 +110,10 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
             label = e.props.label.substr(3);
         }
         let type = _.get(e, 'props.options.type');
+
+        let childrenType = _.get(e, 'props.children.props.type');
+        if (childrenType === 'file') type = childrenType;
+
         if (cdef || fk || type) {
             if (fk) {
                 const tablename = fk.foreign_table_name;
@@ -132,6 +138,9 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                     type = cdef.data_type;
                 }
                 switch (type) {
+                    case "file":
+                        children = <Input type="file" />;
+                        break;
                     case "integer":
                         children = <Input type="number" />;
                         break;
@@ -148,7 +157,7 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                         children = <DateField />
                         break;
                     case "readonly":
-                        children = <Input type="text" readOnly disabled={true}/>;
+                        children = <Input type="text" readOnly disabled={true} />;
                         break;
                     case "textarea":
                         children = <Input type="text" multiline={true} />;
