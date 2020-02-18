@@ -15,7 +15,7 @@ interface QueryOptions {
     withChildren?: boolean;
 }
 
-export const querySQL = async (q: string, options?: QueryOptions) => {
+export const querySQLAll = async (q: string, options?: QueryOptions) => {
     const headers = {
         "content-type": "application/json",
         ..._.get(options, "headers", {})
@@ -31,7 +31,6 @@ export const querySQL = async (q: string, options?: QueryOptions) => {
             url = `${config.hasura.host}/v1/query`;
         }
 
-        console.log(url)
         const res: any = await api({
             url,
             method: "post",
@@ -76,3 +75,19 @@ export const querySQL = async (q: string, options?: QueryOptions) => {
         return [];
     }
 }
+
+export const querySQLSingle = async (q: string, options: QueryOptions = {}) => {
+    const res = await querySQLAll(q, options);
+    if (res) {
+      if (Array.isArray(res)) {
+        return res[0];
+      }
+      const table = Object.keys(res);
+      if (table.length > 0 && res[table[0]] && res[table[0]].length > 0) {
+        return res[table[0]][0];
+      } else {
+        return null;
+      }
+    }
+    return res;
+  };
