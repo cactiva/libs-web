@@ -3,6 +3,7 @@ import { generateInsertString } from "@src/libs/utils/genInsertString";
 import { queryAll } from "@src/libs/utils/gql";
 import { generateUpdateString } from "@src/libs/utils/genUpdateString";
 import session from "@src/stores/session";
+import _ from "lodash";
 
 export default async ({
     mode,
@@ -29,11 +30,12 @@ export default async ({
 
     const id_user = session.user.id;
     const current_date = new Date();
+    const struct = _.map(structure.fields, 'name');
 
     switch (mode) {
         case 'create':
-            if (typeof fdata.created_by !== 'undefined' || fdata.created_by !== undefined) fdata.created_by = id_user;
-            if (typeof fdata.created_date !== 'undefined' || fdata.created_date !== undefined) fdata.created_date = current_date;
+            if (struct.includes('created_by')) fdata.created_by = id_user;
+            if (struct.includes('created_date')) fdata.created_date = current_date;
             q = generateInsertString(structure, fdata);
             setLoading(true);
             const res = await queryAll(q.query, { variables: q.variables, auth });
@@ -60,8 +62,8 @@ export default async ({
 
             break;
         case 'edit':
-            if (typeof fdata.updated_by !== 'undefined' || fdata.updated_by !== undefined) fdata.updated_by = id_user;
-            if (typeof fdata.updated_date !== 'undefined' || fdata.updated_date !== undefined) fdata.updated_date = current_date;
+            if (struct.includes('updated_by')) fdata.updated_by = id_user;
+            if (struct.includes('updated_date')) fdata.updated_date = current_date;
             q = generateUpdateString(structure, fdata, {
                 where: [
                     {
