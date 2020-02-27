@@ -14,21 +14,25 @@ export default observer((props: any) => {
         resizing: false,
         fields: null as any,
         resizeTimer: 0 as any,
-        events: {}
+        events: {} as any
     })
 
     React.useEffect(() => {
         if (typeof form === 'function' && !meta.fields) {
-            const parsedForm = form(mode, meta.events);
-            const afterLoad = _.get(meta, 'events.afterLoad');
-            if (afterLoad) {
-                afterLoad(data);
-            }
+            meta.events.data = data;
+            meta.events.render = () => {
+                const parsedForm = form(mode, meta.events);
+                const afterLoad = _.get(meta, 'events.afterLoad');
+                if (afterLoad) {
+                    afterLoad(data);
+                }
 
-            meta.fields = generateFormField(parsedForm, structure, colDef, fkeys, auth, errors, meta, data, generateForm);
-            if (inmeta.hasRelation === undefined) {
-                inmeta.hasRelation = Object.keys(meta.fields.relations).length > 0
-            }
+                meta.fields = generateFormField(parsedForm, structure, colDef, fkeys, auth, errors, meta, data, generateForm);
+                if (inmeta.hasRelation === undefined) {
+                    inmeta.hasRelation = Object.keys(meta.fields.relations).length > 0
+                }
+            };
+            meta.events.render();
         }
     }, []);
 

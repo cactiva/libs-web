@@ -29,11 +29,15 @@ export default observer(({ parsed, data, errors, fields, formRef, events }: any)
     const presuf = _.map(_.get(parsed, 'table.head.children'), 'props')
 
     const renderField = (e, idx, isSection = false) => {
+        if (!e.children) {
+            return <React.Fragment key={idx}>{e}</React.Fragment>;
+        }
         if (isSection === false && e.props.section) return null;
         const Field = e.children.type;
         const ps = _.find(presuf, { path: e.props.path });
         return <Field
             {...e.props}
+            {...e.props.children.props}
             {...e.children.props}
             prefix={_.get(ps, 'prefix')}
             suffix={_.get(ps, 'suffix')}
@@ -42,6 +46,10 @@ export default observer(({ parsed, data, errors, fields, formRef, events }: any)
             onChange={(v) => {
                 const value = _.get(v, 'target.value', v);
                 _.set(meta.data, e.props.path, value);
+                const onChange = _.get(e, 'props.children.props.onChange');
+                if (onChange) {
+                    onChange(v);
+                }
             }}
             key={idx}
         />;

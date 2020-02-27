@@ -17,7 +17,9 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
         columns = [columns];
     }
     columns.forEach(e => {
-        keys[e.props.path] = e;
+        const path = _.get(e, 'props.path');
+        if (path)
+            keys[path] = e;
     })
     const ovrd = structure.overrideForm || {};
     _.map(colDef, (e, k) => {
@@ -34,6 +36,9 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
     const indexed = {};
     columns = columns.filter(e => {
         let fk: any = null;
+        if (!e || !_.get(e, 'props.path')) {
+            return e;
+        }
         if (indexed[e.props.path]) return false;
         indexed[e.props.path] = true;
         if (e.props.path.indexOf('.') > 0) {
@@ -101,6 +106,9 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
         }
         return true;
     }).filter(e => !!e && hidden.indexOf(e.props.path) < 0).map(e => {
+        if (!e || !_.get(e, 'props.path')) {
+            return e;
+        }
         const path = e.props.path;
         const cdef = colDef[path];
         const fk = fkeys[path];
