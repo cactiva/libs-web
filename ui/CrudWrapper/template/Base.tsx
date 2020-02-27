@@ -31,6 +31,7 @@ export default observer((props: any) => {
         colDefs: [],
         listScroll: { top: 0, left: 0 },
         errors: {},
+        reloadFormKey: 0,
         init: false
     });
     const reload = async () => {
@@ -69,7 +70,10 @@ export default observer((props: any) => {
         structure={structure}
         parsed={parsed}
         form={meta.form}
-        setForm={v => meta.form = v}
+        setForm={v => {
+            meta.form = v;
+            meta.reloadFormKey++;
+        }}
         setErrors={v => meta.errors = v}
         errors={meta.errors}
         mode={mode}
@@ -119,6 +123,7 @@ export default observer((props: any) => {
                 inmeta={meta}
                 setHasRelation={(v) => meta.hasRelation = v}
                 formRef={formRef}
+                reloadFormKey={meta.reloadFormKey}
                 mode={mode} />
         }
     </div>;

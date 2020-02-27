@@ -6,6 +6,7 @@ import DateField from '../../../../DateField';
 import SelectFk from '../../fields/SelectFk';
 import generateSubStructure from './generateSubStructure';
 import { startCase } from '@src/libs/utils';
+import { toJS } from 'mobx';
 
 export const generateFormField = (parsedForm: any, structure, colDef, fkeys, auth, errors, meta, data, generateForm, modifyColumns) => {
     const relations = {};
@@ -82,7 +83,7 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                     options: e.props.options,
                     children: e.props.children
                 };
-                relations[e.props.path].sub = generateSubStructure(relations[e.props.path], structure, data)
+                relations[e.props.path].sub = generateSubStructure(relations[e.props.path], structure, data);
                 return false;
             } else if (!fk.table_schema) {
                 relations[e.props.path] = {
@@ -92,7 +93,7 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                     options: e.props.options,
                     children: e.props.children
                 };
-                relations[e.props.path].sub = generateSubStructure(relations[e.props.path], structure, data)
+                relations[e.props.path].sub = generateSubStructure(relations[e.props.path], structure, data);
                 return false;
             } else {
                 if (fk && fk.table_name === structure.name) {

@@ -26,10 +26,8 @@ export default observer((props: any) => {
                 if (afterLoad) {
                     afterLoad(data);
                 }
-
-
                 meta.fields = generateFormField(parsedForm, structure, colDef, fkeys, auth, errors, meta, data, generateForm, meta.events.modifyColumns);
-                
+
                 if (inmeta.hasRelation === undefined) {
                     inmeta.hasRelation = Object.keys(meta.fields.relations).length > 0
                 }
@@ -37,6 +35,12 @@ export default observer((props: any) => {
             meta.events.render();
         }
     }, []);
+
+    React.useEffect(() => {
+        if (meta.events.render) {
+            meta.events.render();
+        }
+    }, [props.reloadFormKey]);
 
     if (!meta.fields || inmeta.hasRelation === undefined || typeof form !== 'function') return null;
     return <div style={{ flex: 1, position: 'relative' }}>

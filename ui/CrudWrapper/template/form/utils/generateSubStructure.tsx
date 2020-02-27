@@ -30,11 +30,20 @@ export default (rel, structure, data) => {
 
     const options = _.get(rel, 'options', {});
     const id = idata[relfk.foreign_column_name];
+    if (!id) {
+        return null;
+    }
+
     const fields = _.get(_.find(_.get(istructure, `fields`, []), { name: relpath }), 'fields', []);
+
+    const fname = relfk.column_name;
+    if (fname && !_.find(fields, { name: fname })) {
+        fields.push({ name: fname })
+    }
     const table = options.table || {};
     let tcols = (fields).filter(t => {
         if (Array.isArray(table.removeColumns) && table.removeColumns.indexOf(t.name) >= 0) return false;
-        return t.name !== 'id'
+        return t.name !== 'id' && t.name !== fname;
     });
 
     if (Array.isArray(table.addColumns)) {
@@ -74,7 +83,7 @@ export default (rel, structure, data) => {
             return t;
         })
     }
-    const fcols = (rel.column.props.form || fields).filter(t => { return t.name !== 'id' });
+    const fcols = (rel.column.props.form || fields).filter(t => { return t.name !== 'id' && t.name !== fname });
     const defaultForm = _.get(rel, 'column.props.options.default');
 
     if (!_.find(fields, { name: 'id' })) {
@@ -85,7 +94,6 @@ export default (rel, structure, data) => {
     const afterSubmit = _.get(rel, 'column.props.options.form.afterSubmit');
     const beforeSubmit = _.get(rel, 'column.props.options.form.beforeSubmit');
     const modifyColumns = _.get(rel, 'column.props.options.form.modifyColumns');
-
 
     return {
         structure: {

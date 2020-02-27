@@ -59,6 +59,7 @@ export default async ({
                 setForm(toJS(form));
             }
             setLoading(false)
+            console.log('saved', res);
 
             break;
         case 'edit':

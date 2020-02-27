@@ -43,7 +43,7 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
                         text: 'Delete',
                         iconProps: { iconName: 'Trash' },
                         onClick: async () => {
-                            if (confirm('Are you sure ?')) {
+                            if (window.confirm('Are you sure ?')) {
                                 const q = generateDeleteString(structure, {
                                     where: [
                                         {
@@ -114,6 +114,7 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
                             });
                             const newerrs = {};
                             const ovrd = structure.overrideForm || {};
+                            console.log(ovrd);
                             _.map(cdef, (f, k) => {
                                 if (f && f.is_nullable === 'NO' && !f.column_default) {
                                     if (!form[k] && k !== 'id' && !ovrd[k]) {
