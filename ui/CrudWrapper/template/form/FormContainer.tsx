@@ -14,7 +14,7 @@ export default observer(({ mode, fields, formRef, data, auth, parsed, events }: 
     })
     const rels = Object.keys(fields.relations);
     return (mode === 'create' || rels.length === 0)
-        ? <div style={{ padding: 10 }}>
+        ? <div style={{ padding: 10, position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'auto' }}>
             <FormBody
                 parsed={parsed}
                 data={data}

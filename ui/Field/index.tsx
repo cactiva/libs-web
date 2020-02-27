@@ -26,6 +26,7 @@ interface IFieldProps {
             afterLoad?: (form) => void,
             beforeSubmit?: (form, errors) => void,
             afterSubmit?: (form, lastInsertId) => void,
+            modifyColumns?: (cols: any) => any
         },
         default?: {
             [key: string]: any

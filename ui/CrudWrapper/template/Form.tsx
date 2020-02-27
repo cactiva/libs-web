@@ -27,7 +27,9 @@ export default observer((props: any) => {
                     afterLoad(data);
                 }
 
-                meta.fields = generateFormField(parsedForm, structure, colDef, fkeys, auth, errors, meta, data, generateForm);
+
+                meta.fields = generateFormField(parsedForm, structure, colDef, fkeys, auth, errors, meta, data, generateForm, meta.events.modifyColumns);
+                
                 if (inmeta.hasRelation === undefined) {
                     inmeta.hasRelation = Object.keys(meta.fields.relations).length > 0
                 }

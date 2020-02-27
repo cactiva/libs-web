@@ -84,6 +84,7 @@ export default (rel, structure, data) => {
     const afterLoad = _.get(rel, 'column.props.options.form.afterLoad');
     const afterSubmit = _.get(rel, 'column.props.options.form.afterSubmit');
     const beforeSubmit = _.get(rel, 'column.props.options.form.beforeSubmit');
+    const modifyColumns = _.get(rel, 'column.props.options.form.modifyColumns');
 
 
     return {
@@ -134,6 +135,7 @@ export default (rel, structure, data) => {
                 if (afterLoad) events.afterLoad = afterLoad
                 if (beforeSubmit) events.beforeSubmit = beforeSubmit
                 if (afterSubmit) events.afterSubmit = afterSubmit
+                if (modifyColumns) events.modifyColumns = modifyColumns;
 
                 if (rel.children && rel.children.type.type === (Form as any).type) {
                     return rel.children;

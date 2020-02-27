@@ -7,7 +7,7 @@ import SelectFk from '../../fields/SelectFk';
 import generateSubStructure from './generateSubStructure';
 import { startCase } from '@src/libs/utils';
 
-export const generateFormField = (parsedForm: any, structure, colDef, fkeys, auth, errors, meta, data, generateForm) => {
+export const generateFormField = (parsedForm: any, structure, colDef, fkeys, auth, errors, meta, data, generateForm, modifyColumns) => {
     const relations = {};
     const hidden: any = [];
 
@@ -105,22 +105,30 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
             }
         }
         return true;
-    }).filter(e => !!e && hidden.indexOf(e.props.path) < 0).map(e => {
+    }).filter(e => !!e && hidden.indexOf(e.props.path) < 0);
+
+    const modifiedCols = !!modifyColumns ? modifyColumns(columns.map(e => e.props)) : [];
+
+    columns = columns.map((e, idx) => {
         if (!e || !_.get(e, 'props.path')) {
             return e;
         }
-        const path = e.props.path;
+
+        const eprops = !!modifyColumns ? modifiedCols[idx] : e.props;
+        if (!eprops) return undefined;
+        const path = eprops.path;
         const cdef = colDef[path];
         const fk = fkeys[path];
-        let label = e.props.label;
-        let children = e.props.children;
+        let label = eprops.label;
+        let children = eprops.children;
         if (label.indexOf('Id') === 0) {
-            label = e.props.label.substr(3);
+            label = eprops.label.substr(3);
         }
         let type = _.get(e, 'props.options.type');
 
         let childrenType = _.get(e, 'props.children.props.type');
         if (childrenType === 'file') type = childrenType;
+
 
         if (cdef || fk || type) {
             if (fk) {
@@ -129,9 +137,9 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                     const readonly = type === 'readonly'
                     children = <SelectFk
                         tablename={tablename}
-                        labelField={e.props.labelField}
+                        labelField={eprops.labelField}
                         readonly={readonly}
-                        relation={_.get(e, 'props.options.relation')}
+                        relation={_.get(eprops, 'options.relation')}
                         auth={auth}
                         styles={{
                             container: {
@@ -180,11 +188,11 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
         return {
             children,
             props: {
-                ...e.props,
+                ...eprops,
                 required,
-                errorMessage: errors[e.props.path],
+                errorMessage: errors[eprops.path],
                 label,
-                style: e.props.style,
+                style: eprops.style,
                 styles: {
                     root: {
                         width: '32%',
@@ -193,7 +201,7 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                 }
             }
         };
-    });
+    }).filter(e => !!e);
 
     return { columns, relations };
 }
