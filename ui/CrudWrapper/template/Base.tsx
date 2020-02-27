@@ -104,7 +104,8 @@ export default observer((props: any) => {
                 structure={structure}
                 list={list}
                 setForm={(v) => {
-                    meta.form = v
+                    meta.form = v;
+                    meta.reloadFormKey++;
                 }}
                 filter={meta.filter}
                 reload={reload}
