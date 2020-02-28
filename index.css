@@ -12,6 +12,10 @@
   position: relative;
 }
 
+.filter-container .ms-Label {
+  white-space: nowrap;
+}
+
 .Pane.horizontal.Pane1 {
   min-height: 30px;
 }
@@ -61,8 +65,7 @@
   bottom: 6px;
   height: auto;
   width: 2px;
-  transition: top 0.267s cubic-bezier(0.1, 0.25, 0.75, 0.9) 0s,
-    bottom 0.267s cubic-bezier(0.1, 0.25, 0.75, 0.9) 0s;
+  transition: top 0.267s cubic-bezier(0.1, 0.25, 0.75, 0.9) 0s, bottom 0.267s cubic-bezier(0.1, 0.25, 0.75, 0.9) 0s;
 }
 .base-form-sub > .ms-FocusZone .ms-Button:hover::before {
   top: 0px;

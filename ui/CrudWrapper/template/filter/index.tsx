@@ -46,9 +46,11 @@ export default observer((props: any) => {
     }, [columns])
     const btnRef = useRef(null);
 
-    return <div style={{
+    return <div className="filter-container" style={{
         display: 'flex',
         flexDirection: 'row',
+        overflowX: 'auto',
+        overflowY: 'hidden',
         alignItems: 'center'
     }}>
 

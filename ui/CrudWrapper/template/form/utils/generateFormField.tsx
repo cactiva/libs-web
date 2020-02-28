@@ -1,3 +1,4 @@
+import { startCase } from '@src/libs/utils';
 import pluralize from '@src/libs/utils/pluralize';
 import _ from 'lodash';
 import * as React from 'react';
@@ -5,10 +6,16 @@ import { DateTime, Field, Input } from '../../../..';
 import DateField from '../../../../DateField';
 import SelectFk from '../../fields/SelectFk';
 import generateSubStructure from './generateSubStructure';
-import { startCase } from '@src/libs/utils';
-import { toJS } from 'mobx';
 
-export const generateFormField = (parsedForm: any, structure, colDef, fkeys, auth, errors, meta, data, generateForm, modifyColumns) => {
+export const generateFieldWidth = (px) => {
+    return px < 800
+        ? px < 550
+            ? '98%'
+            : '48%'
+        : '32%';
+}
+
+export const generateFormField = (parsedForm: any, structure, colDef, fkeys, auth, errors, meta, data, generateForm, modifyColumns, width) => {
     const relations = {};
     const hidden: any = [];
 
@@ -83,7 +90,7 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                     options: e.props.options,
                     children: e.props.children
                 };
-                relations[e.props.path].sub = generateSubStructure(relations[e.props.path], structure, data);
+                relations[e.props.path].sub = generateSubStructure(relations[e.props.path], structure, data, width);
                 return false;
             } else if (!fk.table_schema) {
                 relations[e.props.path] = {
@@ -93,7 +100,7 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                     options: e.props.options,
                     children: e.props.children
                 };
-                relations[e.props.path].sub = generateSubStructure(relations[e.props.path], structure, data);
+                relations[e.props.path].sub = generateSubStructure(relations[e.props.path], structure, data, width);
                 return false;
             } else {
                 if (fk && fk.table_name === structure.name) {
@@ -130,7 +137,6 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
         let childrenType = _.get(e, 'props.children.props.type');
         if (childrenType === 'file') type = childrenType;
 
-
         if (cdef || fk || type) {
             if (fk) {
                 const tablename = fk.foreign_table_name;
@@ -144,7 +150,7 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                         auth={auth}
                         styles={{
                             container: {
-                                width: '32%',
+                                width: generateFieldWidth(width),
                                 marginRight: '10px'
                             }
                         }}
@@ -196,7 +202,7 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                 style: eprops.style,
                 styles: {
                     root: {
-                        width: '32%',
+                        width: generateFieldWidth(width),
                         marginRight: '10px'
                     }
                 }

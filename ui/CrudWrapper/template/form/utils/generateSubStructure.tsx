@@ -4,8 +4,9 @@ import { TableColumn, Field, Input, Button } from '../../../..';
 import Form from '../../../../Form';
 import { toJS } from 'mobx';
 import { startCase } from '@src/libs/utils';
+import { generateFieldWidth } from './generateFormField';
 
-export default (rel, structure, data) => {
+export default (rel, structure, data, width) => {
     if (!rel.fkey || !rel.path) return null;
     let idata = data;
     let istructure = structure;
@@ -159,7 +160,7 @@ export default (rel, structure, data) => {
                             label={label}
                             styles={{
                                 root: {
-                                    width: '32%',
+                                    width: generateFieldWidth(width),
                                     marginRight: '10px'
                                 }
                             }}>

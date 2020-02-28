@@ -1,14 +1,15 @@
+import { startCase } from '@src/libs/utils';
 import { generateDeleteString } from '@src/libs/utils/genDeleteString';
 import { queryAll } from '@src/libs/utils/gql';
+import { useWindowSize } from '@src/libs/utils/useWindowSize';
 import _ from 'lodash';
 import { observer, useObservable } from 'mobx-react-lite';
-import { ActionButton } from 'office-ui-fabric-react';
+import { ActionButton, CommandButton, DefaultButton, PrimaryButton } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { columnDefs } from '..';
 import { Text } from '../..';
 import Spinner from '../../Spinner';
 import saveForm from '../utils/saveForm';
-import { startCase } from '@src/libs/utils';
 
 export default observer(({ parsed, mode, form, getForm, setForm, colDef, structure, setLoading, setMode, auth, idKey, reload, style, hasRelation }: any) => {
     const title = _.get(parsed, 'title.children');
@@ -210,13 +211,34 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
             {
                 meta.loading
                     ? <Spinner style={{ marginRight: 25 }} />
-                    : actions.filter(e => e.key !== 'cancel').map(e => <ActionButton
-                        text={e.text}
-                        key={e.key}
-                        iconProps={e.iconProps}
-                        onClick={e.onClick}
-                    />)
+                    : <MenuButtons actions={actions} />
             }
         </div>
     </div>;
 })
+
+const MenuButtons = ({ actions }: any) => {
+    const size = useWindowSize();
+    const buttons = actions.filter(e => e.key !== 'cancel');
+    console.log(buttons);
+    if (size.width > 800 || buttons.length < 2)
+        return <>
+            {buttons.map(e => <ActionButton
+                text={e.text}
+                key={e.key}
+                iconProps={e.iconProps}
+                onClick={e.onClick}
+            />)}
+        </>;
+    else
+        return <>
+            <PrimaryButton
+                style={{ marginRight: 5, padding: '0px 5px' }}
+                text={`${buttons.length} Actions`}
+                split={true}
+                menuProps={{
+                    items: buttons
+                }}
+            />
+        </>
+}

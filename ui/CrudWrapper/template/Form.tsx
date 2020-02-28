@@ -4,6 +4,7 @@ import * as React from 'react';
 import FormContainer from './form/FormContainer';
 import { generateFormField } from './form/utils/generateFormField';
 import _ from 'lodash';
+import { useWindowSize } from '@src/libs/utils/useWindowSize';
 
 export default observer((props: any) => {
     const { structure, form, mode, colDef, auth, inmeta, parsed, formRef, generateForm } = props;
@@ -16,7 +17,7 @@ export default observer((props: any) => {
         resizeTimer: 0 as any,
         events: {} as any
     })
-
+    const size = useWindowSize();
     React.useEffect(() => {
         if (typeof form === 'function' && !meta.fields) {
             meta.events.data = data;
@@ -26,7 +27,7 @@ export default observer((props: any) => {
                 if (afterLoad) {
                     afterLoad(data);
                 }
-                meta.fields = generateFormField(parsedForm, structure, colDef, fkeys, auth, errors, meta, data, generateForm, meta.events.modifyColumns);
+                meta.fields = generateFormField(parsedForm, structure, colDef, fkeys, auth, errors, meta, data, generateForm, meta.events.modifyColumns, size.width);
 
                 if (inmeta.hasRelation === undefined) {
                     inmeta.hasRelation = Object.keys(meta.fields.relations).length > 0

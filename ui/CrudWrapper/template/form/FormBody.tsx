@@ -3,6 +3,8 @@ import { toJS } from 'mobx';
 import { observer, useObservable } from 'mobx-react-lite';
 import * as React from 'react';
 import { MessageBar, MessageBarType, Label } from 'office-ui-fabric-react';
+import "./mobile.scss";
+
 export default observer(({ parsed, data, errors, fields, formRef, events }: any) => {
     const meta = useObservable({
         data: toJS(data),
