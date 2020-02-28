@@ -17,6 +17,7 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
     if (!_.find(actions, { props: { type: 'cancel' } })) {
         actions.push({ props: { type: 'cancel' } });
     }
+    const size = useWindowSize();
     const meta = useObservable({
         loading: false,
         shouldRefresh: false
@@ -185,6 +186,13 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
         }
     }).filter(e => !!e);
 
+    const titleStyle = size.width < 800 ? {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        maxWidth: '200px'
+    } : {};
+
     return <div style={{
         display: "flex",
         flexDirection: 'row',
@@ -205,7 +213,7 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
                 iconProps={e.iconProps}
                 onClick={e.onClick}
             />)}
-            <Text style={{ padding: 10, fontSize: 21, fontWeight: 200 }}>{title}</Text>
+            <Text style={{ padding: 10, fontSize: 21, fontWeight: 200, ...titleStyle }}>{title}</Text>
         </div>
         <div>
             {
@@ -220,7 +228,6 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
 const MenuButtons = ({ actions }: any) => {
     const size = useWindowSize();
     const buttons = actions.filter(e => e.key !== 'cancel');
-    console.log(buttons);
     if (size.width > 800 || buttons.length < 2)
         return <>
             {buttons.map(e => <ActionButton

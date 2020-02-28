@@ -47,205 +47,213 @@ export default observer((props: any) => {
     const btnRef = useRef(null);
 
     return <div className="filter-container" style={{
-        display: 'flex',
-        flexDirection: 'row',
         overflowX: 'auto',
         overflowY: 'hidden',
-        alignItems: 'center'
+        height: '45px',
+        position: 'relative'
     }}>
+        <div style={{
 
-        <div ref={btnRef}>
-            <IconButton
-                onClick={() => meta.show = true}
-                iconProps={{ iconName: "GlobalNavButton" }} />
-        </div>
-        {meta.columns.map((e, key) => {
-            if (meta.visibles[e.key]) {
-                let type = _.get(colDef, `${e.key}.data_type`);
-                if (e.key.indexOf('.') > 0) {
-                    const eks = e.key.split('.').join('.columns.');
-                    type = _.get(colDef, `${eks}.data_type`);
-                    if (!type)
-                        console.log(toJS(colDef), eks);
-                }
+            alignItems: 'center',
+            display: 'flex',
+            flexDirection: 'row',
+            position: 'absolute', left: 0,
+            bottom: 0,
+            right: 0, top: 0
+        }}>
+            <div ref={btnRef}>
+                <IconButton
+                    onClick={() => meta.show = true}
+                    iconProps={{ iconName: "GlobalNavButton" }} />
+            </div>
+            {meta.columns.map((e, key) => {
+                if (meta.visibles[e.key]) {
+                    let type = _.get(colDef, `${e.key}.data_type`);
+                    if (e.key.indexOf('.') > 0) {
+                        const eks = e.key.split('.').join('.columns.');
+                        type = _.get(colDef, `${eks}.data_type`);
+                        if (!type)
+                            console.log(toJS(colDef), eks);
+                    }
 
-                const submit = () => {
-                    reload();
-                }
-                let value = filter.form[e.key];
-                if (e._args) {
-                    value = argsLoadFilter(e, filter);
-                }
-
-                const setValue = (newvalue) => {
+                    const submit = () => {
+                        reload();
+                    }
+                    let value = filter.form[e.key];
                     if (e._args) {
-                        argsSetFilter(e, filter, newvalue);
-                    } else {
-                        let key = e.key;
-                        if (!type && !fkeys[e.key] && e.relation && e.relation.alias) {
-                            key = e.relation.alias;
-                        }
-                        if (!newvalue) {
-                            delete filter.form[key];
-                        } else
-                            filter.form[key] = newvalue;
+                        value = argsLoadFilter(e, filter);
                     }
-                }
 
-                if (e.filter) {
-                    type = e.filter.type;
-                }
-
-                if (e.relation) {
-                    const alias = e.relation.alias;
-                    if (alias) {
-                        let tablename = "";
-                        let relSetValue = setValue;
-                        let key: any = [e.key];
-                        if (!type && !fkeys[e.key] && e.relation && e.relation.alias) {
-                            key = e.relation.alias;
-                        }
-
-                        if (fkeys[e.key]) {
-                            tablename = fkeys[e.key].foreign_table_name;
-                        } else if (colDef[e.key] && colDef[e.key].fk) {
-                            tablename = colDef[e.key].fk.foreign_table_name;
-                            key = colDef[e.key].fk.column_name;
-                            relSetValue = (newvalue) => {
-                                if (!newvalue) {
-                                    delete filter.form[key];
-                                } else
-                                    filter.form[key] = newvalue;
+                    const setValue = (newvalue) => {
+                        if (e._args) {
+                            argsSetFilter(e, filter, newvalue);
+                        } else {
+                            let key = e.key;
+                            if (!type && !fkeys[e.key] && e.relation && e.relation.alias) {
+                                key = e.relation.alias;
                             }
+                            if (!newvalue) {
+                                delete filter.form[key];
+                            } else
+                                filter.form[key] = newvalue;
                         }
-
-                        return <FilterRelation
-                            setValue={relSetValue}
-                            submit={submit}
-                            value={filter.form[key]}
-                            key={key}
-                            structure={structure}
-                            auth={auth}
-                            tablename={tablename}
-                            relation={e.relation}
-                            alias={alias}
-                            field={e.key}
-                            label={e.name} />
                     }
-                }
-                switch (type) {
-                    case "character varying":
-                    case "text":
-                        return <FilterString
-                            setValue={setValue}
-                            submit={submit}
-                            value={value}
-                            key={key}
-                            field={e.key}
-                            label={e.name} />
-                    case "integer":
-                        return <FilterInteger
-                            setValue={setValue}
-                            submit={submit}
-                            key={key}
-                            value={value}
-                            field={e.key}
-                            label={e.name} />
-                    case "numeric": // money
-                        return <FilterMoney
-                            setValue={setValue}
-                            submit={submit}
-                            key={key}
-                            value={value}
-                            field={e.key}
-                            label={e.name} />
-                    case "double precision":
-                    case "decimal":
-                        return <FilterDecimal
-                            setValue={setValue}
-                            submit={submit}
-                            key={key}
-                            value={value}
-                            field={e.key}
-                            label={e.name} />
-                    case "timestamp without time zone":
-                    case "timestamp with time zone":
-                        return <FilterDate
-                            setValue={setValue}
-                            submit={submit}
-                            key={key}
-                            operator={'datetime'}
-                            setOperator={(op) => {
-                                _.set(e, 'filter.type', 'date');
-                                _.set(e, 'filter.operator', op);
-                            }}
-                            onlyBetween={_.get(e, 'filter.onlyBetween')}
-                            value={value}
-                            label={e.name} />
-                    case "boolean":
-                        return <FilterBoolean
-                            setValue={setValue}
-                            submit={submit}
-                            key={key}
-                            value={value}
-                            label={e.name}
-                            field={e.key} />
-                    case "date":
-                        return <FilterDate
-                            setValue={setValue}
-                            submit={submit}
-                            key={key}
-                            operator={_.get(e, 'filter.operator')}
-                            setOperator={(op) => {
-                                _.set(e, 'filter.type', 'date');
-                                _.set(e, 'filter.operator', op);
-                            }}
-                            onlyBetween={_.get(e, 'filter.onlyBetween')}
-                            value={value}
-                            label={e.name} />
-                    case "select":
-                        return <FilterSelect
-                            setValue={setValue}
-                            submit={submit}
-                            key={key}
-                            value={value}
-                            field={e.key}
-                            items={e.filter.items}
-                            label={e.name} />
-                }
-                return null;
-            }
-        })}
 
-        {meta.show && (
-            <Callout
-                onDismiss={() => meta.show = false}
-                setInitialFocus={true}
-                target={btnRef.current}
-            >
-                <div style={{
-                    padding: 10,
-                    display: "flex",
-                    width: '250px',
-                    flexWrap: 'wrap',
-                    flexDirection: 'row'
-                }}>
-                    {meta.columns.map((e, key) => {
-                        return <Checkbox
-                            key={e.key}
-                            styles={{ root: { marginBottom: 3, marginRight: 3, width: '120px' } }}
-                            label={e.name}
-                            checked={!!meta.visibles[e.key]}
-                            onChange={() => {
-                                if (meta.visibles[e.key]) {
-                                    meta.visibles[e.key] = false;
-                                } else {
-                                    meta.visibles[e.key] = true;
+                    if (e.filter) {
+                        type = e.filter.type;
+                    }
+
+                    if (e.relation) {
+                        const alias = e.relation.alias;
+                        if (alias) {
+                            let tablename = "";
+                            let relSetValue = setValue;
+                            let key: any = [e.key];
+                            if (!type && !fkeys[e.key] && e.relation && e.relation.alias) {
+                                key = e.relation.alias;
+                            }
+
+                            if (fkeys[e.key]) {
+                                tablename = fkeys[e.key].foreign_table_name;
+                            } else if (colDef[e.key] && colDef[e.key].fk) {
+                                tablename = colDef[e.key].fk.foreign_table_name;
+                                key = colDef[e.key].fk.column_name;
+                                relSetValue = (newvalue) => {
+                                    if (!newvalue) {
+                                        delete filter.form[key];
+                                    } else
+                                        filter.form[key] = newvalue;
                                 }
-                            }} />;
-                    })}
-                </div>
-            </Callout>
-        )}
+                            }
+
+                            return <FilterRelation
+                                setValue={relSetValue}
+                                submit={submit}
+                                value={filter.form[key]}
+                                key={key}
+                                structure={structure}
+                                auth={auth}
+                                tablename={tablename}
+                                relation={e.relation}
+                                alias={alias}
+                                field={e.key}
+                                label={e.name} />
+                        }
+                    }
+                    switch (type) {
+                        case "character varying":
+                        case "text":
+                            return <FilterString
+                                setValue={setValue}
+                                submit={submit}
+                                value={value}
+                                key={key}
+                                field={e.key}
+                                label={e.name} />
+                        case "integer":
+                            return <FilterInteger
+                                setValue={setValue}
+                                submit={submit}
+                                key={key}
+                                value={value}
+                                field={e.key}
+                                label={e.name} />
+                        case "numeric": // money
+                            return <FilterMoney
+                                setValue={setValue}
+                                submit={submit}
+                                key={key}
+                                value={value}
+                                field={e.key}
+                                label={e.name} />
+                        case "double precision":
+                        case "decimal":
+                            return <FilterDecimal
+                                setValue={setValue}
+                                submit={submit}
+                                key={key}
+                                value={value}
+                                field={e.key}
+                                label={e.name} />
+                        case "timestamp without time zone":
+                        case "timestamp with time zone":
+                            return <FilterDate
+                                setValue={setValue}
+                                submit={submit}
+                                key={key}
+                                operator={'datetime'}
+                                setOperator={(op) => {
+                                    _.set(e, 'filter.type', 'date');
+                                    _.set(e, 'filter.operator', op);
+                                }}
+                                onlyBetween={_.get(e, 'filter.onlyBetween')}
+                                value={value}
+                                label={e.name} />
+                        case "boolean":
+                            return <FilterBoolean
+                                setValue={setValue}
+                                submit={submit}
+                                key={key}
+                                value={value}
+                                label={e.name}
+                                field={e.key} />
+                        case "date":
+                            return <FilterDate
+                                setValue={setValue}
+                                submit={submit}
+                                key={key}
+                                operator={_.get(e, 'filter.operator')}
+                                setOperator={(op) => {
+                                    _.set(e, 'filter.type', 'date');
+                                    _.set(e, 'filter.operator', op);
+                                }}
+                                onlyBetween={_.get(e, 'filter.onlyBetween')}
+                                value={value}
+                                label={e.name} />
+                        case "select":
+                            return <FilterSelect
+                                setValue={setValue}
+                                submit={submit}
+                                key={key}
+                                value={value}
+                                field={e.key}
+                                items={e.filter.items}
+                                label={e.name} />
+                    }
+                    return null;
+                }
+            })}
+
+            {meta.show && (
+                <Callout
+                    onDismiss={() => meta.show = false}
+                    setInitialFocus={true}
+                    target={btnRef.current}
+                >
+                    <div style={{
+                        padding: 10,
+                        display: "flex",
+                        width: '250px',
+                        flexWrap: 'wrap',
+                        flexDirection: 'row'
+                    }}>
+                        {meta.columns.map((e, key) => {
+                            return <Checkbox
+                                key={e.key}
+                                styles={{ root: { marginBottom: 3, marginRight: 3, width: '120px' } }}
+                                label={e.name}
+                                checked={!!meta.visibles[e.key]}
+                                onChange={() => {
+                                    if (meta.visibles[e.key]) {
+                                        meta.visibles[e.key] = false;
+                                    } else {
+                                        meta.visibles[e.key] = true;
+                                    }
+                                }} />;
+                        })}
+                    </div>
+                </Callout>
+            )}
+        </div>
     </div>;
 })
