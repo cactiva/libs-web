@@ -17,6 +17,19 @@ export default observer((props: any) => {
             }
         }
     }, []);
+
+    const getValue = () => {
+        let date = new Date();
+        if (meta.date) {
+            if (typeof meta.date === 'string') {
+                date = parseISO(meta.date);
+            } else {
+                date = meta.date;
+            }
+        }
+        return date;
+    }
+
     return <DatePicker
         {...props}
         isRequired={props.required}
@@ -30,7 +43,6 @@ export default observer((props: any) => {
         }}
         onSelectDate={(e: any) => {
             meta.date = e;
-            if (props.setValue)
-                props.setValue(e);
+            props.onChange(getValue());
         }} />
 });

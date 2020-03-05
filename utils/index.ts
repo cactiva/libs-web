@@ -97,8 +97,10 @@ const truncateStr = (text: string, length: number) => {
   return string.length > length ? string.substr(0, length - 1) + "..." : string;
 };
 
-const formatMoney = (number: any) => {
+const formatMoney = (number: any, separator?: string, precision?: number) => {
   let v = number;
+  if(!separator) separator = '.';
+  if(!precision) precision = 12;
 
   if (typeof v === 'string') {
     v = v.replace(/\./ig, '');
@@ -108,14 +110,23 @@ const formatMoney = (number: any) => {
     v = parseInt(v);
   }
 
-  if (isNaN(v)) return '';
+  if (typeof v === "number") {
+    v = floatPointer(v, precision);
+  }
 
-  return (v as number).toLocaleString().replace(/,/ig, '.');
+  if (isNaN(v)) return '';
+  
+  return (v as number).toLocaleString().replace(/,/ig, separator);
 }
 
 const unformatMoney = (string: any) => {
   return parseInt(string.replace(/\./ig, ''))
 }
+
+const floatPointer = (number, precision) => {
+  return Math.ceil(Number(parseFloat(number).toPrecision(precision)));
+}
+
 export {
   uuid,
   randString,
