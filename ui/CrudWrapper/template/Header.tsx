@@ -10,6 +10,8 @@ import { columnDefs } from '..';
 import { Text } from '../..';
 import Spinner from '../../Spinner';
 import saveForm from '../utils/saveForm';
+import ExcelRender from '../../../utils/excel';
+import session from "@src/stores/session";
 
 export default observer(({ parsed, mode, form, getForm, setForm, colDef, structure, setLoading, setMode, auth, idKey, reload, style, hasRelation }: any) => {
     const title = _.get(parsed, 'title.children');
@@ -179,6 +181,20 @@ export default observer(({ parsed, mode, form, getForm, setForm, colDef, structu
                         iconProps: { iconName: icon },
                         onClick: e.props.options && e.props.options.onClick ? e.props.options.onClick : () => {
                             console.log('custom clicked')
+                        }
+                    }
+                }
+                break;
+            case "excel":
+                if (mode === '') {
+                    return {
+                        key: 'excel',
+                        text: 'Export Excel',
+                        iconProps: { iconName: 'ExcelLogo' },
+                        onClick: e.props.options && e.props.options.onClick ? e.props.options.onClick : () => {
+                            console.log('excel clicked');
+                            session.currentMenu = "Pages/Excel/ContohExcel";
+                            // session.currentMenu = "Pages/Transactions/Vessel/Realization/ProductivityList";
                         }
                     }
                 }
