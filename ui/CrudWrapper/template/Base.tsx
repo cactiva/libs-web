@@ -9,6 +9,7 @@ import Form from './Form';
 import Header from './Header';
 import List from './List';
 import Loading from './Loading';
+import { toJS } from 'mobx';
 
 export default observer((props: any) => {
     const { parsed, mode, setMode, afterQuery, structure, generateForm, auth, idKey, renderHeader, style, headerStyle } = props;
@@ -44,6 +45,10 @@ export default observer((props: any) => {
         if (afterQuery) await afterQuery(resultList)
         meta.list = resultList;
     };
+    const getList = async () => {
+        return meta.list;
+    }
+
     useAsyncEffect(async () => {
         meta.fkeys = await reloadStructure({
             idKey, structure, setLoading: (value) => {
@@ -83,6 +88,9 @@ export default observer((props: any) => {
         idKey={idKey}
         getForm={() => {
             return formRef.current
+        }}
+        getList={() => {
+            return toJS(meta.list);
         }}
         colDef={colDef}
         reload={reload}

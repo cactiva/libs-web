@@ -50,11 +50,6 @@ export default observer(({ table, reload, setForm, setScroll, scroll, list, auth
                     left: e.target.scrollLeft
                 })
             }
-
-
-
-
-
         }
     }, [dref.current])
 
