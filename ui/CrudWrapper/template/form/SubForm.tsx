@@ -104,7 +104,8 @@ const SubBase = observer(({ sub, auth }: any) => {
             ? {
                 position: 'absolute',
                 right: 10,
-                top: -5
+                top: -5,
+                zIndex: 99
             }
             : { flexDirection: 'column', height: '100%', justifyContent: 'flex-start' };
     return <Base
