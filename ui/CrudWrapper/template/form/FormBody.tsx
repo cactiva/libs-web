@@ -52,6 +52,10 @@ export default observer(({ parsed, data, errors, fields, formRef, events }: any)
                 if (onChange) {
                     onChange(v);
                 }
+                else {
+                    const optionsOnChange = _.get(e, 'props.options.onChange');
+                    if (optionsOnChange) optionsOnChange(v);
+                }
             }}
             key={idx}
         />;
