@@ -27,7 +27,7 @@ export default observer((props: any) => {
                 date = meta.date;
             }
         }
-        return date;
+        return dateFormat(date, 'yyyy-MM-dd');
     }
 
     return <DatePicker

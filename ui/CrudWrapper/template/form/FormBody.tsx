@@ -67,7 +67,7 @@ export default observer(({ parsed, data, errors, fields, formRef, events }: any)
     return <>
         {errorLen > 0 && <div style={{ flex: 1, width: '100%', marginBottom: 20 }}>
             <MessageBar messageBarType={MessageBarType.error} isMultiline={false}>
-                Save Failed. Please fix {errorLen} error bellow:
+                Save Failed. Please fix {errorLen} error below:
         </MessageBar>
         </div>
         }
