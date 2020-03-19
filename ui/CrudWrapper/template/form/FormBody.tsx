@@ -64,6 +64,9 @@ export default observer(({ parsed, data, errors, fields, formRef, events }: any)
     formRef.current = meta;
     const sectionKeys = Object.keys(sections);
     const columns = fields.columns;
+    if(errorLen>0) {
+        console.log(toJS(meta.errors));
+    }
     return <>
         {errorLen > 0 && <div style={{ flex: 1, width: '100%', marginBottom: 20 }}>
             <MessageBar messageBarType={MessageBarType.error} isMultiline={false}>
