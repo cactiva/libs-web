@@ -41,7 +41,8 @@ export default observer((iprops: any) => {
 
     if (props.type === "money"
         || props.type === "number"
-        || props.type === "decimal") {
+        || props.type === "decimal"
+        || props.type === "double") {
         return <TextField
             {...props}
             value={meta.oldval}
@@ -67,6 +68,7 @@ const clearValue = (value, type) => {
     if (type === "number") return parseInt((value || 0).toString().replace(/\D/g, ''));
     if (type === "money") return parseInt((value || 0).toString().replace(/\D/g, ''));
     if (type === "decimal") return parseFloat((value || 0).toString().replace(/\D/g, ''));
+    if (type === "double") return value ? parseFloat(value).toFixed(2) : parseFloat((value || 0));
     return 0;
 }
 
@@ -74,5 +76,6 @@ const formatValue = (value, type) => {
     if (type === "money") return clearValue(value, type).toLocaleString().replace(/,/ig, '.')
     if (type === "number") return clearValue(value, type).toString()
     if (type === "decimal") return clearValue(value, type).toString()
+    if (type === "double") return clearValue(value, type)
     return value;
 }

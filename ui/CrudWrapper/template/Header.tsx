@@ -200,6 +200,22 @@ export default observer(({ parsed, mode, form, getList, getForm, setForm, colDef
                     }
                 }
                 break;
+            case "back":
+                if (mode === '') {
+                    return {
+                        key: 'back',
+                        text: '',
+                        iconProps: { iconName: 'ChevronLeft' },
+                        onClick: e.props.options && e.props.options.onClick ? e.props.options.onClick : () => {
+                            if(!session.menuStack) session.menuStack = [];
+                            if(!session.menuStack.includes(session.prevMenu)) session.menuStack.push(session.prevMenu);
+                            session.currentMenu = session.prevMenu;
+                            const prev_index = session.menuStack.indexOf(session.currentMenu) - 1;
+                            session.prevMenu = prev_index < 0 ? '' : session.menuStack[prev_index];
+                        }
+                    }
+                }
+                break;
         }
     }).filter(e => !!e);
 
@@ -223,7 +239,7 @@ export default observer(({ parsed, mode, form, getList, getForm, setForm, colDef
             flexDirection: 'row',
             alignItems: 'center',
         }}>
-            {actions.filter(e => e.key === 'cancel').map(e => <ActionButton
+            {actions.filter(e => e.key === 'cancel' || e.key === 'back').map(e => <ActionButton
                 text={e.text}
                 style={{ marginRight: -15 }}
                 key={e.key}
@@ -244,7 +260,7 @@ export default observer(({ parsed, mode, form, getList, getForm, setForm, colDef
 
 const MenuButtons = ({ actions }: any) => {
     const size = useWindowSize();
-    const buttons = actions.filter(e => e.key !== 'cancel');
+    const buttons = actions.filter(e => e.key !== 'cancel' && e.key !== 'back');
     if (size.width > 800 || buttons.length < 2)
         return <>
             {buttons.map(e => <ActionButton
