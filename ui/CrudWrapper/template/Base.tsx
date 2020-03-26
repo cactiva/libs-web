@@ -48,6 +48,18 @@ export default observer((props: any) => {
     const getList = async () => {
         return meta.list;
     }
+    const parseChildrenData = (data) => {
+        if (data.name) {
+            data = data.name;
+            return data;
+        } else {
+            const key = Object.keys(data).filter(item => item.toLowerCase() != 'id');
+            data = data[key[0]];
+            if(Object.keys(data).length > 1) {
+                return parseChildrenData(data);
+            }
+        }
+    }
 
     useAsyncEffect(async () => {
         meta.fkeys = await reloadStructure({
@@ -90,7 +102,33 @@ export default observer((props: any) => {
             return formRef.current
         }}
         getList={() => {
-            return toJS(meta.list);
+            const data = parsed.table.head.children;
+            const table_content = data.map((val) => {
+                return val.props;
+            })
+            let list = toJS(meta.list).map((val, key) => {
+                let list_data: any = [];
+                table_content.map((item) => {
+                    let data;
+                    if (item.path.includes("id_")) {
+                        const m_path = item.path.replace('id_', 'm_');
+                        const t_path = item.path.replace('id_', 't_');
+                        if (val[m_path]) data = _.get(val, m_path);
+                        else if (val[t_path]) data = _.get(val, t_path);
+                        if (data) {
+                            data = parseChildrenData(data);
+                        } else {
+                            data = _.get(val, item.path);
+                        }
+                    } else {
+                        data = _.get(val, item.path);
+                    }
+                    const title = item.title.replace("Id ", "");
+                    list_data = { ...list_data, [title]: data ? data : '-' };
+                })
+                return list_data;
+            })
+            return toJS(list);
         }}
         colDef={colDef}
         reload={reload}

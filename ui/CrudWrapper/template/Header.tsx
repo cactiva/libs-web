@@ -193,8 +193,7 @@ export default observer(({ parsed, mode, form, getList, getForm, setForm, colDef
                         text: 'Export Excel',
                         iconProps: { iconName: 'ExcelLogo' },
                         onClick: e.props.options && e.props.options.onClick ? e.props.options.onClick : () => {
-                            console.log(getList());
-                            // ExportExcel({data: getList(), filename: 'excel-file'});
+                            ExportExcel({data: getList(), filename: 'excel-file'});
                         }
                     }
                 }
