@@ -50,11 +50,11 @@ export default observer(({ parsed, data, errors, fields, formRef, events }: any)
                 _.set(meta.data, e.props.path, value);
                 const onChange = _.get(e, 'props.children.props.onChange');
                 if (onChange) {
-                    onChange(v);
+                    onChange(v, meta.data);
                 }
                 else {
                     const optionsOnChange = _.get(e, 'props.options.onChange');
-                    if (optionsOnChange) optionsOnChange(v);
+                    if (optionsOnChange) optionsOnChange(v, meta.data);
                 }
             }}
             key={idx}

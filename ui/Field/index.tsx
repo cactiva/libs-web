@@ -23,6 +23,7 @@ interface IFieldProps {
             removeColumns?: string[]
         },
         form?: {
+            watch?: any[],
             afterLoad?: (form) => void,
             beforeSubmit?: (form, errors) => void,
             afterSubmit?: (form, lastInsertId) => void,
