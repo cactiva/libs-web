@@ -33,9 +33,6 @@ export default observer((props: any) => {
       }
     }
   }, [query]);
-  if (props.label === "Kpi") {
-    console.log(toJS(props.relation.query), query);
-  }
   return (
     <Select
       styles={props.styles}
