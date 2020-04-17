@@ -110,11 +110,6 @@ const formatSingleString = (e, f, cdef) => {
 const getQuery = (props) => {
   const {
     tablename,
-    labelField,
-    auth,
-    value,
-    setValue,
-    label,
     relation,
   } = props;
   let query = "";
@@ -134,9 +129,6 @@ const loadList = async (props) => {
     tablename,
     labelField,
     auth,
-    value,
-    setValue,
-    label,
     relation,
   } = props;
   let queryIndex = getQuery(props);
@@ -148,9 +140,9 @@ const loadList = async (props) => {
       query = `query { ${tablename} {
                     id
                     ${cols
-                      .map((e) => e.column_name)
-                      .filter((e) => e != "id" && e.indexOf("id") !== 0)
-                      .join("\n")}
+          .map((e) => e.column_name)
+          .filter((e) => e !== "id" && e.indexOf("id") !== 0)
+          .join("\n")}
                 }}`;
     }
   }

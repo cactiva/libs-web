@@ -262,15 +262,15 @@ export default observer(
                   e.props.options && e.props.options.onClick
                     ? e.props.options.onClick
                     : () => {
-                        if (!session.menuStack) session.menuStack = [];
-                        if (!session.menuStack.includes(session.prevMenu))
-                          session.menuStack.push(session.prevMenu);
-                        session.currentMenu = session.prevMenu;
-                        const prev_index =
-                          session.menuStack.indexOf(session.currentMenu) - 1;
-                        session.prevMenu =
-                          prev_index < 0 ? "" : session.menuStack[prev_index];
-                      },
+                        // if (!session.menuStack) session.menuStack = [];
+                        // if (!session.menuStack.includes(session.prevMenu))
+                        //   session.menuStack.push(session.prevMenu);
+                        // session.currentMenu = session.prevMenu;
+                        // const prev_index =
+                        //   session.menuStack.indexOf(session.currentMenu) - 1;
+                        // session.prevMenu =
+                        //   prev_index < 0 ? "" : session.menuStack[prev_index];
+                      }, 
               };
             }
             break;

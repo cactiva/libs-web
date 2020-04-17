@@ -2,7 +2,7 @@ import { observable, observe } from "mobx";
 
 const storage = localStorage;
 
-export default (name: string, data: any) => {
+export default <T>(name: string, data: T): T => {
     const initData = data;
     const vname = `store.${name}`;
     const sData = storage.getItem(vname);

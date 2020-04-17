@@ -5,15 +5,36 @@ import _ from 'lodash';
 
 const structures = {} as any;
 export const loadColDefs = async (name) => {
+    if (localStorage[`structure-cd-${name}`]) {
+        try {
+            const prs = JSON.parse(localStorage[`structure-cd-${name}`]);
+            if (prs) {
+                structures[name] = prs;
+            }
+        } catch (e) { console.log(e) }
+    }
+
     if (columnDefs[name] === undefined) {
         columnDefs[name] = api({ url: `/api/db/columns?table=${name}` });
     }
     if (columnDefs[name] instanceof Promise) {
         columnDefs[name] = await columnDefs[name];
+        localStorage[`structure-cd-${name}`] = JSON.stringify(structures[name]);
     }
+
     return columnDefs[name];
 }
 export const loadStructure = async (name, indexed = false, setLoading?) => {
+
+    if (localStorage[`structure-${name}`]) {
+        try {
+            const prs = JSON.parse(localStorage[`structure-${name}`]);
+            if (prs) {
+                structures[name] = prs;
+            }
+        } catch (e) { console.log(e) }
+    }
+
     if (structures[name] === undefined) {
         if (setLoading) {
             setLoading(`Relation: ${_.upperCase(name)}`);
@@ -22,6 +43,7 @@ export const loadStructure = async (name, indexed = false, setLoading?) => {
     }
     if (structures[name] instanceof Promise) {
         structures[name] = await structures[name];
+        localStorage[`structure-${name}`] = JSON.stringify(structures[name]);
     }
 
     if (indexed) {
@@ -29,6 +51,7 @@ export const loadStructure = async (name, indexed = false, setLoading?) => {
             .keyBy('foreign_table_name')
             .value();
     }
+
     return structures[name];
 }
 
