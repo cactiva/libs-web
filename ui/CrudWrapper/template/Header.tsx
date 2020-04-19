@@ -262,6 +262,7 @@ export default observer(
                   e.props.options && e.props.options.onClick
                     ? e.props.options.onClick
                     : () => {
+                        window.history.back();
                         // if (!session.menuStack) session.menuStack = [];
                         // if (!session.menuStack.includes(session.prevMenu))
                         //   session.menuStack.push(session.prevMenu);
