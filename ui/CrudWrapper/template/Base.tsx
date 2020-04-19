@@ -1,177 +1,273 @@
-import _ from 'lodash';
-import { observer, useObservable } from 'mobx-react-lite';
-import React, { useRef } from 'react';
-import useAsyncEffect from 'use-async-effect';
-import { columnDefs } from '..';
-import reloadList from '../utils/reloadList';
-import reloadStructure from '../utils/reloadStructure';
-import Form from './Form';
-import Header from './Header';
-import List from './List';
-import Loading from './Loading';
-import { toJS } from 'mobx';
+import { useLocation, navigate } from "@reach/router";
+import _ from "lodash";
+import { toJS } from "mobx";
+import { observer, useObservable } from "mobx-react-lite";
+import React, { useRef } from "react";
+import useAsyncEffect from "use-async-effect";
+import { columnDefs } from "..";
+import reloadList from "../utils/reloadList";
+import reloadStructure from "../utils/reloadStructure";
+import Form from "./Form";
+import Header from "./Header";
+import List from "./List";
+import Loading from "./Loading";
 
 export default observer((props: any) => {
-    const { parsed, mode, setMode, afterQuery, structure, generateForm, auth, idKey, renderHeader, style, headerStyle } = props;
-    const { table, form } = parsed;
-    const meta = useObservable({
-        list: [],
-        filter: {
-            columns: {},
-            initDefault: false,
-            form: {}
-        },
-        paging: {
-            current: 0,
-        },
-        loading: false,
-        hasRelation: undefined,
-        loadingInitText: '',
-        fkeys: structure.fkeys,
-        form: {},
-        colDefs: [],
-        listScroll: { top: 0, left: 0 },
-        errors: {},
-        reloadFormKey: 0,
-        init: false
+  const location = useLocation();
+  const {
+    parsed,
+    mode,
+    setMode,
+    afterQuery,
+    structure,
+    generateForm,
+    auth,
+    idKey,
+    renderHeader,
+    isRoot,
+    style,
+    headerStyle,
+  } = props;
+  const { table, form } = parsed;
+  const meta = useObservable({
+    list: [],
+    filter: {
+      columns: {},
+      initDefault: false,
+      form: {},
+    },
+    paging: {
+      current: 0,
+    },
+    loading: false,
+    hasRelation: undefined,
+    loadingInitText: "",
+    fkeys: structure.fkeys,
+    form: {},
+    colDefs: [],
+    listScroll: { top: 0, left: 0 },
+    errors: {},
+    reloadFormKey: 0,
+    init: false,
+    initStructure: false,
+  });
+  const reload = async () => {
+    const resultList = await reloadList({
+      structure,
+      idKey,
+      filter: meta.filter,
+      paging: meta.paging,
     });
-    const reload = async () => {
-        const resultList = await reloadList({
-            structure,
-            idKey,
-            filter: meta.filter,
-            paging: meta.paging
-        });
-        if (afterQuery) await afterQuery(resultList)
-        meta.list = resultList;
-    };
-    const getList = async () => {
-        return meta.list;
+    if (afterQuery) await afterQuery(resultList);
+    meta.list = resultList;
+  };
+  const parseChildrenData = (data) => {
+    if (data.name) {
+      data = data.name;
+      return data;
+    } else {
+      const key = Object.keys(data).filter(
+        (item) => item.toLowerCase() != "id"
+      );
+      data = data[key[0]];
+      if (Object.keys(data).length > 1) {
+        return parseChildrenData(data);
+      }
     }
-    const parseChildrenData = (data) => {
-        if (data.name) {
-            data = data.name;
-            return data;
+  };
+
+  const path = location.pathname;
+  const patharr = path.split("/");
+  const id = parseInt(patharr[patharr.length - 1]);
+  useAsyncEffect(async () => {
+    meta.fkeys = await reloadStructure({
+      idKey,
+      structure,
+      setLoading: (value) => {
+        meta.loadingInitText = value;
+      },
+    });
+    meta.colDefs = _.get(columnDefs, `${structure.name}`, []);
+
+    if (!isRoot) {
+      if (meta.list && meta.list.length === 0) {
+        reload();
+      }
+    }
+
+    if (isRoot) {
+      meta.initStructure = true;
+    } else {
+      meta.init = true;
+    }
+  }, []);
+
+  useAsyncEffect(async () => {
+    if (!isRoot) return;
+
+    await waitUntil(() => meta.initStructure === true);
+    if (id) {
+      if (meta.form && (meta.form as any).id !== id) {
+        const list = await reloadList({
+          structure,
+          idKey,
+          filter: {
+            columns: {
+              id: {
+                default: id,
+              },
+              initDefault: false,
+            },
+          },
+          paging: meta.paging,
+        });
+
+        if (list.length === 1) {
+          meta.form = list[0];
+          meta.reloadFormKey++;
+
+          if (mode !== "edit") {
+            setMode("edit");
+          }
         } else {
-            const key = Object.keys(data).filter(item => item.toLowerCase() != 'id');
-            data = data[key[0]];
-            if(Object.keys(data).length > 1) {
-                return parseChildrenData(data);
-            }
+          navigate((location.state as any).path);
         }
-    }
+      }
+    } else {
+      if (mode !== "") {
+        setMode("");
+      }
 
-    useAsyncEffect(async () => {
-        meta.fkeys = await reloadStructure({
-            idKey, structure, setLoading: (value) => {
-                meta.loadingInitText = value;
-            }
+      if (meta.list && meta.list.length === 0) {
+        reload();
+      }
+    }
+    meta.init = true;
+  }, [location.pathname]);
+
+  const colDef: any = {};
+  meta.colDefs.map((e: any) => {
+    colDef[e.column_name] = e;
+  });
+  const formRef = useRef(null as any);
+  if (Object.keys(colDef).length === 0 || !meta.fkeys || !meta.init) {
+    return <Loading text={meta.loadingInitText} />;
+  }
+
+  const header = (
+    <Header
+      structure={structure}
+      parsed={parsed}
+      form={meta.form}
+      isRoot={isRoot}
+      setForm={(v) => {
+        meta.form = v;
+        meta.reloadFormKey++;
+      }}
+      setErrors={(v) => (meta.errors = v)}
+      errors={meta.errors}
+      mode={mode}
+      style={headerStyle}
+      hasRelation={meta.hasRelation}
+      auth={auth}
+      idKey={idKey}
+      getForm={() => {
+        return formRef.current;
+      }}
+      getList={() => {
+        const data = parsed.table.head.children;
+        const table_content = data.map((val) => {
+          return val.props;
         });
-        meta.colDefs = _.get(columnDefs, `${structure.name}`, []);
-        if (meta.list && meta.list.length === 0) {
-            reload()
-        }
-        meta.init = true;
-    }, []);
+        let list = toJS(meta.list).map((val, key) => {
+          let list_data: any = [];
+          table_content.map((item) => {
+            let data;
+            if (item.path.includes("id_")) {
+              const m_path = item.path.replace("id_", "m_");
+              const t_path = item.path.replace("id_", "t_");
+              if (val[m_path]) data = _.get(val, m_path);
+              else if (val[t_path]) data = _.get(val, t_path);
+              if (data) {
+                data = parseChildrenData(data);
+              } else {
+                data = _.get(val, item.path);
+              }
+            } else {
+              data = _.get(val, item.path);
+            }
+            const title = item.title.replace("Id ", "");
+            list_data = { ...list_data, [title]: data ? data : "-" };
+          });
+          return list_data;
+        });
+        return toJS(list);
+      }}
+      colDef={colDef}
+      reload={reload}
+      setLoading={(v: boolean) => (meta.loading = v)}
+      setMode={setMode}
+    />
+  );
 
-    const colDef: any = {};
-    meta.colDefs.map((e: any) => {
-        colDef[e.column_name] = e;
-    })
-    const formRef = useRef(null as any);
-    if (Object.keys(colDef).length === 0 || !meta.fkeys || !meta.init) {
-        return <Loading text={meta.loadingInitText} />;
-    }
-
-    const header = <Header
-        structure={structure}
-        parsed={parsed}
-        form={meta.form}
-        setForm={v => {
+  const scroll = meta.listScroll;
+  const list = meta.list;
+  return (
+    <div
+      style={{ display: "flex", flexDirection: "column", flex: 1, ...style }}
+    >
+      {renderHeader
+        ? renderHeader({
+            header,
+          })
+        : header}
+      {mode === "" ? (
+        <List
+          table={table}
+          setMode={setMode}
+          structure={structure}
+          list={list}
+          setForm={(v) => {
             meta.form = v;
             meta.reloadFormKey++;
-        }}
-        setErrors={v => meta.errors = v}
-        errors={meta.errors}
-        mode={mode}
-        style={headerStyle}
-        hasRelation={meta.hasRelation}
-        auth={auth}
-        idKey={idKey}
-        getForm={() => {
-            return formRef.current
-        }}
-        getList={() => {
-            const data = parsed.table.head.children;
-            const table_content = data.map((val) => {
-                return val.props;
-            })
-            let list = toJS(meta.list).map((val, key) => {
-                let list_data: any = [];
-                table_content.map((item) => {
-                    let data;
-                    if (item.path.includes("id_")) {
-                        const m_path = item.path.replace('id_', 'm_');
-                        const t_path = item.path.replace('id_', 't_');
-                        if (val[m_path]) data = _.get(val, m_path);
-                        else if (val[t_path]) data = _.get(val, t_path);
-                        if (data) {
-                            data = parseChildrenData(data);
-                        } else {
-                            data = _.get(val, item.path);
-                        }
-                    } else {
-                        data = _.get(val, item.path);
-                    }
-                    const title = item.title.replace("Id ", "");
-                    list_data = { ...list_data, [title]: data ? data : '-' };
-                })
-                return list_data;
-            })
-            return toJS(list);
-        }}
-        colDef={colDef}
-        reload={reload}
-        setLoading={(v: boolean) => meta.loading = v}
-        setMode={setMode} />;
+          }}
+          filter={meta.filter}
+          reload={reload}
+          isRoot={isRoot}
+          auth={auth}
+          colDef={colDef}
+          scroll={scroll}
+          setScroll={(v) => {
+            meta.listScroll = v;
+          }}
+          fkeys={meta.fkeys}
+        />
+      ) : (
+        <Form
+          form={form}
+          colDef={colDef}
+          generateForm={generateForm}
+          parsed={parsed}
+          structure={structure}
+          hasRelation={meta.hasRelation}
+          inmeta={meta}
+          setHasRelation={(v) => (meta.hasRelation = v)}
+          formRef={formRef}
+          reloadFormKey={meta.reloadFormKey}
+          mode={mode}
+        />
+      )}
+    </div>
+  );
+});
 
-    const scroll = meta.listScroll;
-    const list = meta.list;
-    return <div style={{ display: "flex", flexDirection: 'column', flex: 1, ...style }}>
-        {renderHeader
-            ? renderHeader({
-                header,
-            })
-            : header}
-        {mode === ''
-            ? <List
-                table={table}
-                setMode={setMode}
-                structure={structure}
-                list={list}
-                setForm={(v) => {
-                    meta.form = v;
-                    meta.reloadFormKey++;
-                }}
-                filter={meta.filter}
-                reload={reload}
-                auth={auth}
-                colDef={colDef}
-                scroll={scroll}
-                setScroll={(v) => { meta.listScroll = v; }}
-                fkeys={meta.fkeys} />
-            : <Form
-                form={form}
-                colDef={colDef}
-                generateForm={generateForm}
-                parsed={parsed}
-                structure={structure}
-                hasRelation={meta.hasRelation}
-                inmeta={meta}
-                setHasRelation={(v) => meta.hasRelation = v}
-                formRef={formRef}
-                reloadFormKey={meta.reloadFormKey}
-                mode={mode} />
-        }
-    </div>;
-})
+const waitUntil = (f: any): Promise<boolean> => {
+  return new Promise((resolve) => {
+    const ival = setInterval(() => {
+      if (f()) {
+        clearInterval(ival);
+        resolve(true);
+      }
+    }, 10);
+  });
+};

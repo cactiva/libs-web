@@ -4,20 +4,14 @@ import { queryAll } from "@src/libs/utils/gql";
 import { useWindowSize } from "@src/libs/utils/useWindowSize";
 import _ from "lodash";
 import { observer, useObservable } from "mobx-react-lite";
-import {
-  ActionButton,
-  CommandButton,
-  DefaultButton,
-  PrimaryButton,
-} from "office-ui-fabric-react";
+import { ActionButton, PrimaryButton } from "office-ui-fabric-react";
 import * as React from "react";
 import { columnDefs } from "..";
 import { Text } from "../..";
+import { ExportExcel } from "../../../utils/excel";
 import Spinner from "../../Spinner";
 import saveForm from "../utils/saveForm";
-import { ExportExcel } from "../../../utils/excel";
-import session from "@src/stores/session";
-import { toJS } from "mobx";
+import { useLocation, navigate } from "@reach/router";
 
 export default observer(
   ({
@@ -28,6 +22,7 @@ export default observer(
     getForm,
     setForm,
     colDef,
+    isRoot,
     structure,
     setLoading,
     setMode,
@@ -37,6 +32,7 @@ export default observer(
     style,
     hasRelation,
   }: any) => {
+    const location = useLocation();
     const title = _.get(parsed, "title.children");
     let actions = _.get(parsed, "actions.children", []);
     if (!_.find(actions, { props: { type: "cancel" } })) {
@@ -122,6 +118,10 @@ export default observer(
                 text: "",
                 iconProps: { iconName: "ChevronLeft" },
                 onClick: () => {
+                  if (isRoot && location && location.state) {
+                    navigate((location.state as any).path);
+                  }
+
                   setMode("");
                   if (meta.shouldRefresh) {
                     reload();
@@ -270,7 +270,7 @@ export default observer(
                         //   session.menuStack.indexOf(session.currentMenu) - 1;
                         // session.prevMenu =
                         //   prev_index < 0 ? "" : session.menuStack[prev_index];
-                      }, 
+                      },
               };
             }
             break;
