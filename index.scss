@@ -1,0 +1,138 @@
+.base-list {
+  display: flex;
+  flex: 1;
+}
+.base-list > div,
+.base-list .ms-DetailsList,
+.base-list .ms-DetailsList > div,
+.base-list .ms-DetailsList-contentWrapper {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  position: relative;
+}
+
+.filter-container .ms-Label {
+  white-space: nowrap;
+}
+
+.Pane.horizontal.Pane1 {
+  min-height: 30px;
+}
+
+.base-list .ms-DetailsList-headerWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.base-list .ms-DetailsList-headerWrapper > div {
+  padding-top: 0;
+  border-top: 1px solid #ececeb;
+}
+
+.base-list .ms-DetailsList > div {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  display: flex;
+  min-width: auto;
+  overflow: scroll;
+  padding-top: 45px;
+}
+
+.ms-ComboBox {
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 2px;
+  display: flex;
+  flex-direction: row;
+  padding-right: 0px;
+}
+
+.ms-ComboBox > input {
+  flex: 1;
+}
+.ms-ComboBox > button {
+  flex-basis: 30px;
+  border-radius: 0;
+  position: relative;
+}
+
+.ms-ComboBox::after {
+  border-width: 0px;
+}
+.base-form-sub {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  // .sub-head {
+  //   padding: 5px 5px 0px 5px;
+  //   height: 28px;
+  //   background: #ececeb;
+  //   display: flex;
+  //   flex-direction: row;
+  //   .sub-head-tab {
+  //     display: flex;
+  //     cursor: pointer;
+  //     user-select: none;
+  //     flex-direction: row;
+  //     align-items: center;
+  //     padding: 10px;
+  //     font-size: 14px;
+  //     border-bottom: 0;
+  //     margin-right: 5px;
+  //     border: 1px solid #ddd;
+  //     border-bottom: 0;
+
+  //     > i {
+  //       margin-right: 5px;
+  //     }
+
+  //     &:hover {
+  //       background: white;
+  //     }
+  //     &.active {
+  //       background: white;
+  //       border-top: 1px solid #0078d4;
+  //     }
+  //   }
+  // }
+  .sub-tabs {
+    flex: 1;
+    position: relative;
+
+    > .ms-FocusZone {
+      border-right: 1px solid #ececeb;
+      > .ms-Pivot {
+        display: flex;
+        flex-direction: column;
+      }
+      .ms-Button {
+        margin-right: 0;
+        border-bottom: 1px solid #ececeb;
+        text-align: left;
+        padding-left: 15px;
+        &::before {
+          left: 0;
+          right: auto;
+          top: 6px;
+          bottom: 6px;
+          height: auto;
+          width: 2px;
+          transition: top 0.267s cubic-bezier(0.1, 0.25, 0.75, 0.9) 0s,
+            bottom 0.267s cubic-bezier(0.1, 0.25, 0.75, 0.9) 0s;
+        }
+        &:hover {
+          &::before {
+            top: 0px;
+            bottom: 0px;
+          }
+        }
+      }
+    }
+  }
+}
