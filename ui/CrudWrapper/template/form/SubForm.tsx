@@ -1,16 +1,9 @@
-import * as React from "react";
-import {
-  Pivot,
-  PivotItem,
-  Dropdown,
-  IconButton,
-  DefaultButton,
-  Icon,
-} from "office-ui-fabric-react";
-import Base from "../Base";
-import { observer, useObservable } from "mobx-react-lite";
-import { useWindowSize } from "@src/libs/utils/useWindowSize";
 import Select from "@src/libs/ui/Select";
+import { useWindowSize } from "@src/libs/utils/useWindowSize";
+import { observer, useObservable } from "mobx-react-lite";
+import { IconButton, Pivot, PivotItem } from "office-ui-fabric-react";
+import * as React from "react";
+import Base from "../Base";
 
 export default observer(({ fields, auth }: any) => {
   const mobileMeta = useObservable({
@@ -85,6 +78,7 @@ export default observer(({ fields, auth }: any) => {
             placeholder="Sub Data..."
             items={items}
             style={{ flex: 1 }}
+            allowFreeForm={false}
             selectedKey={mobileMeta.selectedKey}
             onChange={(e, item) => {
               mobileMeta.selectedKey = item.key;
