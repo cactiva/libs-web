@@ -168,7 +168,7 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                         children = <Input type="number" />;
                         break;
                     case "double":
-                        children = <Input type="double"/>;
+                        children = <Input type="double" />;
                         break;
                     case "numeric": // money
                     case "double precision":
@@ -184,6 +184,9 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                         break;
                     case "readonly":
                         children = <Input type="text" readOnly disabled={true} />;
+                        break;
+                    case "readonly-numeric":
+                        children = <Input type="money" readOnly disabled={true} />;
                         break;
                     case "textarea":
                         children = <Input type="text" multiline={true} />;
