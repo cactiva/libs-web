@@ -25,7 +25,7 @@ const deepFind = (object: object, path: string, defaultValue?: any) =>
   _.get(object, path, defaultValue);
 
 const findLargestSmallest = (a: string, b: string) =>
-  a.length > b.length
+  a.length > b.length 
     ? {
       largest: a,
       smallest: b
