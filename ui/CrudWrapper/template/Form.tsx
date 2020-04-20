@@ -72,9 +72,15 @@ export default observer((props: any) => {
   )
     return null;
 
-
   return (
-    <div style={{ flex: 1, position: "relative" }}>
+    <div
+      style={{
+        flex: 1,
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <FormContainer
         formRef={formRef}
         data={data}

@@ -6,10 +6,10 @@ import { toJS } from "mobx";
 import { startCase } from "@src/libs/utils";
 import { generateFieldWidth } from "./generateFormField";
 
-export default (rel, structure, data, width) => {
+export default (rel, parentStructure, data, width) => {
   if (!rel.fkey || !rel.path) return null;
   let idata = data;
-  let istructure = structure;
+  let pstructure = parentStructure;
   let relfk = rel.fkey[_.keys(rel.fkey)[0]];
   let relpath = rel.path;
   if (rel.path.indexOf(".") > 0) {
@@ -17,7 +17,7 @@ export default (rel, structure, data, width) => {
     const rsplit = relpath.split(".");
     relpath = rsplit.pop();
     idata = _.get(data, rsplit.join("."));
-    let tstruct = structure.fields;
+    let tstruct = parentStructure.fields;
     for (let name of rsplit) {
       const found = _.find(tstruct, { name });
       if (found) {
@@ -25,7 +25,7 @@ export default (rel, structure, data, width) => {
       }
     }
     if (!Array.isArray(tstruct)) {
-      istructure = tstruct;
+      pstructure = tstruct;
     }
   }
 
@@ -36,7 +36,7 @@ export default (rel, structure, data, width) => {
   }
 
   const fields = _.get(
-    _.find(_.get(istructure, `fields`, []), { name: relpath }),
+    _.find(_.get(pstructure, `fields`, []), { name: relpath }),
     "fields",
     []
   );
