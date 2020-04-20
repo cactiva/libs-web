@@ -7,7 +7,7 @@ import parserChildren from "./utils/parserChildren";
 
 const Template = require("./template/Base").default;
 export const columnDefs = observable({});
-const idKey = "id";
+export const idKey = "id";
 
 interface ICrudWrapper {
   data: any;

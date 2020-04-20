@@ -6,6 +6,7 @@ import { DateTime, Field, Input } from '../../../..';
 import DateField from '../../../../DateField';
 import SelectFk from '../../fields/SelectFk';
 import generateSubStructure from './generateSubStructure';
+import { toJS } from 'mobx';
 
 export const generateFieldWidth = (px) => {
     return px < 800
@@ -101,6 +102,7 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                     children: e.props.children
                 };
                 relations[e.props.path].sub = generateSubStructure(relations[e.props.path], structure, data, width);
+            
                 return false;
             } else {
                 if (fk && fk.table_name === structure.name) {

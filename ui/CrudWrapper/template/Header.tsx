@@ -152,7 +152,6 @@ export default observer(
                   });
                   const newerrs = {};
                   const ovrd = structure.overrideForm || {};
-                  console.log(ovrd);
                   _.map(cdef, (f, k) => {
                     if (f && f.is_nullable === "NO" && !f.column_default) {
                       if (!form[k] && k !== "id" && !ovrd[k]) {

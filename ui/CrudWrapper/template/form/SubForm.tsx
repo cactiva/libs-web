@@ -3,6 +3,7 @@ import { useWindowSize } from "@src/libs/utils/useWindowSize";
 import { observer, useObservable } from "mobx-react-lite";
 import { IconButton, Pivot, PivotItem } from "office-ui-fabric-react";
 import * as React from "react";
+import { idKey } from "../..";
 import Base from "../Base";
 
 export default observer(({ fields, auth }: any) => {
@@ -14,7 +15,10 @@ export default observer(({ fields, auth }: any) => {
   const children = relationKeys.map((e, key) => {
     const rel = fields.relations[e];
     const sub: any = rel.sub;
-    if (!sub || (sub && !sub.parsed)) return null;
+
+    if (!sub || (sub && !sub.parsed)) {
+      return null;
+    }
     return (
       <PivotItem
         key={e}
@@ -33,6 +37,9 @@ export default observer(({ fields, auth }: any) => {
       </PivotItem>
     );
   });
+
+  React.useEffect(() => {}, []);
+
   if (size.width > 800) {
     return (
       <div className="base-form-sub">
@@ -157,10 +164,12 @@ const SubBase = observer(({ sub, auth }: any) => {
     <Base
       structure={sub.structure}
       auth={auth}
+      isRoot={false}
       parsed={{
         ...sub.parsed,
         title: { children: meta.mode === "" ? "" : sub.parsed.title.children },
       }}
+      idKey={idKey}
       mode={meta.mode}
       style={style}
       headerStyle={headerStyle}

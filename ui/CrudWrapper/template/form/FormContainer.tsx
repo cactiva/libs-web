@@ -1,10 +1,9 @@
+import { useWindowSize } from "@src/libs/utils/useWindowSize";
 import { observer, useObservable } from "mobx-react-lite";
 import * as React from "react";
 import SplitPane from "react-split-pane";
 import FormBody from "./FormBody";
 import SubForm from "./SubForm";
-import { toJS } from "mobx";
-import { useWindowSize } from "@src/libs/utils/useWindowSize";
 
 export default observer(
   ({ mode, fields, formRef, data, auth, parsed, events }: any) => {
