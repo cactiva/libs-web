@@ -1,7 +1,7 @@
+import { observer } from 'mobx-react-lite';
+import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
 import * as React from 'react';
 import ItemButton from './ItemButton';
-import { IStackTokens, Stack, Toggle } from 'office-ui-fabric-react';
-import { observer, useObservable } from 'mobx-react-lite';
 
 export default observer(({ label, field, value, setValue, submit }: any) => {
     return (

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import ItemButton from './ItemButton';
-import { TextField } from 'office-ui-fabric-react';
+import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { observer, useObservable } from 'mobx-react-lite';
 
 export default observer(({ label, field, value, setValue, submit }: any) => {

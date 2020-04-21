@@ -1,7 +1,8 @@
 import Select from "@src/libs/ui/Select";
 import { useWindowSize } from "@src/libs/utils/useWindowSize";
 import { observer, useObservable } from "mobx-react-lite";
-import { IconButton, Pivot, PivotItem } from "office-ui-fabric-react";
+import { IconButton } from 'office-ui-fabric-react/lib/Button';
+import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import * as React from "react";
 import { idKey } from "../..";
 import Base from "../Base";
@@ -22,11 +23,7 @@ export default observer(({ fields, auth }: any) => {
     return (
       <PivotItem
         key={e}
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-        }}
+        className="sub-form-pivot"
         headerText={rel.column.props.label}
         headerButtonProps={{
           "data-order": key,

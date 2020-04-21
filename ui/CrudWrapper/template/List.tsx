@@ -4,22 +4,16 @@ import { dateFormat } from "@src/libs/utils/date";
 import _ from "lodash";
 import { toJS } from "mobx";
 import { observer, useObservable } from "mobx-react-lite";
-import {
-  ColumnActionsMode,
-  ConstrainMode,
-  DetailsList,
-  DetailsListLayoutMode,
-  IDetailsHeaderProps,
-  IDetailsRowProps,
-  IRenderFunction,
-  SelectionMode,
-  Spinner,
-} from "office-ui-fabric-react";
+import { ColumnActionsMode, ConstrainMode, DetailsList, DetailsListLayoutMode } from "office-ui-fabric-react/lib/DetailsList";
+import { SelectionMode } from "office-ui-fabric-react/lib/Selection";
+import { Spinner } from "office-ui-fabric-react/lib/Spinner";
 import * as React from "react";
 import useAsyncEffect from "use-async-effect";
 import NiceValue from "../../Field/NiceValue";
 import { formatRelationLabel } from "./fields/SelectFk";
 import Filter from "./filter";
+
+
 
 export const DEFAULT_COLUMN_WIDTH = 160;
 export default observer(
@@ -125,38 +119,38 @@ export default observer(
                 return true;
               }}
               onRenderDetailsHeader={(
-                detailsHeaderProps?: IDetailsHeaderProps,
-                defaultRender?: IRenderFunction<IDetailsHeaderProps>
+                detailsHeaderProps?: any,
+                defaultRender?: any
               ) => {
                 return defaultRender ? (
                   defaultRender(detailsHeaderProps)
                 ) : (
-                  <div></div>
-                );
+                    <div></div>
+                  );
               }}
               onRenderRow={(
-                detailsRowProps?: IDetailsRowProps,
-                defaultRender?: IRenderFunction<IDetailsRowProps>
+                detailsRowProps?: any,
+                defaultRender?: any
               ) => (
-                <>
-                  <div
-                    onClick={() => {
-                      if (detailsRowProps) {
-                        const item = toJS(detailsRowProps.item);
-                        setForm(item);
-                        if (isRoot && item.id && location.state) {
-                          navigate(
-                            `${(location.state as any).path}/${item.id}`
-                          );
+                  <>
+                    <div
+                      onClick={() => {
+                        if (detailsRowProps) {
+                          const item = toJS(detailsRowProps.item);
+                          setForm(item);
+                          if (isRoot && item.id && location.state) {
+                            navigate(
+                              `${(location.state as any).path}/${item.id}`
+                            );
+                          }
+                          setMode("edit");
                         }
-                        setMode("edit");
-                      }
-                    }}
-                  >
-                    {defaultRender && defaultRender(detailsRowProps)}
-                  </div>
-                </>
-              )}
+                      }}
+                    >
+                      {defaultRender && defaultRender(detailsRowProps)}
+                    </div>
+                  </>
+                )}
               layoutMode={DetailsListLayoutMode.fixedColumns}
               onRenderCheckbox={() => {
                 return null;

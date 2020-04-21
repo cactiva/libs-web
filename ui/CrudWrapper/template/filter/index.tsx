@@ -1,8 +1,13 @@
 import _ from 'lodash';
+import { toJS } from 'mobx';
 import { observer, useObservable } from 'mobx-react-lite';
-import { Callout, Checkbox, IconButton, Spinner } from 'office-ui-fabric-react';
+import { IconButton } from 'office-ui-fabric-react/lib/Button';
+import { Callout } from 'office-ui-fabric-react/lib/Callout';
+import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import React, { useEffect, useRef } from 'react';
 import { argsApplyFilter } from '../../utils/argsApplyFilter';
+import { argsLoadFilter } from '../../utils/argsLoadFilter';
+import { argsSetFilter } from '../../utils/argsSetFilter';
 import FilterBoolean from './FilterBoolean';
 import FilterDate from './FilterDate';
 import FilterDecimal from './FilterDecimal';
@@ -11,9 +16,6 @@ import FilterMoney from './FilterMoney';
 import FilterRelation from './FilterRelation';
 import FilterSelect from './FilterSelect';
 import FilterString from './FilterString';
-import { argsLoadFilter } from '../../utils/argsLoadFilter';
-import { argsSetFilter } from '../../utils/argsSetFilter';
-import { toJS } from 'mobx';
 
 export default observer((props: any) => {
     const { reload, filter, columns, colDef, fkeys, structure, auth } = props;

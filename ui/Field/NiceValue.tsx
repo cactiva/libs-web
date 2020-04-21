@@ -1,10 +1,9 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import Text from '../Text';
-import _ from 'lodash';
-import { Label } from 'office-ui-fabric-react';
-import EmptyCell from './EmptyCell';
 import { startCase } from '@src/libs/utils';
+import { observer } from 'mobx-react-lite';
+import { Label } from 'office-ui-fabric-react/lib/Label';
+import React from 'react';
+import Text from '../Text';
+import EmptyCell from './EmptyCell';
 
 const NiceValue = observer(({ value, style }: any) => {
     let valueEl: any = null;

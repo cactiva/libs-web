@@ -1,17 +1,17 @@
+import { navigate, useLocation } from "@reach/router";
 import { startCase } from "@src/libs/utils";
 import { generateDeleteString } from "@src/libs/utils/genDeleteString";
 import { queryAll } from "@src/libs/utils/gql";
 import { useWindowSize } from "@src/libs/utils/useWindowSize";
 import _ from "lodash";
 import { observer, useObservable } from "mobx-react-lite";
-import { ActionButton, PrimaryButton } from "office-ui-fabric-react";
+import { ActionButton, PrimaryButton } from "office-ui-fabric-react/lib/Button";
 import * as React from "react";
 import { columnDefs } from "..";
 import { Text } from "../..";
 import { ExportExcel } from "../../../utils/excel";
 import Spinner from "../../Spinner";
 import saveForm from "../utils/saveForm";
-import { useLocation, navigate } from "@reach/router";
 
 export default observer(
   ({

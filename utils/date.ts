@@ -1,6 +1,7 @@
 import formatFNS from "date-fns/format";
 import parseISO from "date-fns/parseISO";
-import { id, enUS } from "date-fns/locale";
+import id from "date-fns/locale/id";
+import enUS from "date-fns/locale/en-US";
 
 export const dateParse = (value: any) => {
   if (typeof value === "string") {

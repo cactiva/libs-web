@@ -1,9 +1,15 @@
-import * as React from 'react';
-import { DatePicker, MaskedTextField } from 'office-ui-fabric-react';
-import { setHours, setMinutes, getHours, getMinutes, parseISO } from 'date-fns';
-import { useObservable, observer } from 'mobx-react-lite';
 import { dateFormat } from '@src/libs/utils/date';
+import getHours from 'date-fns/getHours';
+import getMinutes from 'date-fns/getMinutes';
+import parseISO from 'date-fns/parseISO';
+import setHours from 'date-fns/setHours';
+import setMinutes from 'date-fns/setMinutes';
 import _ from "lodash";
+import { observer, useObservable } from 'mobx-react-lite';
+import { DatePicker } from 'office-ui-fabric-react/lib/DatePicker';
+import { MaskedTextField } from 'office-ui-fabric-react/lib/TextField';
+import * as React from 'react';
+
 
 export default observer((props: any) => {
     const meta = useObservable({

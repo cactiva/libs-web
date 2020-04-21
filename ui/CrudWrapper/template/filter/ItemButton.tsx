@@ -1,5 +1,7 @@
 import { observer, useObservable } from 'mobx-react-lite';
-import { ActionButton, Callout, IconButton, Label } from 'office-ui-fabric-react';
+import { ActionButton, IconButton } from 'office-ui-fabric-react/lib/Button';
+import { Callout } from 'office-ui-fabric-react/lib/Callout';
+import { Label } from 'office-ui-fabric-react/lib/Label';
 import * as React from 'react';
 
 export default observer(({ label, style, labelStyle, value, onClose, children, setValue, callout }: any) => {

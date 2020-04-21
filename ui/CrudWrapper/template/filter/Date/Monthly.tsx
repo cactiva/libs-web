@@ -1,7 +1,11 @@
-import { lastDayOfMonth, startOfMonth, subMonths, addMonths } from 'date-fns';
+import addMonths from 'date-fns/addMonths';
+import lastDayOfMonth from 'date-fns/lastDayOfMonth';
+import startOfMonth from 'date-fns/startOfMonth';
+import subMonths from 'date-fns/subMonths';
 import _ from 'lodash';
 import { observer, useObservable } from 'mobx-react-lite';
-import { ActionButton, Dropdown, Icon, IconButton } from 'office-ui-fabric-react';
+import { Dropdown } from 'office-ui-fabric-react/lib/Dropdown';
+import { Icon } from 'office-ui-fabric-react/lib/Icon';
 import * as React from 'react';
 
 export default observer(({ value, setValue, submit }: any) => {
