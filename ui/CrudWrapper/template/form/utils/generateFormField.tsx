@@ -102,7 +102,7 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                     children: e.props.children
                 };
                 relations[e.props.path].sub = generateSubStructure(relations[e.props.path], structure, data, width);
-            
+
                 return false;
             } else {
                 if (fk && fk.table_name === structure.name) {
@@ -189,6 +189,9 @@ export const generateFormField = (parsedForm: any, structure, colDef, fkeys, aut
                         break;
                     case "readonly-numeric":
                         children = <Input type="money" readOnly disabled={true} />;
+                        break;
+                    case "readonly-datetime":
+                        children = <DateTime disableDate={'disabled'} disableTime={'disabled'} />;
                         break;
                     case "textarea":
                         children = <Input type="text" multiline={true} />;
