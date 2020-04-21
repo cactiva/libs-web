@@ -31,7 +31,6 @@ export const useCrud = (meta: any, metaField: string, query: string) => {
 
             }
         };
-        console.log(result);
         meta[metaField] = result;
     }, []);
 }
