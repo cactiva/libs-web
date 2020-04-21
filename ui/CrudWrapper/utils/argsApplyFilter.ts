@@ -1,4 +1,5 @@
-import { lastDayOfMonth, startOfMonth } from 'date-fns';
+import lastDayOfMonth from 'date-fns/lastDayOfMonth';
+import startOfMonth from 'date-fns/startOfMonth';
 import _ from 'lodash';
 import { startCase } from '@src/libs/utils';
 

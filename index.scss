@@ -40,7 +40,7 @@
   top: 0;
   display: flex;
   min-width: auto;
-  overflow: scroll;
+  overflow: auto;
   padding-top: 45px;
 }
 
@@ -51,6 +51,55 @@
   display: flex;
   flex-direction: row;
   padding-right: 0px;
+}
+.mobile-form-sub {
+  border-top: 1px solid #ccc;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+
+  &.maximized {
+    background: white;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  .title {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+  }
+}
+
+.sub-form-pivot {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.sub-tabs > .ms-FocusZone {
+  display: flex;
+  flex-direction: column;
+}
+
+.ms-DetailsRow-cell {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-size: 14px;
+}
+
+.ms-DetailsRow-cell > .ms-TextField {
+  margin-top: -15px;
+  margin-bottom: -15px;
+}
+
+.ms-DetailsRow-cell > .ms-TextField .ms-TextField-fieldGroup {
+  height: 24px;
 }
 
 .ms-ComboBox > input {

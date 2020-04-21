@@ -1,9 +1,9 @@
 import _ from 'lodash';
 import { toJS } from 'mobx';
 import { observer, useObservable } from 'mobx-react-lite';
+import { Label } from 'office-ui-fabric-react/lib/Label';
+import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
 import * as React from 'react';
-import { MessageBar, MessageBarType, Label } from 'office-ui-fabric-react';
-import "./mobile.scss";
 
 export default observer(({ parsed, data, errors, fields, formRef, events }: any) => {
     const meta = useObservable({
@@ -64,7 +64,7 @@ export default observer(({ parsed, data, errors, fields, formRef, events }: any)
     formRef.current = meta;
     const sectionKeys = Object.keys(sections);
     const columns = fields.columns;
-    if(errorLen>0) {
+    if (errorLen > 0) {
         console.log(toJS(meta.errors));
     }
     return <>

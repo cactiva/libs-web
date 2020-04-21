@@ -1,9 +1,10 @@
-import * as React from "react";
-import { observer, useObservable } from "mobx-react-lite";
-import { ComboBox, IComboBoxStyles, IconButton } from "office-ui-fabric-react";
 import _ from "lodash";
-import { createPortal } from "react-dom";
-import ReactDOM from "react-dom";
+import { observer, useObservable } from "mobx-react-lite";
+import { IconButton } from 'office-ui-fabric-react/lib/Button';
+import { ComboBox, IComboBoxStyles } from 'office-ui-fabric-react/lib/ComboBox';
+import * as React from "react";
+import ReactDOM, { createPortal } from "react-dom";
+
 
 interface ISelectProps {
   style?: any;
