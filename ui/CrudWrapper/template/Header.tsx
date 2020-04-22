@@ -118,7 +118,11 @@ export default observer(
                 text: "",
                 iconProps: { iconName: "ChevronLeft" },
                 onClick: () => {
-                  window.history.back();
+                  if (isRoot) {
+                    window.history.back();
+                  } else {
+                    setMode("");
+                  }
                 },
               };
             }
@@ -254,7 +258,9 @@ export default observer(
                   e.props.options && e.props.options.onClick
                     ? e.props.options.onClick
                     : () => {
-                        window.history.back();
+                        if (isRoot) {
+                          window.history.back();
+                        }
                       },
               };
             }
