@@ -323,7 +323,7 @@ export default observer(
           {meta.loading ? (
             <Spinner style={{ marginRight: 25 }} />
           ) : (
-            <MenuButtons actions={actions} />
+            <MenuButtons actions={actions} onClick={() => {}} />
           )}
         </div>
       </div>
