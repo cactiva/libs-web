@@ -44,7 +44,9 @@ export default observer(
       const overridenProps: any = {};
       const onBlur = _.get(e, "props.options.onBlur");
       if (onBlur) {
-        overridenProps.onBlur = onBlur;
+        overridenProps.onBlur = (ev) => {
+          onBlur(ev, meta.data);
+        };
       }
 
       return (
