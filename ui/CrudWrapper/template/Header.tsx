@@ -118,14 +118,7 @@ export default observer(
                 text: "",
                 iconProps: { iconName: "ChevronLeft" },
                 onClick: () => {
-                  if (isRoot && location && location.state) {
-                    navigate((location.state as any).path);
-                  }
-
-                  setMode("");
-                  if (meta.shouldRefresh) {
-                    reload();
-                  }
+                  window.history.back();
                 },
               };
             }
@@ -262,14 +255,6 @@ export default observer(
                     ? e.props.options.onClick
                     : () => {
                         window.history.back();
-                        // if (!session.menuStack) session.menuStack = [];
-                        // if (!session.menuStack.includes(session.prevMenu))
-                        //   session.menuStack.push(session.prevMenu);
-                        // session.currentMenu = session.prevMenu;
-                        // const prev_index =
-                        //   session.menuStack.indexOf(session.currentMenu) - 1;
-                        // session.prevMenu =
-                        //   prev_index < 0 ? "" : session.menuStack[prev_index];
                       },
               };
             }
