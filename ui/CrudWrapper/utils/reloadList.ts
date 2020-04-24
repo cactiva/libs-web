@@ -215,6 +215,5 @@ export default async (opt: {
   });
 
   const res = await queryAll(query, { auth: structure.auth });
-  console.log(query);
   return res[structure.name];
 };

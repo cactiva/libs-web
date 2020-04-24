@@ -16,6 +16,7 @@ interface ICrudWrapper {
   style?: any;
   generateForm?: "auto" | "manual";
   children: any;
+  isRoot?: boolean;
 }
 
 export default observer((props: ICrudWrapper) => {
@@ -30,7 +31,7 @@ export default observer((props: ICrudWrapper) => {
   const structure = _.get(props, "data.structure");
   const auth = _.get(props, "data.auth");
   const parsed = parserChildren(props);
-  
+
   return (
     <Template
       idKey={idKey}
@@ -39,7 +40,7 @@ export default observer((props: ICrudWrapper) => {
       parsed={parsed}
       mode={meta.front.mode}
       afterQuery={afterQuery}
-      isRoot={true}
+      isRoot={props.isRoot === undefined ? true : props.isRoot}
       generateForm={props.generateForm || "auto"}
       setMode={(newmode) => (meta.front.mode = newmode)}
     />

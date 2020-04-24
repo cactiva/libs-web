@@ -41,6 +41,22 @@ export default observer(
       );
     });
 
+    fields.subs.forEach((e) => {
+      children.push(
+        <PivotItem
+          key={e.props.label}
+          className="sub-form-pivot"
+          headerText={e.props.label}
+          headerButtonProps={{
+            "data-order": children.length,
+            "data-title": e.props.label,
+          }}
+        >
+          {e.props.children}
+        </PivotItem>
+      );
+    });
+
     const pivotRef = React.useRef(null as any);
     React.useEffect(() => {
       if (pivotRef.current && baseRef.current) {

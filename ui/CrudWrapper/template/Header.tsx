@@ -34,7 +34,7 @@ export default observer(
   }: any) => {
     const location = useLocation();
     const title = _.get(parsed, "title.children");
-    let actions = _.get(parsed, "actions.children", []);
+    let actions = _.get(parsed, "actions.children", []).filter((e) => !!e);
     if (!_.find(actions, { props: { type: "cancel" } })) {
       actions.push({ props: { type: "cancel" } });
     }

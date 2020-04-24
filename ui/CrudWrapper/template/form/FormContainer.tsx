@@ -4,16 +4,18 @@ import * as React from "react";
 import SplitPane from "react-split-pane";
 import FormBody from "./FormBody";
 import SubForm from "./SubForm";
+import _ from "lodash";
 
 export default observer(
   ({ mode, fields, formRef, data, auth, parsed, events }: any) => {
     const meta = useObservable({
-      size: "40",
+      size: localStorage["cactiva-app-split-size"] || "44",
       subs: {},
       resizing: false,
       resizeTimer: 0 as any,
     });
 
+    const conRef = React.useRef(null as any);
     const size = useWindowSize();
     const rels = Object.keys(fields.relations);
     return mode === "create" || rels.length === 0 ? (
@@ -39,7 +41,14 @@ export default observer(
       <SplitPane
         split="horizontal"
         maxSize={0}
-        resizerStyle={{ borderTop: "3px double #ccc", cursor: "row-resize" }}
+        minSize={44}
+        ref={conRef}
+        resizerStyle={{
+          borderTop: "1px solid #ccc",
+          paddingTop: 1,
+          background: parseInt(meta.size) <= 50 ? "#fafafa" : "white",
+          cursor: "row-resize",
+        }}
         primary="second"
         onChange={(size) => {
           if (meta.resizeTimer) {
@@ -47,10 +56,11 @@ export default observer(
           }
           meta.resizing = true;
           if (size <= 50) {
-            meta.size = "40";
+            meta.size = "44";
           } else {
             meta.size = size.toString();
           }
+          localStorage["cactiva-app-split-size"] = meta.size;
           meta.resizeTimer = setTimeout(() => {
             meta.resizing = false;
           }, 300);
@@ -81,12 +91,18 @@ export default observer(
           height={parseInt(meta.size)}
           minimize={() => {
             meta.size = "40";
+            localStorage["cactiva-app-split-size"] = meta.size;
           }}
           restore={() => {
             meta.size = (size.height / 2).toString();
+            localStorage["cactiva-app-split-size"] = meta.size;
           }}
           maximize={() => {
-            meta.size = "99999";
+            const h = _.get(conRef, "current.splitPane.innerHeight");
+            if (h) {
+              meta.size = h;
+              localStorage["cactiva-app-split-size"] = meta.size;
+            }
           }}
         />
       </SplitPane>
