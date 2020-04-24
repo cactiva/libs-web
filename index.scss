@@ -114,6 +114,10 @@
 .ms-ComboBox::after {
   border-width: 0px;
 }
+.base-list {
+  display: flex;
+  flex-direction: column;
+}
 .base-form-sub {
   display: flex;
   flex-direction: column;

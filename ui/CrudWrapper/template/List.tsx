@@ -4,16 +4,22 @@ import { dateFormat } from "@src/libs/utils/date";
 import _ from "lodash";
 import { toJS } from "mobx";
 import { observer, useObservable } from "mobx-react-lite";
-import { ColumnActionsMode, ConstrainMode, DetailsList, DetailsListLayoutMode } from "office-ui-fabric-react/lib/DetailsList";
+import {
+  ColumnActionsMode,
+  ConstrainMode,
+  DetailsList,
+  DetailsListLayoutMode,
+} from "office-ui-fabric-react/lib/DetailsList";
 import { SelectionMode } from "office-ui-fabric-react/lib/Selection";
 import { Spinner } from "office-ui-fabric-react/lib/Spinner";
+import { Label } from "office-ui-fabric-react/lib/Label";
 import * as React from "react";
 import useAsyncEffect from "use-async-effect";
 import NiceValue from "../../Field/NiceValue";
 import { formatRelationLabel } from "./fields/SelectFk";
 import Filter from "./filter";
-
-
+import Loading from "./Loading";
+import Empty from "./Empty";
 
 export const DEFAULT_COLUMN_WIDTH = 160;
 export default observer(
@@ -24,6 +30,7 @@ export default observer(
     setScroll,
     scroll,
     list,
+    loading,
     auth,
     filter,
     colDef,
@@ -76,20 +83,8 @@ export default observer(
       }
     }, [dref.current]);
 
-    if (Object.keys(colDef).length === 0) {
-      return (
-        <div
-          style={{
-            width: 150,
-            height: 150,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Spinner />
-        </div>
-      );
+    if (Object.keys(colDef).length === 0 || loading) {
+      return <Loading text={"Fetching Data"} />;
     }
 
     return (
@@ -105,33 +100,31 @@ export default observer(
         />
         <div style={{ flex: 1, position: "relative", display: "flex" }}>
           <div className="base-list">
-            <DetailsList
-              constrainMode={ConstrainMode.horizontalConstrained}
-              disableSelectionZone={true}
-              componentRef={dref}
-              selectionMode={SelectionMode.single}
-              items={list || []}
-              onItemInvoked={(e) => {
-                setForm(toJS(e));
-                setMode("edit");
-              }}
-              onShouldVirtualize={(e: any) => {
-                return true;
-              }}
-              onRenderDetailsHeader={(
-                detailsHeaderProps?: any,
-                defaultRender?: any
-              ) => {
-                return defaultRender ? (
-                  defaultRender(detailsHeaderProps)
-                ) : (
+            {list ? (
+              <DetailsList
+                constrainMode={ConstrainMode.horizontalConstrained}
+                disableSelectionZone={true}
+                componentRef={dref}
+                selectionMode={SelectionMode.single}
+                items={list || []}
+                onItemInvoked={(e) => {
+                  setForm(toJS(e));
+                  setMode("edit");
+                }}
+                onShouldVirtualize={(e: any) => {
+                  return true;
+                }}
+                onRenderDetailsHeader={(
+                  detailsHeaderProps?: any,
+                  defaultRender?: any
+                ) => {
+                  return defaultRender ? (
+                    defaultRender(detailsHeaderProps)
+                  ) : (
                     <div></div>
                   );
-              }}
-              onRenderRow={(
-                detailsRowProps?: any,
-                defaultRender?: any
-              ) => (
+                }}
+                onRenderRow={(detailsRowProps?: any, defaultRender?: any) => (
                   <>
                     <div
                       onClick={() => {
@@ -151,12 +144,15 @@ export default observer(
                     </div>
                   </>
                 )}
-              layoutMode={DetailsListLayoutMode.fixedColumns}
-              onRenderCheckbox={() => {
-                return null;
-              }}
-              columns={columns}
-            />
+                layoutMode={DetailsListLayoutMode.fixedColumns}
+                onRenderCheckbox={() => {
+                  return null;
+                }}
+                columns={columns}
+              />
+            ) : (
+              <Empty text={"Data Empty"} />
+            )}
           </div>
         </div>
       </>

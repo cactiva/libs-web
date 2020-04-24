@@ -45,6 +45,7 @@ export default observer((props: any) => {
     fkeys: structure.fkeys,
     form: {},
     colDefs: [],
+    listLoading: true,
     listScroll: { top: 0, left: 0 },
     errors: {},
     reloadFormKey: 0,
@@ -52,6 +53,7 @@ export default observer((props: any) => {
     initStructure: false,
   });
   const reload = async () => {
+    meta.listLoading = true;
     const resultList = await reloadList({
       structure,
       idKey,
@@ -60,6 +62,7 @@ export default observer((props: any) => {
     });
     if (afterQuery) await afterQuery(resultList);
     meta.list = resultList;
+    meta.listLoading = false;
   };
   const parseChildrenData = (data) => {
     if (data.name) {
@@ -121,6 +124,8 @@ export default observer((props: any) => {
           },
           paging: meta.paging,
         });
+
+        meta.listLoading = false;
 
         if (list.length === 1) {
           meta.form = list[0];
@@ -234,6 +239,7 @@ export default observer((props: any) => {
           filter={meta.filter}
           reload={reload}
           isRoot={isRoot}
+          loading={meta.listLoading}
           auth={auth}
           colDef={colDef}
           scroll={scroll}
