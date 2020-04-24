@@ -28,6 +28,7 @@ export const useLazy = (module: string): any => {
                     if (m instanceof Promise) {
                         return loading;
                     }
+                    return true;
                 }
 
                 if (m instanceof Promise) {

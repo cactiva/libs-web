@@ -82,7 +82,7 @@ export default observer(
       console.log(toJS(meta.errors));
     }
     return (
-      <>
+      <div style={{ padding: 10 }}>
         {errorLen > 0 && (
           <div style={{ flex: 1, width: "100%", marginBottom: 20 }}>
             <MessageBar
@@ -153,7 +153,7 @@ export default observer(
           {columns.map((e, idx) => renderField(e, idx, false))}
         </div>
         <div style={{ height: 300 }}> </div>
-      </>
+      </div>
     );
   }
 );

@@ -19,7 +19,6 @@ export default observer(
     return mode === "create" || rels.length === 0 ? (
       <div
         style={{
-          padding: 10,
           position: "absolute",
           top: 0,
           left: 0,
@@ -62,7 +61,6 @@ export default observer(
             left: 0,
             bottom: 0,
             right: 0,
-            padding: 10,
             overflow: "auto",
           }}
         >
