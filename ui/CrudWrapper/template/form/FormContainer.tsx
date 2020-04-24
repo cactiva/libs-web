@@ -74,7 +74,19 @@ export default observer(
             events={events}
           />
         </div>
-        <SubForm fields={fields} auth={auth} />
+        <SubForm
+          fields={fields}
+          auth={auth}
+          minimize={() => {
+            meta.size = "46";
+          }}
+          restore={() => {
+            meta.size = (size.height / 2).toString();
+          }}
+          maximize={() => {
+            meta.size = "99999";
+          }}
+        />
       </SplitPane>
     ) : (
       <>

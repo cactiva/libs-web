@@ -17,7 +17,7 @@
 }
 
 .Pane.horizontal.Pane1 {
-  min-height: 30px;
+  min-height: 0fpx;
 }
 
 .base-list .ms-DetailsList-headerWrapper {
@@ -118,6 +118,39 @@
   display: flex;
   flex-direction: column;
   flex: 1;
+
+  .sub-head {
+    z-index: 1;
+    position: absolute;
+    width: 100%;
+    top: 0;
+    background: white;
+    height: 45px;
+
+    border-bottom: 1px solid #ececeb;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    > .ms-Button {
+      padding: 0 !important;
+      margin: 0;
+      border: 0 !important;
+      border-right: 1px solid #ececeb !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      &:last-child {
+        border-right: 0 !important;
+      }
+    }
+  }
+
+  .ms-Pivot {
+    padding-top: 45px;
+    min-width: 120px;
+  }
+
   // .sub-head {
   //   padding: 5px 5px 0px 5px;
   //   height: 28px;

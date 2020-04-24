@@ -1,127 +1,162 @@
 import Select from "@src/libs/ui/Select";
 import { useWindowSize } from "@src/libs/utils/useWindowSize";
 import { observer, useObservable } from "mobx-react-lite";
-import { IconButton } from 'office-ui-fabric-react/lib/Button';
-import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
+import { IconButton } from "office-ui-fabric-react/lib/Button";
+import { Pivot, PivotItem } from "office-ui-fabric-react/lib/Pivot";
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 import { idKey } from "../..";
 import Base from "../Base";
 
-export default observer(({ fields, auth }: any) => {
-  const mobileMeta = useObservable({
-    selectedKey: "",
-  });
-  const size = useWindowSize();
-  const relationKeys = Object.keys(fields.relations);
-  const children = relationKeys.map((e, key) => {
-    const rel = fields.relations[e];
-    const sub: any = rel.sub;
+export default observer(
+  ({ fields, auth, maximize, minimize, restore }: any) => {
+    const meta = useObservable({
+      selectedKey: "",
+      pivotEl: null as any,
+    });
+    const size = useWindowSize();
+    const relationKeys = Object.keys(fields.relations);
+    const children = relationKeys.map((e, key) => {
+      const rel = fields.relations[e];
+      const sub: any = rel.sub;
 
-    if (!sub || (sub && !sub.parsed)) {
-      return null;
-    }
-    return (
-      <PivotItem
-        key={e}
-        className="sub-form-pivot"
-        headerText={rel.column.props.label}
-        headerButtonProps={{
-          "data-order": key,
-          "data-title": rel.column.props.label,
-        }}
-      >
-        <SubBase sub={sub} auth={auth} />
-      </PivotItem>
-    );
-  });
-
-  React.useEffect(() => {}, []);
-
-  if (size.width > 800) {
-    return (
-      <div className="base-form-sub">
-        {/* <div className="sub-head">
-          <div className="sub-head-tab active">Sub Data</div>
-
-          <div className="sub-head-tab">
-            <Icon iconName="ClipboardSolid" /> ISPS
-          </div>
-        </div> */}
-        <Pivot
-          className="sub-tabs"
-          styles={{ itemContainer: { flex: 1, display: "flex" } }}
-          style={{
-            display: "flex",
-            flex: 1,
-            flexDirection: "row",
-            borderRight: "1px solid #ececeb",
-            alignItems: "stretch",
+      if (!sub || (sub && !sub.parsed)) {
+        return null;
+      }
+      return (
+        <PivotItem
+          key={e}
+          className="sub-form-pivot"
+          headerText={rel.column.props.label}
+          headerButtonProps={{
+            "data-order": key,
+            "data-title": rel.column.props.label,
           }}
         >
-          {children}
-        </Pivot>
-      </div>
-    );
-  } else {
-    const items = relationKeys.map((e, idx) => {
-      const rel = fields.relations[e];
-      const label = rel.column.props.label;
-      return {
-        value: idx.toString(),
-        label,
-      };
+          <SubBase sub={sub} auth={auth} />
+        </PivotItem>
+      );
     });
-    return (
-      <div
-        className={`mobile-form-sub ${
-          !!mobileMeta.selectedKey ? "maximized" : ""
-        }`}
-      >
-        <div className={`title`}>
-          <Select
-            placeholder="Sub Data..."
-            items={items}
-            style={{ flex: 1 }}
-            allowFreeForm={false}
-            selectedKey={mobileMeta.selectedKey}
-            onChange={(e, item) => {
-              mobileMeta.selectedKey = item.key;
-            }}
-          />
-          {!!mobileMeta.selectedKey && (
-            <IconButton
-              onClick={() => {
-                mobileMeta.selectedKey = "";
-              }}
-              style={{ marginLeft: 5, padding: 0, minWidth: 40 }}
-              iconProps={{
-                iconName: "MiniContract",
-                style: {
-                  fontSize: 20,
-                },
-              }}
-            />
-          )}
-        </div>
-        {!!mobileMeta.selectedKey && (
-          <div
+
+    const pivotRef = React.useRef(null as any);
+    React.useEffect(() => {
+      if (pivotRef.current) {
+        const el = document.getElementsByClassName(
+          pivotRef.current._classNames.root
+        );
+        if (el && el.length > 0) {
+          meta.pivotEl = el[0];
+        }
+        console.log(el);
+      }
+    }, []);
+
+    if (size.width > 800) {
+      return (
+        <div className="base-form-sub">
+          {meta.pivotEl &&
+            ReactDOM.createPortal(
+              <div className="sub-head">
+                <IconButton
+                  title="Minimize"
+                  onClick={minimize}
+                  styles={{ icon: { color: "#777" } }}
+                  iconProps={{ iconName: "Download", color: "#777" }}
+                />
+                <IconButton
+                  title="Restore"
+                  onClick={restore}
+                  styles={{ icon: { color: "#777" } }}
+                  iconProps={{
+                    iconName: "GripperBarHorizontal",
+                    color: "#777",
+                  }}
+                />
+                <IconButton
+                  title="Maximize"
+                  onClick={maximize}
+                  styles={{ icon: { color: "#777" } }}
+                  iconProps={{ iconName: "Upload" }}
+                />
+              </div>,
+              meta.pivotEl
+            )}
+
+          <Pivot
+            componentRef={pivotRef}
+            className="sub-tabs"
+            styles={{ itemContainer: { flex: 1, display: "flex" } }}
             style={{
-              flex: 1,
-              position: "relative",
-              marginTop: 10,
               display: "flex",
-              marginLeft: -10,
-              marginRight: -10,
-              borderTop: "1px solid #ccc",
+              flex: 1,
+              flexDirection: "row",
+              borderRight: "1px solid #ececeb",
+              alignItems: "stretch",
             }}
           >
-            {children[parseInt(mobileMeta.selectedKey)]}
+            {children}
+          </Pivot>
+        </div>
+      );
+    } else {
+      const items = relationKeys.map((e, idx) => {
+        const rel = fields.relations[e];
+        const label = rel.column.props.label;
+        return {
+          value: idx.toString(),
+          label,
+        };
+      });
+      return (
+        <div
+          className={`mobile-form-sub ${!!meta.selectedKey ? "maximized" : ""}`}
+        >
+          <div className={`title`}>
+            <Select
+              placeholder="Sub Data..."
+              items={items}
+              style={{ flex: 1 }}
+              allowFreeForm={false}
+              selectedKey={meta.selectedKey}
+              onChange={(e, item) => {
+                meta.selectedKey = item.key;
+              }}
+            />
+            {!!meta.selectedKey && (
+              <IconButton
+                onClick={() => {
+                  meta.selectedKey = "";
+                }}
+                style={{ marginLeft: 5, padding: 0, minWidth: 40 }}
+                iconProps={{
+                  iconName: "MiniContract",
+                  style: {
+                    fontSize: 20,
+                  },
+                }}
+              />
+            )}
           </div>
-        )}
-      </div>
-    );
+          {!!meta.selectedKey && (
+            <div
+              style={{
+                flex: 1,
+                position: "relative",
+                marginTop: 10,
+                display: "flex",
+                marginLeft: -10,
+                marginRight: -10,
+                borderTop: "1px solid #ccc",
+              }}
+            >
+              {children[parseInt(meta.selectedKey)]}
+            </div>
+          )}
+        </div>
+      );
+    }
   }
-});
+);
 
 const SubBase = observer(({ sub, auth }: any) => {
   const meta = useObservable({

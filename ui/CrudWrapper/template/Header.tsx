@@ -323,7 +323,7 @@ export default observer(
           {meta.loading ? (
             <Spinner style={{ marginRight: 25 }} />
           ) : (
-            <MenuButtons actions={actions} onClick={() => {}} />
+            <MenuButtons actions={actions} />
           )}
         </div>
       </div>
@@ -353,7 +353,6 @@ const MenuButtons = ({ actions }: any) => {
         <PrimaryButton
           style={{ marginRight: 5, padding: "0px 5px" }}
           text={`${buttons.length} Actions`}
-          split={true}
           menuProps={{
             items: buttons,
           }}
