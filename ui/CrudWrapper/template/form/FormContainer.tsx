@@ -77,12 +77,15 @@ export default observer(
           auth={auth}
           minimize={() => {
             meta.size = "46";
+            localStorage.setItem("cactiva-app-split-size", meta.size);
           }}
           restore={() => {
             meta.size = (size.height / 2).toString();
+            localStorage.setItem("cactiva-app-split-size", meta.size);
           }}
           maximize={() => {
             meta.size = "99999";
+            localStorage.setItem("cactiva-app-split-size", meta.size);
           }}
         />
       </SplitPane>

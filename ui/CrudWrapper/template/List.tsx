@@ -84,7 +84,7 @@ export default observer(
     }, [dref.current]);
 
     if (Object.keys(colDef).length === 0 || loading) {
-      return <Loading text={"Fetching Data"} />;
+      return <Loading text={"Fetching Data "} />;
     }
 
     return (
