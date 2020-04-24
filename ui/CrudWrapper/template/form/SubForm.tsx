@@ -2,19 +2,22 @@ import Select from "@src/libs/ui/Select";
 import { useWindowSize } from "@src/libs/utils/useWindowSize";
 import { observer, useObservable } from "mobx-react-lite";
 import { IconButton } from "office-ui-fabric-react/lib/Button";
+import { Label } from "office-ui-fabric-react/lib/Label";
 import { Pivot, PivotItem } from "office-ui-fabric-react/lib/Pivot";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import _ from "lodash";
 import { idKey } from "../..";
 import Base from "../Base";
 
 export default observer(
-  ({ fields, auth, maximize, minimize, restore }: any) => {
+  ({ fields, auth, maximize, minimize, restore, height }: any) => {
     const meta = useObservable({
       selectedKey: "",
       pivotEl: null as any,
     });
     const size = useWindowSize();
+    const baseRef = React.useRef(null as any);
     const relationKeys = Object.keys(fields.relations);
     const children = relationKeys.map((e, key) => {
       const rel = fields.relations[e];
@@ -40,20 +43,44 @@ export default observer(
 
     const pivotRef = React.useRef(null as any);
     React.useEffect(() => {
-      if (pivotRef.current) {
-        const el = document.getElementsByClassName(
+      if (pivotRef.current && baseRef.current) {
+        const el = baseRef.current.getElementsByClassName(
           pivotRef.current._classNames.root
         );
         if (el && el.length > 0) {
           meta.pivotEl = el[0];
         }
-        console.log(el);
       }
-    }, []);
+    }, [pivotRef.current, height]);
 
     if (size.width > 800) {
+      if (height <= 50) {
+        if (children.length >= 0) {
+          return (
+            <div className="base-form-sub-min">
+              {children.map((e, i) => {
+                const title = _.get(e, "props.headerText");
+                const key = parseInt(meta.selectedKey) || 0;
+                return (
+                  <div
+                    key={i}
+                    className={`sub-tab ${key === i ? "active" : ""}`}
+                    onClick={() => {
+                      meta.selectedKey = i + "";
+                      restore();
+                    }}
+                  >
+                    <Label> {title} </Label>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        }
+      }
+
       return (
-        <div className="base-form-sub">
+        <div className="base-form-sub" ref={baseRef}>
           {meta.pivotEl &&
             ReactDOM.createPortal(
               <div className="sub-head">
@@ -83,9 +110,13 @@ export default observer(
             )}
 
           <Pivot
+            defaultSelectedIndex={parseInt(meta.selectedKey) || 0}
             componentRef={pivotRef}
             className="sub-tabs"
             styles={{ itemContainer: { flex: 1, display: "flex" } }}
+            onLinkClick={(e: any, idx) => {
+              meta.selectedKey = _.get(e, "props.headerButtonProps.data-order");
+            }}
             style={{
               display: "flex",
               flex: 1,

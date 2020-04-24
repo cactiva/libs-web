@@ -8,7 +8,7 @@ import SubForm from "./SubForm";
 export default observer(
   ({ mode, fields, formRef, data, auth, parsed, events }: any) => {
     const meta = useObservable({
-      size: localStorage["cactiva-app-split-size"] || "200",
+      size: "40",
       subs: {},
       resizing: false,
       resizeTimer: 0 as any,
@@ -46,10 +46,13 @@ export default observer(
             clearTimeout(meta.resizeTimer);
           }
           meta.resizing = true;
-          meta.size = size.toString();
+          if (size <= 50) {
+            meta.size = "40";
+          } else {
+            meta.size = size.toString();
+          }
           meta.resizeTimer = setTimeout(() => {
             meta.resizing = false;
-            localStorage.setItem("cactiva-app-split-size", meta.size);
           }, 300);
         }}
         size={meta.size + "px"}
@@ -75,17 +78,15 @@ export default observer(
         <SubForm
           fields={fields}
           auth={auth}
+          height={parseInt(meta.size)}
           minimize={() => {
-            meta.size = "46";
-            localStorage.setItem("cactiva-app-split-size", meta.size);
+            meta.size = "40";
           }}
           restore={() => {
             meta.size = (size.height / 2).toString();
-            localStorage.setItem("cactiva-app-split-size", meta.size);
           }}
           maximize={() => {
             meta.size = "99999";
-            localStorage.setItem("cactiva-app-split-size", meta.size);
           }}
         />
       </SplitPane>

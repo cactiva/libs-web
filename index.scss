@@ -118,10 +118,46 @@
   display: flex;
   flex-direction: column;
 }
+.base-form-sub-min {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  background: #fafafa;
+  padding-left: 10px;
+  flex: 1;
+  .sub-tab {
+    margin-right: 5px;
+    padding: 1px 10px;
+    border-bottom: 0px;
+    background: white;
+    border: 1px solid #aaa;
+    border-bottom: 0;
+    cursor: pointer;
+
+    padding-top: 2px;
+    &:hover {
+      background: #0078d4;
+
+      label {
+        color: white !important;
+      }
+    }
+
+    &.active {
+      padding-top: 1px;
+      border-top: 2px solid #0078d4;
+    }
+
+    label {
+      cursor: pointer !important;
+    }
+  }
+}
 .base-form-sub {
   display: flex;
   flex-direction: column;
   flex: 1;
+  border-left: 1px solid #ececeb;
 
   .sub-head {
     z-index: 1;
