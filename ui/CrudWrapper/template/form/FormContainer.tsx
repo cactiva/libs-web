@@ -49,6 +49,7 @@ export default observer(
           background: parseInt(meta.size) <= 50 ? "#fafafa" : "white",
           cursor: "row-resize",
         }}
+        className="sub-pane-box"
         primary="second"
         onChange={(size) => {
           if (meta.resizeTimer) {
@@ -98,7 +99,7 @@ export default observer(
             localStorage["cactiva-app-split-size"] = meta.size;
           }}
           maximize={() => {
-            const h = _.get(conRef, "current.splitPane.innerHeight");
+            const h = _.get(conRef, "current.splitPane.offsetHeight");
             if (h) {
               meta.size = h;
               localStorage["cactiva-app-split-size"] = meta.size;

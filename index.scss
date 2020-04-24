@@ -80,6 +80,10 @@
   flex-direction: column;
   position: relative;
 }
+
+.sub-pane-box .Pane2 {
+  box-shadow: 0 0 5px 0px rgba(0, 0, 0, 0.2);
+}
 .sub-tabs > .ms-FocusZone {
   display: flex;
   flex-direction: column;
