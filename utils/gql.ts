@@ -1,11 +1,10 @@
-import api from "./api";
 import session from "@src/stores/session";
 import _ from "lodash";
-import { generateUpdateString } from "./genUpdateString";
-import { generateInsertString } from "./genInsertString";
-import { generateDeleteString } from "./genDeleteString";
-import { toJS } from "mobx";
 import { startCase } from ".";
+import api from "./api";
+import { generateDeleteString } from "./genDeleteString";
+import { generateInsertString } from "./genInsertString";
+import { generateUpdateString } from "./genUpdateString";
 
 const config = require("../../settings.json");
 interface QueryOptions {

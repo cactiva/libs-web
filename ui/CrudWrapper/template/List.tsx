@@ -20,6 +20,8 @@ import { formatRelationLabel } from "./fields/SelectFk";
 import Filter from "./filter";
 import Loading from "./Loading";
 import Empty from "./Empty";
+import FileUpload from "./fields/FileUpload";
+import { queryUpdate } from "@src/libs/utils/gql";
 
 export const DEFAULT_COLUMN_WIDTH = 160;
 export default observer(
@@ -100,7 +102,7 @@ export default observer(
         />
         <div style={{ flex: 1, position: "relative", display: "flex" }}>
           <div className="base-list">
-            {list ? (
+            {list && list.length > 0 ? (
               <DetailsList
                 constrainMode={ConstrainMode.horizontalConstrained}
                 disableSelectionZone={true}
@@ -121,8 +123,8 @@ export default observer(
                   return defaultRender ? (
                     defaultRender(detailsHeaderProps)
                   ) : (
-                    <div></div>
-                  );
+                      <div></div>
+                    );
                 }}
                 onRenderRow={(detailsRowProps?: any, defaultRender?: any) => (
                   <>
@@ -151,8 +153,8 @@ export default observer(
                 columns={columns}
               />
             ) : (
-              <Empty text={"Data Empty"} />
-            )}
+                <Empty text={"Data Empty"} />
+              )}
           </div>
         </div>
       </>
@@ -336,6 +338,17 @@ const generateColumns = (structure, table, colDef, fkeys) => {
               )}
             </div>
           );
+        }
+
+        if (e.path.indexOf("file") === 0) {
+          return <FileUpload table={structure.name} field={e.path} value={value} onChange={async (newvalue) => {
+            if (item.id) {
+              const data: any = {};
+              data['id'] = item.id;
+              data[e.path] = newvalue;
+              await queryUpdate(structure.name, data);
+            }
+          }} />
         }
 
         return renderValue();

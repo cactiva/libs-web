@@ -7,6 +7,7 @@ import DateField from "../../../../DateField";
 import SelectFk from "../../fields/SelectFk";
 import generateSubStructure from "./generateSubStructure";
 import { toJS } from "mobx";
+import FileUpload from "../../fields/FileUpload";
 
 export const generateFieldWidth = (px) => {
   return px < 800 ? (px < 550 ? "98%" : "48%") : "32%";
@@ -198,9 +199,14 @@ export const generateFormField = (
           if (!type && cdef.data_type) {
             type = cdef.data_type;
           }
+
+          if (path.indexOf("file") === 0) {
+            type = "file";
+          }
+
           switch (type) {
             case "file":
-              children = <Input type="file" />;
+              children = <FileUpload table={structure.name} field={path} />;
               break;
             case "integer":
               children = <Input type="number" />;
