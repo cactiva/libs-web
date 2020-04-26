@@ -49,6 +49,12 @@ export default observer(
         };
       }
 
+      let epath = e.props.path;
+      let relTo = _.get(e.props, "options.relation.to");
+      if (relTo) {
+        epath = relTo;
+      }
+
       return (
         <Field
           {...e.props}
@@ -57,12 +63,17 @@ export default observer(
           {...overridenProps}
           prefix={_.get(ps, "prefix")}
           suffix={_.get(ps, "suffix")}
-          value={_.get(meta.data, e.props.path)}
-          errorMessage={meta.errors[e.props.path]}
+          value={_.get(meta.data, epath)}
+          errorMessage={meta.errors[epath]}
           onChange={(v) => {
             const value = _.get(v, "target.value", v);
-            _.set(meta.data, e.props.path, value);
+            _.set(meta.data, epath, value);
             const onChange = _.get(e, "props.children.props.onChange");
+
+            if (relTo) {
+              meta.data[e.props.path].id = value;
+            }
+
             if (onChange) {
               onChange(v, meta.data);
             } else {

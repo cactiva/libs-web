@@ -4,9 +4,9 @@ import { toJS } from "mobx";
 import _ from "lodash";
 
 const structures = {} as any;
-export const loadColDefs = async (name) => {
+export const loadColDefs = async (name, reset?) => {
   const cols = localStorage[`structure-cd-${name}`];
-  if (cols) {
+  if (!reset && cols) {
     try {
       const prs = JSON.parse(cols);
       if (prs) {
@@ -27,8 +27,13 @@ export const loadColDefs = async (name) => {
 
   return columnDefs[name];
 };
-export const loadStructure = async (name, indexed = false, setLoading?) => {
-  if (localStorage[`structure-${name}`]) {
+export const loadStructure = async (
+  name,
+  indexed = false,
+  setLoading?,
+  reset?
+) => {
+  if (!reset && localStorage[`structure-${name}`]) {
     try {
       const prs = JSON.parse(localStorage[`structure-${name}`]);
       if (prs) {
@@ -63,11 +68,18 @@ export default async (props: {
   structure: any;
   idKey: string;
   setLoading?: (value) => any;
+  reset?: boolean;
 }) => {
-  const { structure, idKey } = props;
+  const { structure, idKey, reset } = props;
 
   if (structure.fkeys === undefined) {
-    const res = await loadStructure(structure.name, false, props.setLoading);
+    const res = await loadStructure(
+      structure.name,
+      false,
+      props.setLoading,
+      reset
+    );
+
     if (res) {
       const tempfkeys = {};
       res.forEach((e) => {
@@ -101,13 +113,14 @@ export default async (props: {
   if (props.setLoading) {
     props.setLoading(`Structure: ${_.upperCase(structure.name)}`);
   }
-  await loadColDefs(structure.name);
+  await loadColDefs(structure.name, reset);
 
   if (structure.fields && structure.fkeys) {
     const sf = await loadSubFields(
       structure.fields,
       structure.fkeys,
-      props.setLoading
+      props.setLoading,
+      reset
     );
     sf.forEach((e) => {
       columnDefs[structure.name].push(e);
@@ -117,7 +130,7 @@ export default async (props: {
   return structure.fkeys;
 };
 
-const loadSubFields = async (fields, fkeys, setLoading?) => {
+const loadSubFields = async (fields, fkeys, setLoading?, reset?) => {
   const keys = _.chain(_.cloneDeep(fields)).keyBy("name").value();
   const res = [] as any;
   await Promise.all(
@@ -128,13 +141,13 @@ const loadSubFields = async (fields, fkeys, setLoading?) => {
         const tname = fk.foreign_table_name;
         const col = keys[tname] || keys[tname + "s"];
         if (col) {
-          const sfkeys = await loadStructure(tname, true, setLoading);
-          fk.columns = await loadStructure(tname);
+          const sfkeys = await loadStructure(tname, true, setLoading, reset);
+          fk.columns = await loadStructure(tname, false, undefined, reset);
 
           if (setLoading) {
             setLoading(`Structure: ${_.upperCase(tname)}`);
           }
-          await loadColDefs(tname);
+          await loadColDefs(tname, reset);
 
           const columns = {};
           toJS(columnDefs[tname]).forEach((e) => {
@@ -154,7 +167,8 @@ const loadSubFields = async (fields, fkeys, setLoading?) => {
                     const subfkeys = await loadStructure(
                       sfkeys[subfield.name].foreign_table_name,
                       true,
-                      setLoading
+                      setLoading,
+                      reset
                     );
                     result.columns[subfield.name] = (
                       await loadSubFields([subfield], subfkeys)

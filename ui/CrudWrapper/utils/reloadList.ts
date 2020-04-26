@@ -18,14 +18,14 @@ export default async (opt: {
     structure.orderBy.length > 0
       ? structure.orderBy
       : fk
-        ? [
+      ? [
           {
             name: idKey,
             value: "desc",
             valueType: "StringValue",
           },
         ]
-        : [];
+      : [];
 
   let where: any = [];
   if (structure.where) {

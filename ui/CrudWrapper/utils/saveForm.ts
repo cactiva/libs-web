@@ -23,7 +23,6 @@ export default async ({
   let q: any = null;
 
   const fdata = toJS(form);
-
   if (structure.overrideForm) {
     for (let i in structure.overrideForm) {
       fdata[i] = structure.overrideForm[i];

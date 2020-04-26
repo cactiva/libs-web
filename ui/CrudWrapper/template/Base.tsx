@@ -52,7 +52,19 @@ export default observer((props: any) => {
     init: false,
     initStructure: false,
   });
-  const reload = async () => {
+  const reload = async (resetStructure = false) => {
+    if (resetStructure) {
+      meta.fkeys = await reloadStructure({
+        idKey,
+        structure,
+        setLoading: (value) => {
+          meta.loadingInitText = value;
+        },
+        reset: true,
+      });
+      meta.colDefs = _.get(columnDefs, `${structure.name}`, []);
+    }
+
     meta.listLoading = true;
     const resultList = await reloadList({
       structure,
@@ -127,7 +139,13 @@ export default observer((props: any) => {
 
         meta.listLoading = false;
 
-        if (list.length === 1) {
+        if (!list) {
+          await reload(true);
+          window.location.reload();
+          return;
+        }
+
+        if (list && list.length === 1) {
           meta.form = list[0];
           meta.reloadFormKey++;
 

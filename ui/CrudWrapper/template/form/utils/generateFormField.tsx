@@ -8,6 +8,7 @@ import SelectFk from "../../fields/SelectFk";
 import generateSubStructure from "./generateSubStructure";
 import { toJS } from "mobx";
 import FileUpload from "../../fields/FileUpload";
+import gql from "graphql-tag";
 
 export const generateFieldWidth = (px) => {
   return px < 800 ? (px < 550 ? "98%" : "48%") : "32%";
@@ -101,6 +102,17 @@ export const generateFormField = (
       } else {
         fk = fkeys[e.props.path];
         if (!fk) fk = fkeys[pluralize.singular(e.props.path)];
+        if (!fk) {
+          _.forEach(fkeys, (f) => {
+            if (!f.table_schema) {
+              _.forEach(f, (fe) => {
+                if (fe.constraint_name === e.props.path) {
+                  fk = f;
+                }
+              });
+            }
+          });
+        }
       }
 
       if (fk) {
@@ -174,74 +186,106 @@ export const generateFormField = (
       let childrenType = _.get(e, "props.children.props.type");
       if (childrenType === "file") type = childrenType;
 
-      if (cdef || fk || type) {
-        if (fk) {
-          const tablename = fk.foreign_table_name;
-          if (tablename) {
-            const readonly = type === "readonly";
-            children = (
-              <SelectFk
-                tablename={tablename}
-                labelField={eprops.labelField}
-                readonly={readonly}
-                relation={_.get(eprops, "options.relation")}
-                auth={auth}
-                styles={{
-                  container: {
-                    width: generateFieldWidth(width),
-                    marginRight: "10px",
-                  },
-                }}
-              />
-            );
-          }
-        } else {
-          if (!type && cdef.data_type) {
-            type = cdef.data_type;
-          }
+      const rel = _.get(eprops, "options.relation", {});
+      let useCustomRel = false;
+      if (rel.to && rel.query) {
+        const qstruct = gql`
+          ${rel.query}
+        `;
+        const tablename = _.get(
+          qstruct,
+          "definitions.0.selectionSet.selections.0.name.value"
+        );
+        if (tablename) {
+          children = (
+            <SelectFk
+              tablename={tablename}
+              labelField={eprops.labelField}
+              readonly={eprops.readonly}
+              relation={rel}
+              auth={auth}
+              styles={{
+                container: {
+                  width: generateFieldWidth(width),
+                  marginRight: "10px",
+                },
+              }}
+            />
+          );
+          useCustomRel = true;
+        }
+      }
 
-          if (path.indexOf("file") === 0) {
-            type = "file";
-          }
-
-          switch (type) {
-            case "file":
-              children = <FileUpload table={structure.name} field={path} />;
-              break;
-            case "integer":
-              children = <Input type="number" />;
-              break;
-            case "double":
-              children = <Input type="double" />;
-              break;
-            case "numeric": // money
-            case "double precision":
-            case "decimal":
-              children = <Input type="money" />;
-              break;
-            case "timestamp without time zone":
-            case "timestamp with time zone":
-              children = <DateTime />;
-              break;
-            case "date":
-              children = <DateField />;
-              break;
-            case "readonly":
-              children = <Input type="text" readOnly disabled={true} />;
-              break;
-            case "readonly-numeric":
-              children = <Input type="money" readOnly disabled={true} />;
-              break;
-            case "readonly-datetime":
+      if (!useCustomRel) {
+        if (cdef || fk || type) {
+          if (fk) {
+            const tablename = fk.foreign_table_name;
+            if (tablename) {
+              const readonly = type === "readonly";
               children = (
-                <DateTime disableDate={"disabled"} disableTime={"disabled"} />
+                <SelectFk
+                  tablename={tablename}
+                  labelField={eprops.labelField}
+                  readonly={readonly}
+                  relation={_.get(eprops, "options.relation")}
+                  auth={auth}
+                  styles={{
+                    container: {
+                      width: generateFieldWidth(width),
+                      marginRight: "10px",
+                    },
+                  }}
+                />
               );
-              break;
-            case "textarea":
-              children = <Input type="text" multiline={true} />;
-              break;
-            default:
-              children = <Input type="text" />;
+            }
+          } else {
+            if (!type && cdef.data_type) {
+              type = cdef.data_type;
+            }
+
+            if (path.indexOf("file") === 0) {
+              type = "file";
+            }
+
+            switch (type) {
+              case "file":
+                children = <FileUpload table={structure.name} field={path} />;
+                break;
+              case "integer":
+                children = <Input type="number" />;
+                break;
+              case "double":
+                children = <Input type="double" />;
+                break;
+              case "numeric": // money
+              case "double precision":
+              case "decimal":
+                children = <Input type="money" />;
+                break;
+              case "timestamp without time zone":
+              case "timestamp with time zone":
+                children = <DateTime />;
+                break;
+              case "date":
+                children = <DateField />;
+                break;
+              case "readonly":
+                children = <Input type="text" readOnly disabled={true} />;
+                break;
+              case "readonly-numeric":
+                children = <Input type="money" readOnly disabled={true} />;
+                break;
+              case "readonly-datetime":
+                children = (
+                  <DateTime disableDate={"disabled"} disableTime={"disabled"} />
+                );
+                break;
+              case "textarea":
+                children = <Input type="text" multiline={true} />;
+                break;
+              default:
+                children = <Input type="text" />;
+            }
           }
         }
       }

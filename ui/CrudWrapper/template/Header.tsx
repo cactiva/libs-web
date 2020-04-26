@@ -1,9 +1,10 @@
-import { navigate, useLocation } from "@reach/router";
+import { useLocation } from "@reach/router";
 import { startCase } from "@src/libs/utils";
 import { generateDeleteString } from "@src/libs/utils/genDeleteString";
 import { queryAll } from "@src/libs/utils/gql";
 import { useWindowSize } from "@src/libs/utils/useWindowSize";
 import _ from "lodash";
+import { toJS } from "mobx";
 import { observer, useObservable } from "mobx-react-lite";
 import { ActionButton, PrimaryButton } from "office-ui-fabric-react/lib/Button";
 import * as React from "react";
