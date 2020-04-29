@@ -11,10 +11,7 @@ export default observer(({ label, field, value, setValue, submit }: any) => {
         label={label}
         field={field}
         setValue={setValue}
-        onClose={() => {
-            setValue(parseInt((meta.oldval || '').replace(/\./ig, '')));
-            submit();
-        }}
+        onClear={submit}
         value={(parseInt(value || '') || '').toLocaleString().replace(/,/ig, '.')}>
 
         <TextField

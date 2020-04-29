@@ -9,9 +9,7 @@ export default observer(({ label, field, value, setValue, submit }: any) => {
             label={label}
             field={field}
             setValue={setValue}
-            onClose={() => {
-                submit();
-            }}
+            onClear={submit}
             value={value}>
             <div style={{ paddingTop: 10, paddingLeft: 10 }}>
                 <Toggle label={label.label} onText="Yes" offText="No" onChanged={

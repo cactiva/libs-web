@@ -136,9 +136,7 @@ export default observer(
                             const item = toJS(detailsRowProps.item);
                             setForm(item);
                             if (isRoot && item.id && location.state) {
-                              navigate(
-                                `${(location.state as any).path}/${item.id}`
-                              );
+                              window.history.pushState({}, '', `${(location.state as any).path}/${item.id}`);
                             }
                             setMode("edit");
                           }

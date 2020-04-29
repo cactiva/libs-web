@@ -11,7 +11,7 @@ export default observer(({ label, field, value, setValue, submit }: any) => {
         label={label}
         field={field}
         setValue={setValue}
-        onClose={() => submit()}
+        onClear={submit}
         value={value}>
         <TextField
             value={meta.oldval}

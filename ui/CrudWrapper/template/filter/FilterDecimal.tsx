@@ -15,6 +15,7 @@ export default observer (({ label, value, field, setValue, submit }: any) => {
             setValue(parseFloat(meta.oldval));
             submit()
         }}
+        onClear={submit}
         value= {value}>
         <TextField
             value= {meta.oldval}

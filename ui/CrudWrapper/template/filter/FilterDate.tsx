@@ -65,7 +65,7 @@ export default observer((props: IFilterDate) => {
             }} />}
         field={field}
         setValue={setValue}
-        onClose={() => submit()}
+        onClear={submit}
         callout={false}
         value={({
             monthly: (

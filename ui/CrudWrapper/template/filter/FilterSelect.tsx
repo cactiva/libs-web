@@ -14,9 +14,7 @@ export default ((props: any) => {
         label={label}
         field={field}
         setValue={setValue}
-        onClose={() => {
-            submit()
-        }}
+        onClear={submit}
         value={valueLabel}>
         <div style={{ padding: 10 }}>
             <Select items={items} selectedKey={value} onChange={(e, item) => {
