@@ -4,7 +4,7 @@ import { Callout } from 'office-ui-fabric-react/lib/Callout';
 import { Label } from 'office-ui-fabric-react/lib/Label';
 import * as React from 'react';
 
-export default observer(({ label, style, labelStyle, value, onClose, children, setValue, callout }: any) => {
+export default observer(({ label, style, labelStyle, value, onClose, onClear, children, setValue, callout }: any) => {
     const meta = useObservable({
         show: false,
     });
@@ -55,7 +55,9 @@ export default observer(({ label, style, labelStyle, value, onClose, children, s
                     <IconButton iconProps={{ iconName: 'Trash' }} onClick={() => {
                         meta.show = false;
                         setValue(undefined);
-                        if (onClose) {
+                        if (onClear) {
+                            onClear();
+                        } else if (onClose) {
                             onClose();
                         }
                     }} />

@@ -85,9 +85,8 @@ export default observer(
       }
     }, [dref.current]);
 
-    if (Object.keys(colDef).length === 0 || loading) {
-      return <Loading text={"Fetching Data "} />;
-    }
+    const hasList = list && list.length > 0;
+    const isLoading = Object.keys(colDef).length === 0 || loading;
 
     return (
       <>
@@ -100,61 +99,62 @@ export default observer(
           colDef={colDef}
           fkeys={fkeys}
         />
+
         <div style={{ flex: 1, position: "relative", display: "flex" }}>
           <div className="base-list">
-            {list && list.length > 0 ? (
-              <DetailsList
-                constrainMode={ConstrainMode.horizontalConstrained}
-                disableSelectionZone={true}
-                componentRef={dref}
-                selectionMode={SelectionMode.single}
-                items={list || []}
-                onItemInvoked={(e) => {
-                  setForm(toJS(e));
-                  setMode("edit");
-                }}
-                onShouldVirtualize={(e: any) => {
-                  return true;
-                }}
-                onRenderDetailsHeader={(
-                  detailsHeaderProps?: any,
-                  defaultRender?: any
-                ) => {
-                  return defaultRender ? (
-                    defaultRender(detailsHeaderProps)
-                  ) : (
-                      <div></div>
-                    );
-                }}
-                onRenderRow={(detailsRowProps?: any, defaultRender?: any) => (
-                  <>
-                    <div
-                      onClick={() => {
-                        if (detailsRowProps) {
-                          const item = toJS(detailsRowProps.item);
-                          setForm(item);
-                          if (isRoot && item.id && location.state) {
-                            navigate(
-                              `${(location.state as any).path}/${item.id}`
-                            );
+            {isLoading
+              ? <Loading text={"Fetching Data "} />
+              : !hasList
+                ? <Empty text={"Data Empty"} /> : <DetailsList
+                  constrainMode={ConstrainMode.horizontalConstrained}
+                  disableSelectionZone={true}
+                  componentRef={dref}
+                  selectionMode={SelectionMode.single}
+                  items={list || []}
+                  onItemInvoked={(e) => {
+                    setForm(toJS(e));
+                    setMode("edit");
+                  }}
+                  onShouldVirtualize={(e: any) => {
+                    return true;
+                  }}
+                  onRenderDetailsHeader={(
+                    detailsHeaderProps?: any,
+                    defaultRender?: any
+                  ) => {
+                    return defaultRender ? (
+                      defaultRender(detailsHeaderProps)
+                    ) : (
+                        <div></div>
+                      );
+                  }}
+                  onRenderRow={(detailsRowProps?: any, defaultRender?: any) => (
+                    <>
+                      <div
+                        onClick={() => {
+                          if (detailsRowProps) {
+                            const item = toJS(detailsRowProps.item);
+                            setForm(item);
+                            if (isRoot && item.id && location.state) {
+                              navigate(
+                                `${(location.state as any).path}/${item.id}`
+                              );
+                            }
+                            setMode("edit");
                           }
-                          setMode("edit");
-                        }
-                      }}
-                    >
-                      {defaultRender && defaultRender(detailsRowProps)}
-                    </div>
-                  </>
-                )}
-                layoutMode={DetailsListLayoutMode.fixedColumns}
-                onRenderCheckbox={() => {
-                  return null;
-                }}
-                columns={columns}
-              />
-            ) : (
-                <Empty text={"Data Empty"} />
-              )}
+                        }}
+                      >
+                        {defaultRender && defaultRender(detailsRowProps)}
+                      </div>
+                    </>
+                  )}
+                  layoutMode={DetailsListLayoutMode.fixedColumns}
+                  onRenderCheckbox={() => {
+                    return null;
+                  }}
+                  columns={columns}
+                />
+            }
           </div>
         </div>
       </>

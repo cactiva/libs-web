@@ -67,8 +67,9 @@ export default observer(({ label, field, value, setValue, submit, tablename, aut
         label={label}
         field={field}
         setValue={setValue}
+        onClear={submit}
         onClose={() => {
-            submit()
+            // submit()
         }}
         value={valueLabel}>
         <div style={{ padding: 10 }}>
