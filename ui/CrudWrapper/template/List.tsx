@@ -22,6 +22,9 @@ import Loading from "./Loading";
 import Empty from "./Empty";
 import FileUpload from "./fields/FileUpload";
 import { queryUpdate } from "@src/libs/utils/gql";
+import { useWindowSize } from "@src/libs/utils/useWindowSize";
+import { List, Icon } from "office-ui-fabric-react";
+import { waitUntil } from "./Base";
 
 export const DEFAULT_COLUMN_WIDTH = 160;
 export default observer(
@@ -41,10 +44,26 @@ export default observer(
     isRoot,
     structure,
   }: any) => {
+    const size = useWindowSize();
     const location = useLocation();
+    const isMobile = size.width > 800 ? false : true;
+    const isEmpty = !(list && list.length > 0);
+    const isLoading = Object.keys(colDef).length === 0 || loading;
     const meta = useObservable({
       columns: [],
+      more: [] as any,
     });
+    const onClick = (item) => {
+      setForm(item);
+      if (isRoot && item.id && location.state) {
+        window.history.pushState(
+          {},
+          "",
+          `${(location.state as any).path}/${item.id}`
+        );
+      }
+      setMode("edit");
+    };
     useAsyncEffect(async () => {
       meta.columns = generateColumns(structure, table, colDef, fkeys);
     }, [structure]);
@@ -52,107 +71,168 @@ export default observer(
     const columns = meta.columns;
     const dref = React.useRef(null);
     React.useEffect(() => {
-      const el = _.get(dref, "current._root.current");
-      if (el) {
-        const grid = el.children[0];
-        grid.scrollTop = scroll.top;
-        grid.scrollLeft = scroll.left;
-
-        let trycount = 0;
-        let tryset: any = setInterval(() => {
+      waitUntil(() => _.get(dref, "current._root.current")).then(() => {
+        const el = _.get(dref, "current._root.current");
+        if (el) {
+          const grid = isMobile ? el : el.children[0];
           grid.scrollTop = scroll.top;
           grid.scrollLeft = scroll.left;
-          trycount++;
 
-          if (
-            trycount > 100 ||
-            (scroll.top === grid.scrollTop && scroll.left === grid.scrollLeft)
-          )
-            clearInterval(tryset);
-        }, 10);
+          let trycount = 0;
+          let tryset: any = setInterval(() => {
+            grid.scrollTop = scroll.top;
+            grid.scrollLeft = scroll.left;
+            trycount++;
 
-        grid.onscroll = (e) => {
-          if (tryset) {
-            clearInterval(tryset);
-            tryset = undefined;
-          }
-          e.target.children[0].style.top = e.target.scrollTop + "px";
-          setScroll({
-            top: e.target.scrollTop,
-            left: e.target.scrollLeft,
-          });
-        };
-      }
+            if (
+              trycount > 100 ||
+              (scroll.top === grid.scrollTop && scroll.left === grid.scrollLeft)
+            )
+              clearInterval(tryset);
+          }, 10);
+          grid.onscroll = (e) => {
+            if (tryset) {
+              clearInterval(tryset);
+              tryset = undefined;
+            }
+            e.target.children[0].style.top = e.target.scrollTop + "px";
+            setScroll({
+              top: e.target.scrollTop,
+              left: e.target.scrollLeft,
+            });
+          };
+        }
+      });
     }, [dref.current]);
-
-    const hasList = list && list.length > 0;
-    const isLoading = Object.keys(colDef).length === 0 || loading;
 
     return (
       <>
-        <Filter
-          filter={filter}
-          reload={reload}
-          columns={columns}
-          structure={structure}
-          auth={auth}
-          colDef={colDef}
-          fkeys={fkeys}
-        />
+        {!isMobile && (
+          <Filter
+            filter={filter}
+            reload={reload}
+            columns={columns}
+            structure={structure}
+            auth={auth}
+            colDef={colDef}
+            fkeys={fkeys}
+          />
+        )}
 
         <div style={{ flex: 1, position: "relative", display: "flex" }}>
           <div className="base-list">
-            {isLoading
-              ? <Loading text={"Fetching Data "} />
-              : !hasList
-                ? <Empty text={"Data Empty"} /> : <DetailsList
-                  constrainMode={ConstrainMode.horizontalConstrained}
-                  disableSelectionZone={true}
-                  componentRef={dref}
-                  selectionMode={SelectionMode.single}
-                  items={list || []}
-                  onItemInvoked={(e) => {
-                    setForm(toJS(e));
-                    setMode("edit");
-                  }}
-                  onShouldVirtualize={(e: any) => {
-                    return true;
-                  }}
-                  onRenderDetailsHeader={(
-                    detailsHeaderProps?: any,
-                    defaultRender?: any
-                  ) => {
-                    return defaultRender ? (
-                      defaultRender(detailsHeaderProps)
-                    ) : (
-                        <div></div>
-                      );
-                  }}
-                  onRenderRow={(detailsRowProps?: any, defaultRender?: any) => (
-                    <>
+            {isLoading ? (
+              <Loading text={"Fetching Data "} />
+            ) : isEmpty ? (
+              <Empty text={"Data Empty"} />
+            ) : isMobile ? (
+              <List
+                items={list || []}
+                componentRef={dref}
+                onShouldVirtualize={(e: any) => {
+                  return true;
+                }}
+                version={meta.more}
+                onRenderCell={(item: any, idx?: number) => {
+                  const id = item["id"];
+                  console.log(meta.more.indexOf(id));
+                  return (
+                    <div
+                      className={`mobile-list-item ${
+                        meta.more.indexOf(id) >= 0 ? "expanded" : ""
+                      }`}
+                    >
                       <div
+                        className="outer"
                         onClick={() => {
-                          if (detailsRowProps) {
-                            const item = toJS(detailsRowProps.item);
-                            setForm(item);
-                            if (isRoot && item.id && location.state) {
-                              window.history.pushState({}, '', `${(location.state as any).path}/${item.id}`);
-                            }
-                            setMode("edit");
-                          }
+                          onClick(toJS(item));
                         }}
                       >
-                        {defaultRender && defaultRender(detailsRowProps)}
+                        <div className="inner">
+                          {meta.more.indexOf(id) >= 0
+                            ? meta.columns.map((e: any, idx: number) => {
+                                const v = e.onRender(item);
+                                return (
+                                  <Label key={idx}>
+                                    <div className="label">{e.name}</div>
+                                    <span className="sep">:</span>
+                                    <div className="value">{!v ? "-" : v}</div>
+                                  </Label>
+                                );
+                              })
+                            : meta.columns.map((e: any, idx: number) => {
+                                if (idx <= 2) {
+                                  return (
+                                    <Label key={idx}> {e.onRender(item)}</Label>
+                                  );
+                                }
+                              })}
+                        </div>
+                        <Icon
+                          style={{ fontSize: 25, color: "#aaa" }}
+                          iconName="ChevronRight"
+                        />
                       </div>
-                    </>
-                  )}
-                  layoutMode={DetailsListLayoutMode.fixedColumns}
-                  onRenderCheckbox={() => {
-                    return null;
-                  }}
-                  columns={columns}
-                />
-            }
+                      {meta.more.indexOf(id) < 0 && (
+                        <div
+                          className="expand"
+                          onClick={() => {
+                            if (meta.more.indexOf(id) < 0) {
+                              meta.more = [...meta.more, id];
+                            }
+                          }}
+                        >
+                          <Icon
+                            style={{ fontSize: 25, color: "#aaa" }}
+                            iconName="More"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  );
+                }}
+              />
+            ) : (
+              <DetailsList
+                constrainMode={ConstrainMode.horizontalConstrained}
+                disableSelectionZone={true}
+                componentRef={dref}
+                selectionMode={SelectionMode.single}
+                items={list || []}
+                onShouldVirtualize={(e: any) => {
+                  return true;
+                }}
+                onRenderDetailsHeader={(
+                  detailsHeaderProps?: any,
+                  defaultRender?: any
+                ) => {
+                  return defaultRender ? (
+                    defaultRender(detailsHeaderProps)
+                  ) : (
+                    <div></div>
+                  );
+                }}
+                onRenderRow={(detailsRowProps?: any, defaultRender?: any) => (
+                  <>
+                    <div
+                      onClick={() => {
+                        if (detailsRowProps) {
+                          const item = toJS(detailsRowProps.item);
+                          onClick(item);
+                        }
+                      }}
+                    >
+                      {defaultRender && defaultRender(detailsRowProps)}
+                    </div>
+                  </>
+                )}
+                layoutMode={DetailsListLayoutMode.fixedColumns}
+                onRenderCheckbox={() => {
+                  return null;
+                }}
+                columns={columns}
+              />
+            )}
           </div>
         </div>
       </>
@@ -321,7 +401,8 @@ const generateColumns = (structure, table, colDef, fkeys) => {
                 display: "flex",
                 width: "100%",
                 border: "1px solid #ddd",
-                padding: 5,
+                padding: "0px 5px",
+                borderRadius: 3,
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
@@ -339,14 +420,21 @@ const generateColumns = (structure, table, colDef, fkeys) => {
         }
 
         if (e.path.indexOf("file") === 0) {
-          return <FileUpload table={structure.name} field={e.path} value={value} onChange={async (newvalue) => {
-            if (item.id) {
-              const data: any = {};
-              data['id'] = item.id;
-              data[e.path] = newvalue;
-              await queryUpdate(structure.name, data);
-            }
-          }} />
+          return (
+            <FileUpload
+              table={structure.name}
+              field={e.path}
+              value={value}
+              onChange={async (newvalue) => {
+                if (item.id) {
+                  const data: any = {};
+                  data["id"] = item.id;
+                  data[e.path] = newvalue;
+                  await queryUpdate(structure.name, data);
+                }
+              }}
+            />
+          );
         }
 
         return renderValue();

@@ -309,16 +309,18 @@ export default observer(
                 onClick={e.onClick}
               />
             ))}
-          <Text
-            style={{
-              padding: 10,
-              fontSize: 21,
-              fontWeight: 200,
-              ...titleStyle,
-            }}
-          >
-            {title}
-          </Text>
+          {!!title && (
+            <Text
+              style={{
+                padding: 10,
+                fontSize: 21,
+                fontWeight: 200,
+                ...titleStyle,
+              }}
+            >
+              {title}
+            </Text>
+          )}
         </div>
         <div>
           {meta.loading ? (

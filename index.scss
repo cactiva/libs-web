@@ -259,3 +259,73 @@
     }
   }
 }
+
+.base-list > .ms-List {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: auto;
+  .mobile-list-item {
+    margin: 10px;
+    border-radius: 3px;
+    border: 1px solid #ececeb;
+    background: #fafafa;
+    display: flex;
+    flex-direction: column;
+    max-height: 150px;
+    transition: max-height 1s;
+
+    &.expanded {
+      max-height: 1000px;
+    }
+
+    .outer {
+      display: flex;
+      flex-direction: row;
+      padding: 10px;
+      padding-top: 5px;
+      align-items: center;
+      justify-content: space-between;
+      overflow: hidden;
+
+      .inner {
+        padding-right: 20px;
+        overflow: hidden;
+        position: relative;
+        flex: 1;
+
+        .ms-Label {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+
+          .label {
+            width: 100px;
+            overflow: hidden;
+            white-space: nowrap;
+            justify-content: flex-start;
+            text-overflow: ellipsis;
+          }
+          .sep {
+            margin: 0px 5px;
+          }
+          .value {
+            flex: 1;
+          }
+        }
+      }
+    }
+    .expand {
+      height: 20px;
+      display: flex;
+      border-top: 1px solid #ececeb;
+      background: white;
+      flex-direction: column;
+      align-items: flex-end;
+      padding: 0px 10px;
+      justify-content: center;
+    }
+  }
+}

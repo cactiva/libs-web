@@ -120,7 +120,7 @@ export default observer((props: any) => {
   useAsyncEffect(async () => {
     if (!isRoot) return;
     await waitUntil(() => meta.initStructure === true);
-    
+
     if (id) {
       if (meta.form && (meta.form as any).id !== id) {
         const list = await reloadList({
@@ -241,8 +241,8 @@ export default observer((props: any) => {
     >
       {renderHeader
         ? renderHeader({
-          header,
-        })
+            header,
+          })
         : header}
       {mode === "" ? (
         <List
@@ -267,25 +267,25 @@ export default observer((props: any) => {
           fkeys={meta.fkeys}
         />
       ) : (
-          <Form
-            form={form}
-            colDef={colDef}
-            generateForm={generateForm}
-            parsed={parsed}
-            structure={structure}
-            hasRelation={meta.hasRelation}
-            inmeta={meta}
-            setHasRelation={(v) => (meta.hasRelation = v)}
-            formRef={formRef}
-            reloadFormKey={meta.reloadFormKey}
-            mode={mode}
-          />
-        )}
+        <Form
+          form={form}
+          colDef={colDef}
+          generateForm={generateForm}
+          parsed={parsed}
+          structure={structure}
+          hasRelation={meta.hasRelation}
+          inmeta={meta}
+          setHasRelation={(v) => (meta.hasRelation = v)}
+          formRef={formRef}
+          reloadFormKey={meta.reloadFormKey}
+          mode={mode}
+        />
+      )}
     </div>
   );
 });
 
-const waitUntil = (f: any): Promise<boolean> => {
+export const waitUntil = (f: any): Promise<boolean> => {
   return new Promise((resolve) => {
     const ival = setInterval(() => {
       if (f()) {

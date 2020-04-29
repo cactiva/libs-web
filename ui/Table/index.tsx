@@ -1,5 +1,9 @@
-import * as React from 'react';
+import * as React from "react";
 
-export default (props: any) => {
-    return <div></div>;
-}
+export default (props: {
+  columnMode?: "manual";
+  children: any;
+  mobileCol?: number | ((any) => any);
+}) => {
+  return <div></div>;
+};

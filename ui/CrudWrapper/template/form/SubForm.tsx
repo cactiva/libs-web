@@ -42,6 +42,7 @@ export default observer(
     });
 
     fields.subs.forEach((e) => {
+      relationKeys.push(e.props.label);
       children.push(
         <PivotItem
           key={e.props.label}
@@ -148,11 +149,18 @@ export default observer(
     } else {
       const items = relationKeys.map((e, idx) => {
         const rel = fields.relations[e];
-        const label = rel.column.props.label;
-        return {
-          value: idx.toString(),
-          label,
-        };
+        if (rel) {
+          const label = rel.column.props.label;
+          return {
+            value: idx.toString(),
+            label,
+          };
+        } else {
+          return {
+            value: idx.toString(),
+            label: e,
+          };
+        }
       });
       return (
         <div
@@ -218,9 +226,10 @@ const SubBase = observer(({ sub, auth }: any) => {
     size.width < 800
       ? meta.mode === ""
         ? {
-            position: "absolute",
+            position: "fixed",
             bottom: 10,
             right: 10,
+            width: 85,
             zIndex: 99,
             borderRadius: 5,
             boxShadow: "0 0 5px 0 rgba(0,0,0,.3)",
