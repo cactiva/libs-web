@@ -182,6 +182,7 @@ export default observer(
                             }
                           }}
                         >
+                          <small>#{idx || 0 + 1}</small>
                           <Icon
                             style={{ fontSize: 25, color: "#aaa" }}
                             iconName="More"

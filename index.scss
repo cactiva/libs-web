@@ -322,10 +322,11 @@
       display: flex;
       border-top: 1px solid #ececeb;
       background: white;
-      flex-direction: column;
-      align-items: flex-end;
+      flex-direction: row;
+      align-items: center;
       padding: 0px 10px;
-      justify-content: center;
+      color: #aaa;
+      justify-content: space-between;
     }
   }
 }
