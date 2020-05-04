@@ -39,7 +39,7 @@ export default observer(
           <SubBase sub={sub} auth={auth} />
         </PivotItem>
       );
-    });
+    }).filter(e => !!e);
 
     fields.subs.forEach((e) => {
       relationKeys.push(e.props.label);
@@ -126,24 +126,26 @@ export default observer(
               meta.pivotEl
             )}
 
-          <Pivot
-            defaultSelectedIndex={parseInt(meta.selectedKey) || 0}
-            componentRef={pivotRef}
-            className="sub-tabs"
-            styles={{ itemContainer: { flex: 1, display: "flex" } }}
-            onLinkClick={(e: any, idx) => {
-              meta.selectedKey = _.get(e, "props.headerButtonProps.data-order");
-            }}
-            style={{
-              display: "flex",
-              flex: 1,
-              flexDirection: "row",
-              borderRight: "1px solid #ececeb",
-              alignItems: "stretch",
-            }}
-          >
-            {children}
-          </Pivot>
+          {children.length > 0 &&
+            <Pivot
+              defaultSelectedIndex={parseInt(meta.selectedKey) || 0}
+              componentRef={pivotRef}
+              className="sub-tabs"
+              styles={{ itemContainer: { flex: 1, display: "flex" } }}
+              onLinkClick={(e: any, idx) => {
+                meta.selectedKey = _.get(e, "props.headerButtonProps.data-order");
+              }}
+              style={{
+                display: "flex",
+                flex: 1,
+                flexDirection: "row",
+                borderRight: "1px solid #ececeb",
+                alignItems: "stretch",
+              }}
+            >
+              {children}
+            </Pivot>
+          }
         </div>
       );
     } else {
@@ -226,24 +228,24 @@ const SubBase = observer(({ sub, auth }: any) => {
     size.width < 800
       ? meta.mode === ""
         ? {
-            position: "fixed",
-            bottom: 10,
-            right: 10,
-            width: 85,
-            zIndex: 99,
-            borderRadius: 5,
-            boxShadow: "0 0 5px 0 rgba(0,0,0,.3)",
-            background: "white",
-          }
+          position: "fixed",
+          bottom: 10,
+          right: 10,
+          width: 85,
+          zIndex: 99,
+          borderRadius: 5,
+          boxShadow: "0 0 5px 0 rgba(0,0,0,.3)",
+          background: "white",
+        }
         : {}
       : meta.mode === ""
-      ? {
+        ? {
           position: "absolute",
           right: 10,
           top: -5,
           zIndex: 99,
         }
-      : {
+        : {
           flexDirection: "column",
           height: "100%",
           justifyContent: "flex-start",

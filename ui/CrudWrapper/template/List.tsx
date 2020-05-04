@@ -1,30 +1,24 @@
-import { navigate, useLocation } from "@reach/router";
+import { useLocation } from "@reach/router";
 import { formatMoney } from "@src/libs/utils";
 import { dateFormat } from "@src/libs/utils/date";
+import { queryUpdate } from "@src/libs/utils/gql";
+import { useWindowSize } from "@src/libs/utils/useWindowSize";
 import _ from "lodash";
 import { toJS } from "mobx";
 import { observer, useObservable } from "mobx-react-lite";
-import {
-  ColumnActionsMode,
-  ConstrainMode,
-  DetailsList,
-  DetailsListLayoutMode,
-} from "office-ui-fabric-react/lib/DetailsList";
-import { SelectionMode } from "office-ui-fabric-react/lib/Selection";
-import { Spinner } from "office-ui-fabric-react/lib/Spinner";
+import { Icon, List } from "office-ui-fabric-react";
+import { ColumnActionsMode, ConstrainMode, DetailsList, DetailsListLayoutMode } from "office-ui-fabric-react/lib/DetailsList";
 import { Label } from "office-ui-fabric-react/lib/Label";
+import { SelectionMode } from "office-ui-fabric-react/lib/Selection";
 import * as React from "react";
 import useAsyncEffect from "use-async-effect";
 import NiceValue from "../../Field/NiceValue";
+import { waitUntil } from "./Base";
+import Empty from "./Empty";
+import FileUpload from "./fields/FileUpload";
 import { formatRelationLabel } from "./fields/SelectFk";
 import Filter from "./filter";
 import Loading from "./Loading";
-import Empty from "./Empty";
-import FileUpload from "./fields/FileUpload";
-import { queryUpdate } from "@src/libs/utils/gql";
-import { useWindowSize } from "@src/libs/utils/useWindowSize";
-import { List, Icon } from "office-ui-fabric-react";
-import { waitUntil } from "./Base";
 
 export const DEFAULT_COLUMN_WIDTH = 160;
 export default observer(
