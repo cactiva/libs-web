@@ -14,6 +14,7 @@ export default observer((props: any) => {
     auth,
     inmeta,
     parsed,
+    isRoot,
     formRef,
     generateForm,
   } = props;
@@ -85,6 +86,7 @@ export default observer((props: any) => {
         data={data}
         auth={auth}
         mode={mode}
+        isRoot={isRoot}
         parsed={parsed}
         events={meta.events}
         fields={toJS(meta.fields)}

@@ -275,6 +275,7 @@ export default observer((props: any) => {
           structure={structure}
           hasRelation={meta.hasRelation}
           inmeta={meta}
+          isRoot={isRoot}
           setHasRelation={(v) => (meta.hasRelation = v)}
           formRef={formRef}
           reloadFormKey={meta.reloadFormKey}

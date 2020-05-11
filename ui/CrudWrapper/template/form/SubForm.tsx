@@ -70,16 +70,21 @@ export default observer(
           meta.pivotEl = el[0];
         }
       }
-      const el = document.querySelector(".base-form-sub .ms-FocusZone");
-      if (el instanceof HTMLDivElement) {
-        el.setAttribute("style", `height:${height}px`);
-        if (!el.onscroll) {
-          el.onscroll = function (e: any) {
-            const sub = document.querySelector(".base-form-sub .sub-head");
-            if (sub instanceof HTMLDivElement) {
-              sub.setAttribute("style", `top:${e.target.scrollTop}px;background:white`);
-            }
-          };
+      if (baseRef.current) {
+        const el = baseRef.current.querySelector(".ms-FocusZone");
+        if (el instanceof HTMLDivElement) {
+          el.setAttribute("style", `height:${height}px`);
+          if (!el.onscroll) {
+            el.onscroll = function (e: any) {
+              const sub = baseRef.current.querySelector(".sub-head");
+              if (sub instanceof HTMLDivElement) {
+                sub.setAttribute(
+                  "style",
+                  `top:${e.target.scrollTop}px;background:white`
+                );
+              }
+            };
+          }
         }
       }
     }, [pivotRef.current, height]);

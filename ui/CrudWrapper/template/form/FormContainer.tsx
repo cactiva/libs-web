@@ -7,9 +7,10 @@ import SubForm from "./SubForm";
 import _ from "lodash";
 
 export default observer(
-  ({ mode, fields, formRef, data, auth, parsed, events }: any) => {
+  ({ mode, fields, formRef, data, auth, parsed, events, isRoot }: any) => {
+    const localSize = localStorage["cactiva-app-split-size"] || "44";
     const meta = useObservable({
-      size: localStorage["cactiva-app-split-size"] || "44",
+      size: isRoot ? localSize : "44",
       subs: {},
       resizing: false,
       resizeTimer: 0 as any,
@@ -61,7 +62,9 @@ export default observer(
           } else {
             meta.size = size.toString();
           }
-          localStorage["cactiva-app-split-size"] = meta.size;
+          if (isRoot) {
+            localStorage["cactiva-app-split-size"] = meta.size;
+          }
           meta.resizeTimer = setTimeout(() => {
             meta.resizing = false;
           }, 300);
@@ -92,17 +95,27 @@ export default observer(
           height={parseInt(meta.size)}
           minimize={() => {
             meta.size = "40";
-            localStorage["cactiva-app-split-size"] = meta.size;
+            if (isRoot) {
+              localStorage["cactiva-app-split-size"] = meta.size;
+            }
           }}
           restore={() => {
-            meta.size = (size.height / 2).toString();
-            localStorage["cactiva-app-split-size"] = meta.size;
+            const h = _.get(conRef, "current.splitPane.offsetHeight");
+            if (h) {
+              meta.size = h / 2;
+
+              if (isRoot) {
+                localStorage["cactiva-app-split-size"] = meta.size;
+              }
+            }
           }}
           maximize={() => {
             const h = _.get(conRef, "current.splitPane.offsetHeight");
             if (h) {
               meta.size = h;
-              localStorage["cactiva-app-split-size"] = meta.size;
+              if (isRoot) {
+                localStorage["cactiva-app-split-size"] = meta.size;
+              }
             }
           }}
         />
