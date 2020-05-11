@@ -16,6 +16,7 @@ export default (input: any) => {
         table: {
             row: null as any,
             head: null as any,
+            onRowClick: null as any,
             root: {
                 config: null as any
             },
@@ -33,6 +34,7 @@ export default (input: any) => {
                     sortField: _.get(structure, 'orderBy.0.name'),
                 }
             }
+            output.table.onRowClick = e.props.onRowClick;
 
             _.castArray(e.props.children).map(c => {
                 if (c.type === TableRow) {

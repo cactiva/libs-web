@@ -7,7 +7,12 @@ import _ from "lodash";
 import { toJS } from "mobx";
 import { observer, useObservable } from "mobx-react-lite";
 import { Icon, List } from "office-ui-fabric-react";
-import { ColumnActionsMode, ConstrainMode, DetailsList, DetailsListLayoutMode } from "office-ui-fabric-react/lib/DetailsList";
+import {
+  ColumnActionsMode,
+  ConstrainMode,
+  DetailsList,
+  DetailsListLayoutMode,
+} from "office-ui-fabric-react/lib/DetailsList";
 import { Label } from "office-ui-fabric-react/lib/Label";
 import { SelectionMode } from "office-ui-fabric-react/lib/Selection";
 import * as React from "react";
@@ -47,17 +52,20 @@ export default observer(
       columns: [],
       more: [] as any,
     });
-    const onClick = (item) => {
-      setForm(item);
-      if (isRoot && item.id && location.state) {
-        window.history.pushState(
-          {},
-          "",
-          `${(location.state as any).path}/${item.id}`
-        );
-      }
-      setMode("edit");
-    };
+    console.log(table);
+    const onClick = table.onRowClick
+      ? table.onRowClick
+      : (item) => {
+          setForm(item);
+          if (isRoot && item.id && location.state) {
+            window.history.pushState(
+              {},
+              "",
+              `${(location.state as any).path}/${item.id}`
+            );
+          }
+          setMode("edit");
+        };
     useAsyncEffect(async () => {
       meta.columns = generateColumns(structure, table, colDef, fkeys);
     }, [structure]);
@@ -129,7 +137,6 @@ export default observer(
                 version={meta.more}
                 onRenderCell={(item: any, idx?: number) => {
                   const id = item["id"];
-                  console.log(meta.more.indexOf(id));
                   return (
                     <div
                       className={`mobile-list-item ${
