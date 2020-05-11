@@ -19,27 +19,29 @@ export default observer(
     const size = useWindowSize();
     const baseRef = React.useRef(null as any);
     const relationKeys = Object.keys(fields.relations);
-    const children = relationKeys.map((e, key) => {
-      const rel = fields.relations[e];
-      const sub: any = rel.sub;
+    const children = relationKeys
+      .map((e, key) => {
+        const rel = fields.relations[e];
+        const sub: any = rel.sub;
 
-      if (!sub || (sub && !sub.parsed)) {
-        return null;
-      }
-      return (
-        <PivotItem
-          key={e}
-          className="sub-form-pivot"
-          headerText={rel.column.props.label}
-          headerButtonProps={{
-            "data-order": key,
-            "data-title": rel.column.props.label,
-          }}
-        >
-          <SubBase sub={sub} auth={auth} />
-        </PivotItem>
-      );
-    }).filter(e => !!e);
+        if (!sub || (sub && !sub.parsed)) {
+          return null;
+        }
+        return (
+          <PivotItem
+            key={e}
+            className="sub-form-pivot"
+            headerText={rel.column.props.label}
+            headerButtonProps={{
+              "data-order": key,
+              "data-title": rel.column.props.label,
+            }}
+          >
+            <SubBase sub={sub} auth={auth} />
+          </PivotItem>
+        );
+      })
+      .filter((e) => !!e);
 
     fields.subs.forEach((e) => {
       relationKeys.push(e.props.label);
@@ -66,6 +68,18 @@ export default observer(
         );
         if (el && el.length > 0) {
           meta.pivotEl = el[0];
+        }
+      }
+      const el = document.querySelector(".base-form-sub .ms-FocusZone");
+      if (el instanceof HTMLDivElement) {
+        el.setAttribute("style", `height:${height}px`);
+        if (!el.onscroll) {
+          el.onscroll = function (e: any) {
+            const sub = document.querySelector(".base-form-sub .sub-head");
+            if (sub instanceof HTMLDivElement) {
+              sub.setAttribute("style", `top:${e.target.scrollTop}px;background:white`);
+            }
+          };
         }
       }
     }, [pivotRef.current, height]);
@@ -126,14 +140,17 @@ export default observer(
               meta.pivotEl
             )}
 
-          {children.length > 0 &&
+          {children.length > 0 && (
             <Pivot
               defaultSelectedIndex={parseInt(meta.selectedKey) || 0}
               componentRef={pivotRef}
               className="sub-tabs"
               styles={{ itemContainer: { flex: 1, display: "flex" } }}
               onLinkClick={(e: any, idx) => {
-                meta.selectedKey = _.get(e, "props.headerButtonProps.data-order");
+                meta.selectedKey = _.get(
+                  e,
+                  "props.headerButtonProps.data-order"
+                );
               }}
               style={{
                 display: "flex",
@@ -145,7 +162,7 @@ export default observer(
             >
               {children}
             </Pivot>
-          }
+          )}
         </div>
       );
     } else {
@@ -228,24 +245,24 @@ const SubBase = observer(({ sub, auth }: any) => {
     size.width < 800
       ? meta.mode === ""
         ? {
-          position: "fixed",
-          bottom: 10,
-          right: 10,
-          width: 85,
-          zIndex: 99,
-          borderRadius: 5,
-          boxShadow: "0 0 5px 0 rgba(0,0,0,.3)",
-          background: "white",
-        }
+            position: "fixed",
+            bottom: 10,
+            right: 10,
+            width: 85,
+            zIndex: 99,
+            borderRadius: 5,
+            boxShadow: "0 0 5px 0 rgba(0,0,0,.3)",
+            background: "white",
+          }
         : {}
       : meta.mode === ""
-        ? {
+      ? {
           position: "absolute",
           right: 10,
           top: -5,
           zIndex: 99,
         }
-        : {
+      : {
           flexDirection: "column",
           height: "100%",
           justifyContent: "flex-start",

@@ -229,7 +229,9 @@
     position: relative;
 
     > .ms-FocusZone {
+      overflow-y:auto;
       border-right: 1px solid #ececeb;
+      
       > .ms-Pivot {
         display: flex;
         flex-direction: column;
