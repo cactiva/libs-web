@@ -189,6 +189,7 @@ export default observer((props: any) => {
       }}
       setErrors={(v) => (meta.errors = v)}
       errors={meta.errors}
+      reloadList={reload}
       mode={mode}
       style={headerStyle}
       hasRelation={meta.hasRelation}

@@ -159,7 +159,7 @@ export const generateFormField = (
       }
       return true;
     })
-    .filter((e) => !!e && hidden.indexOf(e.props.path) < 0);
+    .filter((e) => !!e && !!e.props && hidden.indexOf(e.props.path) < 0);
 
   const modifiedCols = !!modifyColumns
     ? modifyColumns(columns.map((e) => e.props))

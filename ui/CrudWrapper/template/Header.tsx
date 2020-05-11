@@ -25,6 +25,7 @@ export default observer(
     colDef,
     isRoot,
     structure,
+    reloadList,
     setLoading,
     setMode,
     auth,
@@ -123,6 +124,7 @@ export default observer(
                     window.history.back();
                   } else {
                     setMode("");
+                    reloadList();
                   }
                 },
               };
