@@ -466,7 +466,12 @@ const generateColumns = (structure, table, colDef, fkeys, onClick) => {
                         const data: any = {};
                         data["id"] = item.id;
                         data[e.path] = newvalue;
+                        item[e.path] = newvalue;
+                        item.__loading = true;
                         await queryUpdate(structure.name, data);
+                        setTimeout(() => {
+                          delete item.__loading;
+                        }, 1000);
                       }
                     }
                   : undefined
