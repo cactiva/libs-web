@@ -89,22 +89,38 @@
   flex-direction: column;
 }
 
-.ms-DetailsRow-cell {
-  display: flex;
+.list-row {
+  .ms-DetailsRow-cell {
+    transition: all 1s;
+  }
+  &.loading .ms-DetailsRow-cell {
+    background: #2488f37e;
+  }
+}
+
+.ms-DetailsRow-fields {
   flex-direction: row;
-  align-items: center;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  font-size: 14px;
-}
+  display: flex;
+  align-items: stretch;
 
-.ms-DetailsRow-cell > .ms-TextField {
-  margin-top: -15px;
-  margin-bottom: -15px;
-}
+  .ms-DetailsRow-cell {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    // padding-top: 5px;
+    // padding-bottom: 5px;
+    font-size: 14px;
+    padding: 0;
+  }
 
-.ms-DetailsRow-cell > .ms-TextField .ms-TextField-fieldGroup {
-  height: 24px;
+  .ms-DetailsRow-cell > .row-item-cell {
+    height: 100%;
+    display: flex;
+    flex: 1;
+    padding: 0px 12px;
+    flex-direction: row;
+    align-items: center;
+  }
 }
 
 .ms-ComboBox > input {
@@ -229,9 +245,9 @@
     position: relative;
 
     > .ms-FocusZone {
-      overflow-y:auto;
+      overflow-y: auto;
       border-right: 1px solid #ececeb;
-      
+
       > .ms-Pivot {
         display: flex;
         flex-direction: column;

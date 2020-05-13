@@ -6,7 +6,10 @@ import { useWindowSize } from "@src/libs/utils/useWindowSize";
 import _ from "lodash";
 import { toJS } from "mobx";
 import { observer, useObservable } from "mobx-react-lite";
-import { Icon, List } from "office-ui-fabric-react";
+import { Icon } from "office-ui-fabric-react/lib/Icon";
+import { List } from "office-ui-fabric-react/lib/List";
+import { TextField } from "office-ui-fabric-react/lib/TextField";
+
 import {
   ColumnActionsMode,
   ConstrainMode,
@@ -52,7 +55,6 @@ export default observer(
       columns: [],
       more: [] as any,
     });
-    console.log(table);
     const onClick = table.onRowClick
       ? table.onRowClick
       : (item) => {
@@ -67,7 +69,7 @@ export default observer(
           setMode("edit");
         };
     useAsyncEffect(async () => {
-      meta.columns = generateColumns(structure, table, colDef, fkeys);
+      meta.columns = generateColumns(structure, table, colDef, fkeys, onClick);
     }, [structure]);
 
     const columns = meta.columns;
@@ -215,18 +217,7 @@ export default observer(
                   );
                 }}
                 onRenderRow={(detailsRowProps?: any, defaultRender?: any) => (
-                  <>
-                    <div
-                      onClick={() => {
-                        if (detailsRowProps) {
-                          const item = toJS(detailsRowProps.item);
-                          onClick(item);
-                        }
-                      }}
-                    >
-                      {defaultRender && defaultRender(detailsRowProps)}
-                    </div>
-                  </>
+                  <ItemRow render={defaultRender} props={detailsRowProps} />
                 )}
                 layoutMode={DetailsListLayoutMode.fixedColumns}
                 onRenderCheckbox={() => {
@@ -242,7 +233,15 @@ export default observer(
   }
 );
 
-const generateColumns = (structure, table, colDef, fkeys) => {
+const ItemRow = observer(({ render, props }: any) => {
+  return (
+    <div className={`list-row ${props.item.__loading ? "loading" : ""}`}>
+      {render(props)}
+    </div>
+  );
+});
+
+const generateColumns = (structure, table, colDef, fkeys, onClick) => {
   const keys = {};
   _.forEach(table.head.children, (e) => {
     keys[e.props.path] = e;
@@ -349,6 +348,7 @@ const generateColumns = (structure, table, colDef, fkeys) => {
       maxWidth: e.width || DEFAULT_COLUMN_WIDTH,
       isResizable: !e.width ? true : false,
       columnActionsMode: ColumnActionsMode.disabled,
+      editable: e.editable,
       onRender: (item: any) => {
         const renderValue = () => {
           if (typeof e.children === "function") {
@@ -392,12 +392,46 @@ const generateColumns = (structure, table, colDef, fkeys) => {
             return formatValue(value);
           }
 
+          if (e.editable) {
+            const updateField = async (ev) => {
+              if (item.id) {
+                const data: any = {};
+                data["id"] = item.id;
+                if (item[e.path] !== ev.target.value) {
+                  item[e.path] = ev.target.value;
+                  data[e.path] = ev.target.value;
+                  item.__loading = true;
+                  await queryUpdate(structure.name, data);
+                  setTimeout(() => {
+                    delete item.__loading;
+                  }, 1000);
+                }
+              }
+            };
+            if (e.relation) {
+              return valueEl;
+            } else {
+              return (
+                <TextField
+                  defaultValue={valueEl}
+                  onKeyDown={(e: any) => {
+                    if (e.which === 13) {
+                      e.target.blur();
+                    }
+                  }}
+                  onBlur={updateField}
+                />
+              );
+            }
+          }
+
           return valueEl;
         };
 
         const value = _.get(item, e.path);
+        let result: any = null;
         if (value && (e.prefix || e.suffix)) {
-          return (
+          result = (
             <div
               style={{
                 display: "flex",
@@ -419,27 +453,47 @@ const generateColumns = (structure, table, colDef, fkeys) => {
               )}
             </div>
           );
-        }
-
-        if (e.path.indexOf("file") === 0) {
-          return (
+        } else if (e.path.indexOf("file") === 0) {
+          result = (
             <FileUpload
               table={structure.name}
               field={e.path}
               value={value}
-              onChange={async (newvalue) => {
-                if (item.id) {
-                  const data: any = {};
-                  data["id"] = item.id;
-                  data[e.path] = newvalue;
-                  await queryUpdate(structure.name, data);
-                }
-              }}
+              onChange={
+                e.editable
+                  ? async (newvalue) => {
+                      if (item.id) {
+                        const data: any = {};
+                        data["id"] = item.id;
+                        data[e.path] = newvalue;
+                        item[e.path] = newvalue;
+                        item.__loading = true;
+                        await queryUpdate(structure.name, data);
+                        setTimeout(() => {
+                          delete item.__loading;
+                        }, 1000);
+                      }
+                    }
+                  : undefined
+              }
             />
           );
+        } else {
+          result = renderValue();
         }
 
-        return renderValue();
+        return (
+          <div
+            className="row-item-cell"
+            onClick={() => {
+              if (!e.editable) {
+                onClick(item);
+              }
+            }}
+          >
+            {result}
+          </div>
+        );
       },
     };
   });
