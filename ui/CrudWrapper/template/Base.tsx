@@ -11,6 +11,7 @@ import Form from "./Form";
 import Header from "./Header";
 import List from "./List";
 import Loading from "./Loading";
+import { dateFormat, validateDate } from "../../../utils/date";
 
 export default observer((props: any) => {
   const location = useLocation();
@@ -220,6 +221,7 @@ export default observer((props: any) => {
             } else {
               data = _.get(val, item.path);
             }
+            if (validateDate(data)) data = dateFormat(data);
             const title = item.title.replace("Id ", "");
             list_data = { ...list_data, [title]: data ? data : "-" };
           });
@@ -242,8 +244,8 @@ export default observer((props: any) => {
     >
       {renderHeader
         ? renderHeader({
-            header,
-          })
+          header,
+        })
         : header}
       {mode === "" ? (
         <List
@@ -268,21 +270,21 @@ export default observer((props: any) => {
           fkeys={meta.fkeys}
         />
       ) : (
-        <Form
-          form={form}
-          colDef={colDef}
-          generateForm={generateForm}
-          parsed={parsed}
-          structure={structure}
-          hasRelation={meta.hasRelation}
-          inmeta={meta}
-          isRoot={isRoot}
-          setHasRelation={(v) => (meta.hasRelation = v)}
-          formRef={formRef}
-          reloadFormKey={meta.reloadFormKey}
-          mode={mode}
-        />
-      )}
+          <Form
+            form={form}
+            colDef={colDef}
+            generateForm={generateForm}
+            parsed={parsed}
+            structure={structure}
+            hasRelation={meta.hasRelation}
+            inmeta={meta}
+            isRoot={isRoot}
+            setHasRelation={(v) => (meta.hasRelation = v)}
+            formRef={formRef}
+            reloadFormKey={meta.reloadFormKey}
+            mode={mode}
+          />
+        )}
     </div>
   );
 });

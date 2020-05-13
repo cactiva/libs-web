@@ -2,6 +2,7 @@ import formatFNS from "date-fns/format";
 import parseISO from "date-fns/parseISO";
 import id from "date-fns/locale/id";
 import enUS from "date-fns/locale/en-US";
+import isValid from "date-fns/isValid";
 
 export const dateParse = (value: any) => {
   if (typeof value === "string") {
@@ -9,6 +10,7 @@ export const dateParse = (value: any) => {
   }
   return value;
 };
+
 export const dateFormat = (value: any, format?: string) => {
   const locale = "en";
   const inputFormat = format
@@ -28,3 +30,7 @@ export const dateFormat = (value: any, format?: string) => {
     return value;
   }
 };
+
+export const validateDate = (value:any) => {
+  return isValid(parseISO(value));
+}
