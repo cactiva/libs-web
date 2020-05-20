@@ -14,6 +14,7 @@ export default observer(
     table: string;
     label?: string;
     value?: string;
+    enableUpload?: boolean;
     onChange?;
   }) => {
     const fileRef = useRef(null as any);
@@ -43,14 +44,17 @@ export default observer(
             <Spinner style={{ marginRight: 5 }} /> Uploading ({meta.percent}%)
           </div>
         ) : !meta.value ? (
-          <DefaultButton
-            onClick={() => {
-              fileRef.current.click();
-            }}
-            iconProps={{ iconName: "Upload" }}
-          >
-            Upload
-          </DefaultButton>
+          props.enableUpload === undefined ||
+          (props.enableUpload === true && (
+            <DefaultButton
+              onClick={() => {
+                fileRef.current.click();
+              }}
+              iconProps={{ iconName: "Upload" }}
+            >
+              Upload
+            </DefaultButton>
+          ))
         ) : (
           <DefaultButton
             split

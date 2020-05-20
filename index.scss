@@ -89,6 +89,10 @@
   flex-direction: column;
 }
 
+.list-head-col {
+  cursor: pointer;
+}
+
 .list-row {
   .ms-DetailsRow-cell {
     transition: all 1s;

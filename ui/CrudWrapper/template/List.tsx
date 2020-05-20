@@ -53,7 +53,12 @@ export default observer(
     const isLoading = Object.keys(colDef).length === 0 || loading;
     const meta = useObservable({
       columns: [],
+      sort: {
+        by: "",
+        order: "asc",
+      },
       more: [] as any,
+      sortedList: [] as any,
     });
     const onClick = table.onRowClick
       ? table.onRowClick
@@ -202,18 +207,77 @@ export default observer(
                 disableSelectionZone={true}
                 componentRef={dref}
                 selectionMode={SelectionMode.single}
-                items={list || []}
+                items={
+                  meta.sortedList.length > 0 ? meta.sortedList : list || []
+                }
                 onShouldVirtualize={(e: any) => {
                   return true;
+                }}
+                onColumnHeaderClick={(__: any, c: any) => {
+                  let prerender = false;
+
+                  for (let idx in list) {
+                    const row = list[idx];
+                    if (typeof toJS(row[c.key]) === "object") {
+                      if (!prerender) prerender = true;
+                      if (row[c.key + "___"] !== undefined) break;
+                      row[c.key + "___"] = _.join(_.values(row[c.key]), " ");
+                    }
+                  }
+
+                  if (c.relation) {
+                    prerender = true;
+                    for (let idx in list) {
+                      const row = list[idx];
+                      if (row[c.key + "___"] !== undefined) break;
+
+                      const alias = c.relation.alias;
+                      if (typeof c.relation.label === "function") {
+                        row[c.key + "___"] = c.relation.label(
+                          row,
+                          colDef[alias]
+                        );
+                      } else if (alias) {
+                        row[c.key + "___"] = row[alias];
+                      }
+                    }
+                  }
+
+                  if (meta.sort.by === c.key) {
+                    if (meta.sort.order === "asc") {
+                      meta.sort.by = c.key;
+                      meta.sort.order = "desc";
+                      if (prerender) {
+                        meta.sortedList = _.orderBy(list, c.key + "___", [
+                          "desc",
+                        ]);
+                      } else {
+                        meta.sortedList = _.orderBy(list, c.key, ["desc"]);
+                      }
+                    } else {
+                      meta.sort.by = "";
+                      meta.sortedList = [];
+                    }
+                  } else {
+                    meta.sort.by = c.key;
+                    meta.sort.order = "asc";
+                    if (prerender) {
+                      meta.sortedList = _.orderBy(list, c.key + "___", ["asc"]);
+                    } else {
+                      meta.sortedList = _.orderBy(list, c.key, ["asc"]);
+                    }
+                  }
                 }}
                 onRenderDetailsHeader={(
                   detailsHeaderProps?: any,
                   defaultRender?: any
                 ) => {
-                  return defaultRender ? (
-                    defaultRender(detailsHeaderProps)
-                  ) : (
-                    <div></div>
+                  return (
+                    <ListHeader
+                      render={defaultRender}
+                      props={detailsHeaderProps}
+                      sort={meta.sort}
+                    />
                   );
                 }}
                 onRenderRow={(detailsRowProps?: any, defaultRender?: any) => (
@@ -232,6 +296,18 @@ export default observer(
     );
   }
 );
+
+const ListHeader = observer(({ render, props, sort }: any) => {
+  const col = _.find(props.columns, { key: sort.by });
+  if (col) {
+    if (!col.originalName) {
+      col.originalName = col.name;
+    }
+    col.name = col.originalName + (sort.order === "desc" ? " ⌄" : " ⌃");
+  }
+
+  return <>{render(props)}</>;
+});
 
 const ItemRow = observer(({ render, props }: any) => {
   return (
@@ -347,7 +423,7 @@ const generateColumns = (structure, table, colDef, fkeys, onClick) => {
       filter: e.filter,
       maxWidth: e.width || DEFAULT_COLUMN_WIDTH,
       isResizable: !e.width ? true : false,
-      columnActionsMode: ColumnActionsMode.disabled,
+      columnActionsMode: ColumnActionsMode.clickable,
       editable: e.editable,
       onRender: (item: any) => {
         const renderValue = () => {
@@ -363,10 +439,10 @@ const generateColumns = (structure, table, colDef, fkeys, onClick) => {
           const cdef = colDef[e.path];
           let valueEl: any = null;
           if (e.path.indexOf(".") > 0) {
-            return formatValue(value);
+            valueEl = formatValue(value);
           }
 
-          if (e.relation) {
+          if (relation) {
             const alias = e.relation.alias;
             if (typeof e.relation.label === "function") {
               valueEl = formatValue(e.relation.label(item, colDef[alias]));
@@ -459,23 +535,20 @@ const generateColumns = (structure, table, colDef, fkeys, onClick) => {
               table={structure.name}
               field={e.path}
               value={value}
-              onChange={
-                e.editable
-                  ? async (newvalue) => {
-                      if (item.id) {
-                        const data: any = {};
-                        data["id"] = item.id;
-                        data[e.path] = newvalue;
-                        item[e.path] = newvalue;
-                        item.__loading = true;
-                        await queryUpdate(structure.name, data);
-                        setTimeout(() => {
-                          delete item.__loading;
-                        }, 1000);
-                      }
-                    }
-                  : undefined
-              }
+              enableUpload={e.editable}
+              onChange={async (newvalue) => {
+                if (item.id) {
+                  const data: any = {};
+                  data["id"] = item.id;
+                  data[e.path] = newvalue;
+                  item[e.path] = newvalue;
+                  item.__loading = true;
+                  await queryUpdate(structure.name, data);
+                  setTimeout(() => {
+                    delete item.__loading;
+                  }, 1000);
+                }
+              }}
             />
           );
         } else {
