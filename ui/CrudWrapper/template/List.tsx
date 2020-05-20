@@ -303,7 +303,7 @@ const ListHeader = observer(({ render, props, sort }: any) => {
     if (!col.originalName) {
       col.originalName = col.name;
     }
-    col.name = col.originalName + (sort.order === "desc" ? " ⌄" : " ⌃");
+    col.name =  col.originalName + (sort.order === "desc" ? " ⌄" : " ⌃");
   }
 
   return <>{render(props)}</>;
@@ -442,7 +442,7 @@ const generateColumns = (structure, table, colDef, fkeys, onClick) => {
             valueEl = formatValue(value);
           }
 
-          if (relation) {
+          if (e.relation) {
             const alias = e.relation.alias;
             if (typeof e.relation.label === "function") {
               valueEl = formatValue(e.relation.label(item, colDef[alias]));
