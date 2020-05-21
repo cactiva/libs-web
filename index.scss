@@ -102,6 +102,32 @@
   }
 }
 
+.filter-item-box {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border: 1px solid #ccc;
+  height: 22px;
+  padding-bottom: 2px;
+  overflow: hidden;
+  margin-right: 10px;
+  border-radius: 3px;
+
+  label > .ms-Dropdown-container {
+    height: 23px;
+    > .ms-Dropdown {
+      height: 23px;
+      .ms-Dropdown-title {
+        height: 23px;
+        .ms-Label {
+          height: 23px;
+          line-height: 23px;
+        }
+      }
+    }
+  }
+}
+
 .ms-DetailsRow-fields {
   flex-direction: row;
   display: flex;

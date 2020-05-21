@@ -51,7 +51,7 @@ export default observer(
     );
     return (
       <>
-        <div ref={btnRef}>
+        <div ref={btnRef} className="filter-item">
           {callout === false ? (
             <div
               style={{
