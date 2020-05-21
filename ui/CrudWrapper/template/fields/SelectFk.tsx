@@ -7,8 +7,8 @@ import * as React from "react";
 import useAsyncEffect from "use-async-effect";
 import { columnDefs } from "../..";
 import { loadColDefs } from "../../utils/reloadStructure";
-import { toJS } from "mobx";
 
+const queryCacheEnabled = false;
 const queryCache = {};
 
 export default observer((props: any) => {
@@ -150,7 +150,7 @@ const loadList = async (props) => {
   if (!queryIndex) {
     return;
   }
-  if (!queryCache[queryIndex]) {
+  if (!queryCache[queryIndex] || !queryCacheEnabled) {
     const rawList = await queryAll(query, { auth });
     queryCache[queryIndex] = await Promise.all(
       rawList.map(async (e) => {
