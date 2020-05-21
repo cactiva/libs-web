@@ -93,9 +93,24 @@
   cursor: pointer;
 }
 
+.base-list {
+  .ms-DetailsHeader-cellIsCheck {
+    opacity: 0 !important;
+  }
+}
+
 .list-row {
+  .ms-DetailsRow-cellCheck{
+    opacity: 0 !important;
+    height: 1px !important;
+  }
   .ms-DetailsRow-cell {
     transition: all 1s;
+  }
+  &.selected {
+    .ms-DetailsRow-cell {
+      background: rgb(194, 243, 159);
+    }
   }
   &.loading .ms-DetailsRow-cell {
     background: #2488f37e;
@@ -169,6 +184,50 @@
   display: flex;
   flex-direction: column;
 }
+
+.select-fk {
+  .ms-TextField-field {
+    cursor: pointer !important;
+  }
+}
+
+.fk-modal {
+  .ms-Dialog-main {
+    left: 10%;
+    right: 10%;
+    position: absolute;
+  }
+
+  &.fk-col-1 .ms-Dialog-main {
+    left: auto;
+    right: auto;
+    min-width: 250px;
+  }
+
+  &.fk-col-2 .ms-Dialog-main {
+    left: auto;
+    right: auto;
+    min-width: 420px;
+  }
+
+  &.fk-col-3 .ms-Dialog-main {
+    left: auto;
+    right: auto;
+    min-width: 520px;
+  }
+
+  &.fk-col-4 .ms-Dialog-main {
+    left: auto;
+    right: auto;
+    min-width: 620px;
+  }
+}
+.fk-popup {
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
 .base-form-sub-min {
   display: flex;
   flex-direction: row;

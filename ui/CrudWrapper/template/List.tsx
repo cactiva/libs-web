@@ -281,7 +281,11 @@ export default observer(
                   );
                 }}
                 onRenderRow={(detailsRowProps?: any, defaultRender?: any) => (
-                  <ItemRow render={defaultRender} props={detailsRowProps} />
+                  <ItemRow
+                    render={defaultRender}
+                    props={detailsRowProps}
+                    selectedId={table.root.selectedId}
+                  />
                 )}
                 layoutMode={DetailsListLayoutMode.fixedColumns}
                 onRenderCheckbox={() => {
@@ -309,9 +313,13 @@ const ListHeader = observer(({ render, props, sort }: any) => {
   return <>{render(props)}</>;
 });
 
-const ItemRow = observer(({ render, props }: any) => {
+const ItemRow = observer(({ render, props, selectedId }: any) => {
   return (
-    <div className={`list-row ${props.item.__loading ? "loading" : ""}`}>
+    <div
+      className={`list-row ${props.item.__loading ? "loading" : ""} ${
+        selectedId === props.item["id"] ? "selected" : ""
+      }`}
+    >
       {render(props)}
     </div>
   );

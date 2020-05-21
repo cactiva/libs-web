@@ -1,53 +1,160 @@
-import { Select } from "@src/libs/ui";
+import { CrudWrapper, Table, TableColumn, TableHead, Text } from "@src/libs/ui";
+import { startCase } from "@src/libs/utils";
 import { dateFormat } from "@src/libs/utils/date";
-import { queryAll } from "@src/libs/utils/gql";
+import { generateQueryString } from "@src/libs/utils/genQueryString";
+import { querySingle } from "@src/libs/utils/gql";
+import { parseTable, useCrud } from "@src/libs/utils/useCrud";
+import gql from "graphql-tag";
 import _ from "lodash";
+import { toJS } from "mobx";
 import { observer, useObservable } from "mobx-react-lite";
+import { Modal } from "office-ui-fabric-react";
+import { ContextualMenu } from "office-ui-fabric-react/lib/ContextualMenu";
+import { TextField } from "office-ui-fabric-react/lib/TextField";
 import * as React from "react";
 import useAsyncEffect from "use-async-effect";
 import { columnDefs } from "../..";
 import { loadColDefs } from "../../utils/reloadStructure";
 
-const queryCacheEnabled = false;
-const queryCache = {};
-
 export default observer((props: any) => {
-  const { value, onChange } = props;
-
   const meta = useObservable({
-    list: queryCache[getQuery(props)] || [],
-    loading: false,
+    label: "Loading...",
+    rawQuery: "",
+    query: "",
+    show: false,
   });
-  const query = getQuery(props);
-  useAsyncEffect(async () => {
-    if (meta.list.length === 0) {
-      meta.loading = true;
-      meta.list = await loadList(props);
-      meta.loading = false;
 
-      if (queryCache[query].length === 0 && value) {
-        delete queryCache[query];
-        meta.loading = true;
-        meta.list = await loadList(props);
-        meta.loading = false;
-      }
+  meta.rawQuery = getQuery(props);
+  useAsyncEffect(async () => {
+    if (!meta.query) {
+      meta.query = await parseQuery(meta.rawQuery, props.tablename);
     }
-  }, [query]);
+    if (props.value) {
+      const res = await loadValue(meta.query, props.value);
+      if (res) {
+        meta.label = formatRelationLabel(Object.keys(res), res);
+      } else {
+        console.log(res, props);
+      }
+    } else {
+      meta.label = "";
+    }
+  }, [props.value, meta.rawQuery]);
+
   return (
-    <Select
-      styles={props.styles}
-      label={props.label}
-      errorMessage={props.errorMessage}
-      required={props.required}
-      readonly={props.readonly}
-      items={meta.loading ? [{ value: "", label: "Loading..." }] : meta.list}
-      selectedKey={meta.loading ? "" : value}
-      onChange={(e, item) => {
-        onChange(item && item.key);
-      }}
-    />
+    <>
+      <TextField
+        value={meta.label}
+        label={props.label}
+        spellCheck={false}
+        styles={props.styles}
+        onClick={() => (meta.show = true)}
+        className="select-fk"
+        iconProps={{
+          iconName: "ChevronDown",
+          style: {
+            fontSize: "11px",
+          },
+        }}
+      />
+      {meta.show && (
+        <FkPicker
+          query={meta.query}
+          label={props.label}
+          value={props.value}
+          onSelect={(item) => {
+            if (item && item["id"]) {
+              props.onChange(item["id"]);
+            }
+            meta.show = false;
+          }}
+          onDismiss={() => {
+            meta.show = false;
+          }}
+        />
+      )}
+    </>
   );
 });
+
+const FkPicker = observer(
+  ({ query, label, onSelect, onDismiss, value }: any) => {
+    const meta = useObservable({
+      crud: {} as any,
+      fields: [] as any[],
+    });
+
+    useCrud(meta, "crud", query);
+
+    React.useEffect(() => {
+      const table = getTable(query);
+      meta.fields = [];
+
+      if (_.find(table.fields, { name: "name" })) {
+        meta.fields.push({ path: "name", title: "Name" });
+      }
+
+      table.fields.forEach((e, idx) => {
+        if (e.name.indexOf("name") > 0) {
+          meta.fields.push({ path: e.name, title: startCase(e.name) });
+        }
+      });
+
+      table.fields.forEach((e, idx) => {
+        if (
+          ["id", "name"].indexOf(e.name) >= 0 ||
+          _.find(meta.fields, { path: e }) ||
+          meta.fields.length > 6
+        ) {
+          return;
+        }
+
+        meta.fields.push({ path: e.name, title: startCase(e.name) });
+      });
+    }, [query]);
+
+    return (
+      <Modal
+        className={`fk-modal fk-col-${meta.fields.length}`}
+        isOpen={true}
+        onDismiss={onDismiss}
+        isDarkOverlay={false}
+        dragOptions={{
+          moveMenuItemText: "Move",
+          closeMenuItemText: "Close",
+          menu: ContextualMenu,
+        }}
+      >
+        <div className="fk-popup">
+          {meta.fields.length > 0 && (
+            <CrudWrapper data={meta.crud} isRoot={false}>
+              <Text>{label}</Text>
+              <Table
+                columnMode={"manual"}
+                selectedId={value}
+                onRowClick={(e) => {
+                  onSelect(e);
+                }}
+              >
+                <TableHead>
+                  {meta.fields.map((e, idx) => {
+                    return (
+                      <TableColumn
+                        key={idx}
+                        path={e.path}
+                        title={e.title}
+                      ></TableColumn>
+                    );
+                  })}
+                </TableHead>
+              </Table>
+            </CrudWrapper>
+          )}
+        </div>
+      </Modal>
+    );
+  }
+);
 
 export const formatRelationLabel = (keys, e, colDef?) => {
   let usedKeys = keys;
@@ -108,10 +215,7 @@ const formatSingleString = (e, f, cdef) => {
 };
 
 const getQuery = (props) => {
-  const {
-    tablename,
-    relation,
-  } = props;
+  const { tablename, relation } = props;
   let query = "";
   if (relation && relation.query) {
     if (typeof relation.query === "function") {
@@ -124,78 +228,49 @@ const getQuery = (props) => {
   }
   return query;
 };
-const loadList = async (props) => {
-  const {
-    tablename,
-    labelField,
-    auth,
-    relation,
-  } = props;
-  let queryIndex = getQuery(props);
-  let query = queryIndex;
-  if (queryIndex.indexOf(":::") === 0) {
+
+const parseQuery = async (query, tablename) => {
+  if (query.indexOf(":::") === 0) {
     await loadColDefs(tablename);
     const cols = columnDefs[tablename];
     if (cols) {
       query = `query { ${tablename} {
                     id
                     ${cols
-          .map((e) => e.column_name)
-          .filter((e) => e !== "id" && e.indexOf("id") !== 0)
-          .join("\n")}
+                      .map((e) => e.column_name)
+                      .filter((e) => e !== "id" && e.indexOf("id") !== 0)
+                      .join("\n")}
                 }}`;
     }
   }
 
-  if (!queryIndex) {
-    return;
-  }
-  if (!queryCache[queryIndex] || !queryCacheEnabled) {
-    const rawList = await queryAll(query, { auth });
-    queryCache[queryIndex] = await Promise.all(
-      rawList.map(async (e) => {
-        if (relation && relation.label) {
-          if (typeof relation.label === "function") {
-            let labelResult = relation.label(e);
-            if (labelResult instanceof Promise) {
-              labelResult = await labelResult;
-            }
+  return query;
+};
 
-            return {
-              value: relation.id ? e[relation.id] : e["id"],
-              label: labelResult,
-            };
-          } else {
-            return {
-              value: relation.id ? e[relation.id] : e["id"],
-              label: _.get(e, relation.label),
-            };
-          }
-        } else {
-          const keys = Object.keys(e);
+const getTable = (query) => {
+  const q = gql`
+    ${query}
+  `;
+  const root = _.get(q, `definitions.0.selectionSet.selections.0`);
+  const table: any = parseTable(root);
+  return table;
+};
 
-          let lfield = "";
-          if (typeof labelField === "string") {
-            lfield = labelField;
-          } else if (typeof labelField === "function") {
-            lfield = labelField(e);
-          } else {
-            if (keys.length > 0) {
-              return {
-                value: e["id"],
-                label: formatRelationLabel(keys, e),
-              };
-            }
-          }
+const loadValue = async (query, id) => {
+  const table = getTable(query);
+  table.where = [
+    {
+      name: "id",
+      operator: "_eq",
+      valueType: "IntValue",
+      value: id,
+    },
+  ];
+  const result = await querySingle(generateQueryString(table, true));
 
-          return {
-            value: e["id"],
-            label: e[lfield],
-          };
-        }
-      })
-    );
+  if (!result) {
+    console.log(generateQueryString(table, true));
   }
 
-  return queryCache[queryIndex];
+  return result;
 };

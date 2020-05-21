@@ -266,7 +266,7 @@ export default observer((props: any) => {
             }
             if (result)
               return (
-                <div className="filter-item-box">
+                <div className="filter-item-box" key={e.key}>
                   {result}
                   <div className="separator"></div>
                 </div>

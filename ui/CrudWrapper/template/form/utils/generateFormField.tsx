@@ -1,14 +1,14 @@
 import { startCase } from "@src/libs/utils";
 import pluralize from "@src/libs/utils/pluralize";
+import gql from "graphql-tag";
 import _ from "lodash";
 import * as React from "react";
 import { DateTime, Field, Input } from "../../../..";
 import DateField from "../../../../DateField";
+import FileUpload from "../../fields/FileUpload";
 import SelectFk from "../../fields/SelectFk";
 import generateSubStructure from "./generateSubStructure";
-import { toJS } from "mobx";
-import FileUpload from "../../fields/FileUpload";
-import gql from "graphql-tag";
+
 
 export const generateFieldWidth = (px) => {
   return px < 800 ? (px < 550 ? "98%" : "48%") : "32%";
@@ -52,7 +52,7 @@ export const generateFormField = (
       const col = _.find(columns, { props: { path: k } });
       if (!col && generateForm === "auto") {
         let label = startCase(k);
-        if (label.indexOf("Id") === 0) label = label.substr(3);
+        if (label.indexOf("Id") === 0 || label.indexOf("id") === 0) label = label.substr(3);
         columns.push(
           <Field path={k} label={label}>
             <Input />
@@ -205,7 +205,7 @@ export const generateFormField = (
               relation={rel}
               auth={auth}
               styles={{
-                container: {
+                root: {
                   width: generateFieldWidth(width),
                   marginRight: "10px",
                 },
@@ -230,7 +230,7 @@ export const generateFormField = (
                   relation={_.get(eprops, "options.relation")}
                   auth={auth}
                   styles={{
-                    container: {
+                    root: {
                       width: generateFieldWidth(width),
                       marginRight: "10px",
                     },

@@ -17,6 +17,7 @@ export default (input: any) => {
             row: null as any,
             head: null as any,
             onRowClick: null as any,
+            selectedId: null as any,
             root: {
                 config: null as any
             },
@@ -35,6 +36,7 @@ export default (input: any) => {
                 }
             }
             output.table.onRowClick = e.props.onRowClick;
+            output.table.selectedId = e.props.selectedId;
 
             _.castArray(e.props.children).map(c => {
                 if (c.type === TableRow) {
