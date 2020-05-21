@@ -22,7 +22,14 @@ interface IFieldProps {
         position?: "first" | "last" | number;
       }[];
       modifyColumns?: (
-        columns: { name; title; children; relation; suffix; prefix }[]
+        columns: {
+          name;
+          title;
+          children;
+          relation;
+          suffix;
+          prefix;
+        }[]
       ) => any;
       removeColumns?: string[];
     };

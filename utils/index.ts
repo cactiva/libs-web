@@ -1,11 +1,20 @@
 import _ from "lodash";
 
-export const startCase = (str) => (str || '')
-  .replace(/_/ig, ' ')
-  .replace(/\w+/g, (string) => {
+export const startCase = (str) => {
+  let res = (str || "").replace(/_/gi, " ").replace(/\w+/g, (string) => {
     if (string.length <= 2) return string;
     return string.charAt(0).toUpperCase() + string.slice(1);
   });
+
+  if (res.indexOf("m ") === 0) {
+    return res.substr(2);
+  }
+  if (res.indexOf("id ") === 0) {
+    return res.substr(3);
+  }
+
+  return res;
+};
 
 const uuid = (prefix: string = randString()) =>
   `${prefix ? prefix + "-" : ""}${new Date().getTime()}${Math.floor(
@@ -25,15 +34,15 @@ const deepFind = (object: object, path: string, defaultValue?: any) =>
   _.get(object, path, defaultValue);
 
 const findLargestSmallest = (a: string, b: string) =>
-  a.length > b.length 
+  a.length > b.length
     ? {
-      largest: a,
-      smallest: b
-    }
+        largest: a,
+        smallest: b,
+      }
     : {
-      largest: b,
-      smallest: a
-    };
+        largest: b,
+        smallest: a,
+      };
 const fuzzyMatch = (strA: string, strB: string, fuzziness = 0) => {
   if (strA === "" || strB === "") {
     return false;
@@ -59,7 +68,7 @@ const fuzzyMatch = (strA: string, strB: string, fuzziness = 0) => {
 
   return false;
 };
-const dateToString = date => {
+const dateToString = (date) => {
   var d = new Date(date),
     month = "" + (d.getMonth() + 1),
     day = "" + d.getDate(),
@@ -70,7 +79,7 @@ const dateToString = date => {
 
   return [year, month, day].join("-");
 };
-const textStyle = style => {
+const textStyle = (style) => {
   const textStyleProps = [
     "fontSize",
     "color",
@@ -78,11 +87,11 @@ const textStyle = style => {
     "lineHeight",
     "fontFamily",
     "textAlign",
-    "fontStyle"
+    "fontStyle",
   ];
   const newTextStyle = {};
   if (!!style)
-    Object.keys(style).forEach(k => {
+    Object.keys(style).forEach((k) => {
       if (textStyleProps.indexOf(k) > -1) newTextStyle[k] = style[k];
     });
   return newTextStyle;
@@ -99,11 +108,11 @@ const truncateStr = (text: string, length: number) => {
 
 const formatMoney = (number: any, separator?: string, precision?: number) => {
   let v = number;
-  if(!separator) separator = '.';
-  if(!precision) precision = 12;
+  if (!separator) separator = ".";
+  if (!precision) precision = 12;
 
-  if (typeof v === 'string') {
-    v = v.replace(/\./ig, '');
+  if (typeof v === "string") {
+    v = v.replace(/\./gi, "");
   }
 
   if (typeof v !== "number") {
@@ -114,18 +123,18 @@ const formatMoney = (number: any, separator?: string, precision?: number) => {
     v = floatPointer(v, precision);
   }
 
-  if (isNaN(v)) return '';
-  
-  return (v as number).toLocaleString().replace(/,/ig, separator);
-}
+  if (isNaN(v)) return "";
+
+  return (v as number).toLocaleString().replace(/,/gi, separator);
+};
 
 const unformatMoney = (string: any) => {
-  return parseInt(string.replace(/\./ig, ''))
-}
+  return parseInt(string.replace(/\./gi, ""));
+};
 
 const floatPointer = (number, precision) => {
   return Math.ceil(Number(parseFloat(number).toPrecision(precision)));
-}
+};
 
 export {
   uuid,
@@ -137,6 +146,5 @@ export {
   unformatMoney,
   textStyle,
   capitalizeFLetter,
-  truncateStr
+  truncateStr,
 };
-

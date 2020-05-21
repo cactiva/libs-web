@@ -11,6 +11,7 @@ interface ITableColumn {
   prefix?: string;
   children?: any;
   relation?: any;
+  relationPage?: any;
 }
 
 export default (props: ITableColumn) => {

@@ -182,8 +182,6 @@ export default (rel, parentStructure, data, width) => {
           <Form>
             {fcols.map((e, idx) => {
               let label = startCase(e.name);
-              if (label.indexOf("id ") === 0) label = label.substr(3);
-
               return (
                 <Field
                   key={idx}
