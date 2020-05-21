@@ -320,7 +320,7 @@ const ItemRow = observer(({ render, props, selectedId }: any) => {
   return (
     <div
       className={`list-row ${props.item.__loading ? "loading" : ""} ${
-        selectedId === props.item["id"] ? "selected" : ""
+        !!selectedId && selectedId === props.item["id"] ? "selected" : ""
       }`}
     >
       {render(props)}

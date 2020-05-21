@@ -195,20 +195,25 @@
 }
 
 .fk-modal {
-  .ms-Dialog-main {
-    left: 10%;
-    right: 10%;
-    position: absolute;
-    min-height: 80%;
-    display: flex;
+  &.loading {
+    display: none;
   }
-
   .fk-popup {
     display: flex;
     width: 100%;
     position: relative;
     height: 100%;
     flex-direction: column;
+  }
+  .ms-Dialog-main {
+    position: absolute;
+    min-height: 80%;
+    display: flex;
+  }
+
+  &.fk-col-s .ms-Dialog-main {
+    left: 10%;
+    right: 10%;
   }
 
   &.fk-col-1 .ms-Dialog-main {
@@ -220,19 +225,19 @@
   &.fk-col-2 .ms-Dialog-main {
     left: auto;
     right: auto;
-    min-width: 420px;
+    min-width: 430px;
   }
 
   &.fk-col-3 .ms-Dialog-main {
     left: auto;
     right: auto;
-    min-width: 520px;
+    min-width: 630px;
   }
 
   &.fk-col-4 .ms-Dialog-main {
     left: auto;
     right: auto;
-    min-width: 620px;
+    min-width: 820px;
   }
 }
 

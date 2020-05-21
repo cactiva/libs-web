@@ -125,7 +125,9 @@ const FkPicker = observer(
     const PageComponent = page;
     return (
       <Modal
-        className={`fk-modal fk-col-${meta.fields.length}`}
+        className={`fk-modal fk-col-${
+          meta.fields.length > 4 ? "s" : meta.fields.length
+        } ${meta.fields.length === 0 ? "loading" : ""}`}
         isOpen={true}
         onDismiss={onDismiss}
         isDarkOverlay={false}
