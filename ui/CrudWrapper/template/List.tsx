@@ -210,8 +210,11 @@ export default observer(
                 items={
                   meta.sortedList.length > 0 ? meta.sortedList : list || []
                 }
+                onRenderMissingItem={(e) => {
+                  return null;
+                }}
                 onShouldVirtualize={(e: any) => {
-                  return true;
+                  return true; // will be falsed when pagination is implemented
                 }}
                 onColumnHeaderClick={(__: any, c: any) => {
                   let prerender = false;

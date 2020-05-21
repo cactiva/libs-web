@@ -7,7 +7,9 @@ interface IFieldProps {
   path?: string;
   options?: {
     actions?: { type: string }[];
+    relationPage?: React.FunctionComponent | React.Component;
     relation?: {
+      page?: string;
       query: string;
       label: (item: any) => string | Promise<string>;
     };

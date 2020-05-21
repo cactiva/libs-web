@@ -6,7 +6,6 @@ import { querySingle } from "@src/libs/utils/gql";
 import { parseTable, useCrud } from "@src/libs/utils/useCrud";
 import gql from "graphql-tag";
 import _ from "lodash";
-import { toJS } from "mobx";
 import { observer, useObservable } from "mobx-react-lite";
 import { Modal } from "office-ui-fabric-react";
 import { ContextualMenu } from "office-ui-fabric-react/lib/ContextualMenu";
@@ -15,6 +14,7 @@ import * as React from "react";
 import useAsyncEffect from "use-async-effect";
 import { columnDefs } from "../..";
 import { loadColDefs } from "../../utils/reloadStructure";
+import { waitUntil } from "../Base";
 
 export default observer((props: any) => {
   const meta = useObservable({
@@ -62,6 +62,7 @@ export default observer((props: any) => {
           query={meta.query}
           label={props.label}
           value={props.value}
+          page={props.relationPage}
           onSelect={(item) => {
             if (item && item["id"]) {
               props.onChange(item["id"]);
@@ -78,7 +79,7 @@ export default observer((props: any) => {
 });
 
 const FkPicker = observer(
-  ({ query, label, onSelect, onDismiss, value }: any) => {
+  ({ query, label, onSelect, onDismiss, value, page }: any) => {
     const meta = useObservable({
       crud: {} as any,
       fields: [] as any[],
@@ -87,69 +88,82 @@ const FkPicker = observer(
     useCrud(meta, "crud", query);
 
     React.useEffect(() => {
-      const table = getTable(query);
-      meta.fields = [];
+      waitUntil(() => document.querySelector(".fk-modal")).then(() => {
+        const modal = document.querySelector(".fk-modal");
+        if (modal) {
+          const sc = modal.querySelector(".ms-Modal-scrollableContent");
+          sc?.removeAttribute("data-is-scrollable");
+        }
 
-      if (_.find(table.fields, { name: "name" })) {
-        meta.fields.push({ path: "name", title: "Name" });
-      }
+        const table = getTable(query);
+        meta.fields = [];
 
-      table.fields.forEach((e, idx) => {
-        if (e.name.indexOf("name") > 0) {
+        if (_.find(table.fields, { name: "name" })) {
+          meta.fields.push({ path: "name", title: "Name" });
+        }
+
+        table.fields.forEach((e, idx) => {
+          if (e.name.indexOf("name") > 0) {
+            meta.fields.push({ path: e.name, title: startCase(e.name) });
+          }
+        });
+
+        table.fields.forEach((e, idx) => {
+          if (
+            ["id", "name"].indexOf(e.name) >= 0 ||
+            _.find(meta.fields, { path: e }) ||
+            meta.fields.length > 6
+          ) {
+            return;
+          }
+
           meta.fields.push({ path: e.name, title: startCase(e.name) });
-        }
-      });
-
-      table.fields.forEach((e, idx) => {
-        if (
-          ["id", "name"].indexOf(e.name) >= 0 ||
-          _.find(meta.fields, { path: e }) ||
-          meta.fields.length > 6
-        ) {
-          return;
-        }
-
-        meta.fields.push({ path: e.name, title: startCase(e.name) });
+        });
       });
     }, [query]);
 
+    const PageComponent = page;
     return (
       <Modal
         className={`fk-modal fk-col-${meta.fields.length}`}
         isOpen={true}
         onDismiss={onDismiss}
         isDarkOverlay={false}
-        dragOptions={{
-          moveMenuItemText: "Move",
-          closeMenuItemText: "Close",
-          menu: ContextualMenu,
-        }}
       >
         <div className="fk-popup">
-          {meta.fields.length > 0 && (
-            <CrudWrapper data={meta.crud} isRoot={false}>
-              <Text>{label}</Text>
-              <Table
-                columnMode={"manual"}
+          {meta.fields.length > 0 &&
+            (page ? (
+              <PageComponent
+                isPopup={true}
                 selectedId={value}
                 onRowClick={(e) => {
                   onSelect(e);
                 }}
-              >
-                <TableHead>
-                  {meta.fields.map((e, idx) => {
-                    return (
-                      <TableColumn
-                        key={idx}
-                        path={e.path}
-                        title={e.title}
-                      ></TableColumn>
-                    );
-                  })}
-                </TableHead>
-              </Table>
-            </CrudWrapper>
-          )}
+              />
+            ) : (
+              <CrudWrapper data={meta.crud} isRoot={false}>
+                <Text>{label}</Text>
+                <Table
+                  columnMode={"manual"}
+                  selectedId={value}
+                  onRowClick={(e) => {
+                    onSelect(e);
+                  }}
+                >
+                  <TableHead>
+                    {meta.fields.map((e, idx) => {
+                      return (
+                        <TableColumn
+                          key={idx}
+                          path={e.path}
+                          title={e.title}
+                        ></TableColumn>
+                      );
+                    })}
+                  </TableHead>
+                </Table>
+              </CrudWrapper>
+            ))}
         </div>
       </Modal>
     );

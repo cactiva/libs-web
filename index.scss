@@ -93,23 +93,26 @@
   cursor: pointer;
 }
 
-.base-list {
-  .ms-DetailsHeader-cellIsCheck {
-    opacity: 0 !important;
-  }
-}
-
 .list-row {
-  .ms-DetailsRow-cellCheck{
-    opacity: 0 !important;
-    height: 1px !important;
-  }
   .ms-DetailsRow-cell {
     transition: all 1s;
   }
   &.selected {
     .ms-DetailsRow-cell {
-      background: rgb(194, 243, 159);
+      background: rgb(162, 206, 131);
+    }
+
+    .ms-DetailsRow-cellCheck {
+      opacity: 1;
+      background: transparent;
+      ::after {
+        content: "✓";
+        color: rgb(104, 143, 76) !important;
+        font-size: 30px;
+      }
+      .ms-DetailsRow-check {
+        opacity: 1;
+      }
     }
   }
   &.loading .ms-DetailsRow-cell {
@@ -196,6 +199,16 @@
     left: 10%;
     right: 10%;
     position: absolute;
+    min-height: 80%;
+    display: flex;
+  }
+
+  .fk-popup {
+    display: flex;
+    width: 100%;
+    position: relative;
+    height: 100%;
+    flex-direction: column;
   }
 
   &.fk-col-1 .ms-Dialog-main {
@@ -221,11 +234,6 @@
     right: auto;
     min-width: 620px;
   }
-}
-.fk-popup {
-  min-height: 500px;
-  display: flex;
-  flex-direction: column;
 }
 
 .base-form-sub-min {

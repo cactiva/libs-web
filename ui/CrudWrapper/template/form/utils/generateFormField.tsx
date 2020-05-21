@@ -9,7 +9,6 @@ import FileUpload from "../../fields/FileUpload";
 import SelectFk from "../../fields/SelectFk";
 import generateSubStructure from "./generateSubStructure";
 
-
 export const generateFieldWidth = (px) => {
   return px < 800 ? (px < 550 ? "98%" : "48%") : "32%";
 };
@@ -52,7 +51,8 @@ export const generateFormField = (
       const col = _.find(columns, { props: { path: k } });
       if (!col && generateForm === "auto") {
         let label = startCase(k);
-        if (label.indexOf("Id") === 0 || label.indexOf("id") === 0) label = label.substr(3);
+        if (label.indexOf("Id") === 0 || label.indexOf("id") === 0)
+          label = label.substr(3);
         columns.push(
           <Field path={k} label={label}>
             <Input />
@@ -202,6 +202,7 @@ export const generateFormField = (
               tablename={tablename}
               labelField={eprops.labelField}
               readonly={eprops.readonly}
+              relationPage={_.get(eprops, "options.relationPage")}
               relation={rel}
               auth={auth}
               styles={{
@@ -227,6 +228,7 @@ export const generateFormField = (
                   tablename={tablename}
                   labelField={eprops.labelField}
                   readonly={readonly}
+                  relationPage={_.get(eprops, "options.relationPage")}
                   relation={_.get(eprops, "options.relation")}
                   auth={auth}
                   styles={{
