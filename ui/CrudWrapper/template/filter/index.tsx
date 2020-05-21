@@ -78,7 +78,7 @@ export default observer((props: any) => {
         </div>
         {meta.columns.map((e, key) => {
           if (meta.visibles[e.key]) {
-            let result = <div></div>;
+            let result:any = null;
             let type = _.get(colDef, `${e.key}.data_type`);
             if (e.key.indexOf(".") > 0) {
               const eks = e.key.split(".").join(".columns.");
