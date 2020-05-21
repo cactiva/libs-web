@@ -183,7 +183,7 @@ export default observer((props: any) => {
                                 setValue={setValue}
                                 submit={submit}
                                 key={key}
-                                operator={'datetime'}
+                                operator={'date'}
                                 setOperator={(op) => {
                                     _.set(e, 'filter.type', 'date');
                                     _.set(e, 'filter.operator', op);

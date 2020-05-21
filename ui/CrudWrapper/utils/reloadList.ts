@@ -133,18 +133,37 @@ export default async (opt: {
                   value: dateFormat(value.from, "yyyy-MM-dd HH:mm:ss"),
                   valueType: "StringValue",
                 });
-                where.push({
-                  name: "_and",
-                  valueType: "ObjectValue",
-                  value: [
-                    {
-                      name: i,
-                      operator: "_lte",
-                      value: dateFormat(value.to, "yyyy-MM-dd HH:mm:ss"),
-                      valueType: "StringValue",
-                    },
-                  ],
+
+                const and = {
+                  name: i,
+                  operator: "_lte",
+                  value: dateFormat(value.to, "yyyy-MM-dd HH:mm:ss"),
+                  valueType: "StringValue",
+                };
+
+                let foundAnd = false;
+                where.forEach((e) => {
+                  if (e.name === "_and") {
+                    const f = _.find(e.value, { name: i });
+                    if (!f) {
+                      e.value.push(and);
+                    } else {
+                      e.value.push({
+                        name: "_and",
+                        valueType: "ObjectValue",
+                        value: [and],
+                      });
+                    }
+                    foundAnd = true;
+                  }
                 });
+                if (!foundAnd) {
+                  where.push({
+                    name: "_and",
+                    valueType: "ObjectValue",
+                    value: [and],
+                  });
+                }
               } else {
                 vtype = "StringValue";
                 operator = "_eq";

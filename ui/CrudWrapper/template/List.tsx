@@ -54,7 +54,7 @@ export default observer(
     const meta = useObservable({
       columns: [],
       sort: {
-        by: "",
+        by: "___________",
         order: "asc",
       },
       more: [] as any,
@@ -255,7 +255,7 @@ export default observer(
                         meta.sortedList = _.orderBy(list, c.key, ["desc"]);
                       }
                     } else {
-                      meta.sort.by = "";
+                      meta.sort.by = "___________";
                       meta.sortedList = [];
                     }
                   } else {
@@ -303,7 +303,7 @@ const ListHeader = observer(({ render, props, sort }: any) => {
     if (!col.originalName) {
       col.originalName = col.name;
     }
-    col.name =  col.originalName + (sort.order === "desc" ? " ⌄" : " ⌃");
+    col.name = col.originalName + (sort.order === "desc" ? " ⌄" : " ⌃");
   }
 
   return <>{render(props)}</>;
