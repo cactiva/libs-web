@@ -260,9 +260,10 @@ export const generateFormField = (
                 children = <Input type="double" />;
                 break;
               case "numeric": // money
+                children = <Input type="money" />;
               case "double precision":
               case "decimal":
-                children = <Input type="money" />;
+                children = <Input type="decimal" />;
                 break;
               case "timestamp without time zone":
               case "timestamp with time zone":
