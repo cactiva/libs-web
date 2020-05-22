@@ -242,9 +242,10 @@ export default observer(
                   e.props.options && e.props.options.onClick
                     ? e.props.options.onClick
                     : () => {
+                        const filename = e.props.options.filename;
                         ExportExcel({
                           data: getList(),
-                          filename: "excel-file",
+                          filename: filename ? filename : "excel-file",
                         });
                       },
               };
