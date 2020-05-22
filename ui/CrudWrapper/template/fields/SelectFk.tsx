@@ -46,6 +46,7 @@ export default observer((props: any) => {
       <TextField
         value={meta.label}
         label={props.label}
+        disabled={props.readonly === true}
         spellCheck={false}
         styles={props.styles}
         onClick={() => (meta.show = true)}
