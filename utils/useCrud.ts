@@ -84,6 +84,13 @@ export const parseTable = (table: any): ITable => {
         valueType: _.get(w, "value.fields.0.value.kind"),
         value: _.get(w, "value.fields.0.value.value"),
       };
+
+      if (item.valueType === "ListValue") {
+        item.value = _.get(w, "value.fields.0.value.values").map(
+          (e) => e.value
+        );
+      }
+
       if (item.valueType === "ObjectValue") {
         item.value = parseWhere(w);
       }

@@ -72,9 +72,8 @@ export const genWhere = (where: ITableWhere[], level = 0): string => {
       value = genWhere(w.value as ITableWhere[], level + 1);
       result.push(`${w.name}:${value}`);
       return;
-    } else if (w.valueType === "StringValue") {
-      value = JSON.stringify(w.value);
-    } else if (w.valueType === "ArrayValue") {
+    } else if (w.valueType === "StringValue" || w.valueType === "ListValue" || w.valueType === "ArrayValue") {
+      console.log(typeof value);
       value = JSON.stringify(w.value);
     }
     result.push(`${w.name}:{${w.operator}: ${value}}`);

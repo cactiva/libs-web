@@ -8,7 +8,6 @@ import gql from "graphql-tag";
 import _ from "lodash";
 import { observer, useObservable } from "mobx-react-lite";
 import { Modal } from "office-ui-fabric-react";
-import { ContextualMenu } from "office-ui-fabric-react/lib/ContextualMenu";
 import { TextField } from "office-ui-fabric-react/lib/TextField";
 import * as React from "react";
 import useAsyncEffect from "use-async-effect";
@@ -29,6 +28,7 @@ export default observer((props: any) => {
     if (!meta.query) {
       meta.query = await parseQuery(meta.rawQuery, props.tablename);
     }
+
     if (props.value) {
       const res = await loadValue(meta.query, props.value);
       if (res) {
