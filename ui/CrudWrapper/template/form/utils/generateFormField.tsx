@@ -205,12 +205,7 @@ export const generateFormField = (
               relationPage={_.get(eprops, "options.relationPage")}
               relation={rel}
               auth={auth}
-              styles={{
-                root: {
-                  width: generateFieldWidth(width),
-                  marginRight: "10px",
-                },
-              }}
+              fieldWidth={width}
             />
           );
           useCustomRel = true;
@@ -231,12 +226,7 @@ export const generateFormField = (
                   relationPage={_.get(eprops, "options.relationPage")}
                   relation={_.get(eprops, "options.relation")}
                   auth={auth}
-                  styles={{
-                    root: {
-                      width: generateFieldWidth(width),
-                      marginRight: "10px",
-                    },
-                  }}
+                  fieldWidth={width}
                 />
               );
             }
