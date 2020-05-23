@@ -247,11 +247,10 @@ export const generateFormField = (
                 children = <Input type="number" />;
                 break;
               case "double":
-                children = <Input type="double" />;
+                children = <Input type="decimal" />;
                 break;
               case "numeric": // money
                 children = <Input type="money" />;
-              case "double precision":
               case "decimal":
                 children = <Input type="money" />;
                 break;
