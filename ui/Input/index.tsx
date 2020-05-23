@@ -78,8 +78,14 @@ const clearValue = (value, type) => {
 };
 
 const formatValue = (value, type) => {
-  if (type === "money")
-    return clearValue(value, type).toLocaleString().replace(/,/gi, ".");
+  if (type === "money"){
+    if(value && value.toString().includes('.')) {
+      const num = value.toString().split('.');
+      value = Number(num[0]);
+    };
+    const res = clearValue(value, type).toLocaleString().replace(/,/gi, ".");
+    return res;
+  }
   if (type === "number") return clearValue(value, type).toString();
   if (type === "decimal") return clearValue(value, type).toString();
   if (type === "double") return clearValue(value, type);
