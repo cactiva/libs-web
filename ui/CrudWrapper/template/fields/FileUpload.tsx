@@ -66,7 +66,7 @@ export default observer(
               window.open(url + meta.value, "_blank");
             }}
             menuProps={
-              props.onChange
+              props.onChange && (props.enableUpload === undefined || props.enableUpload)
                 ? {
                     items: [
                       {
