@@ -70,7 +70,7 @@ export default observer((iprops: any) => {
 const clearValue = (value, type) => {
   if (type === "number")
     return parseInt((value || 0).toString().replace(/\D/g, ""));
-  if (type === "decimal" || type === "money" || type === "money-cents") {
+  if (type === "decimal" || type === "money") {
     if (value && typeof value === 'string' && value.toString().includes('.')) {
       if(!value.split('.').pop()) value = value.concat('01');
     }
@@ -80,7 +80,7 @@ const clearValue = (value, type) => {
 };
 
 const formatValue = (value, type) => {
-  if (type === "decimal" || type === "money" || type === "money-cents") return clearValue(value, type).toLocaleString().replace(/,/gi, ",");
+  if (type === "decimal" || type === "money") return clearValue(value, type).toLocaleString().replace(/,/gi, ",");
   if (type === "number") return clearValue(value, type).toString();
   return value;
 };

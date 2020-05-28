@@ -254,11 +254,11 @@ export const generateFormField = (
               case "decimal":
                 children = <Input type="decimal" />;
               break;
+              case "double precision":
+                children = <Input type="decimal" />;
+              break;
               case "money":
                 children = <Input type="money" />;
-              break;
-              case "money-cents":
-                children = <Input type="money-cents" />;
               break;
               case "timestamp without time zone":
               case "timestamp with time zone":
