@@ -70,29 +70,32 @@ export default observer((iprops: any) => {
 const clearValue = (value, type) => {
   if (type === "number")
     return parseInt((value || 0).toString().replace(/\D/g, ""));
-  if (type === "money") {
-    if (!Number.isInteger(value) && typeof value !== 'string') {
-      const num = value.toString().split('.');
-      value = Number(num[0]);
-    };
-    return parseInt((value || 0).toString().replace(/\D/g, ""));
-  }
-  if (type === "money-cents") {
+  if (type === "decimal" || type === "money" || type === "money-cents") {
     if (value && typeof value === 'string' && value.toString().includes('.')) {
       if(!value.split('.').pop()) value = value.concat('01');
     }
     return parseFloat((value || 0).toString().replace(/,/g, ""));
   }
-  if (type === "decimal") return (value || 0).toString().replace(/[^0-9\.]+/g, '');
-  if (type === "double")
-    return value ? parseFloat(value).toFixed(2) : parseFloat(value || 0);
   return 0;
 };
 
 const formatValue = (value, type) => {
-  if (type === "money" || type === "money-cents") return clearValue(value, type).toLocaleString().replace(/,/gi, ",");
+  if (type === "decimal" || type === "money" || type === "money-cents") return clearValue(value, type).toLocaleString().replace(/,/gi, ",");
   if (type === "number") return clearValue(value, type).toString();
-  if (type === "decimal") return clearValue(value, type).toString();
-  if (type === "double") return clearValue(value, type);
   return value;
 };
+
+  // if (type === "money") {
+  //   if (!Number.isInteger(value) && typeof value !== 'string') {
+  //     const num = value.toString().split('.');
+  //     value = Number(num[0]);
+  //   };
+  //   return parseInt((value || 0).toString().replace(/\D/g, ""));
+  // }
+  // if (type === "decimal") return (value || 0).toString().replace(/[^0-9\.]+/g, '');
+  // if (type === "double")
+  //   return value ? parseFloat(value).toFixed(2) : parseFloat(value || 0);
+  // return 0;
+
+  // if (type === "decimal") return clearValue(value, type).toString();
+  // if (type === "double") return clearValue(value, type);
