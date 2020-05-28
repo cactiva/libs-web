@@ -39,6 +39,7 @@ export default observer((iprops: any) => {
 
   if (
     props.type === "money" ||
+    props.type === "money-cents" ||
     props.type === "number" ||
     props.type === "decimal" ||
     props.type === "double"
@@ -69,8 +70,19 @@ export default observer((iprops: any) => {
 const clearValue = (value, type) => {
   if (type === "number")
     return parseInt((value || 0).toString().replace(/\D/g, ""));
-  if (type === "money")
+  if (type === "money") {
+    if (!Number.isInteger(value) && typeof value !== 'string') {
+      const num = value.toString().split('.');
+      value = Number(num[0]);
+    };
     return parseInt((value || 0).toString().replace(/\D/g, ""));
+  }
+  if (type === "money-cents") {
+    if (value && typeof value === 'string' && value.toString().includes('.')) {
+      if(!value.split('.').pop()) value = value.concat('01');
+    }
+    return parseFloat((value || 0).toString().replace(/,/g, ""));
+  }
   if (type === "decimal") return (value || 0).toString().replace(/[^0-9\.]+/g, '');
   if (type === "double")
     return value ? parseFloat(value).toFixed(2) : parseFloat(value || 0);
@@ -78,15 +90,7 @@ const clearValue = (value, type) => {
 };
 
 const formatValue = (value, type) => {
-  if (type === "money"){
-    // if(value && value.toString().includes('.')) {
-    //   const num = value.toString().split('.');
-    //   value = Number(num[0]);
-    // };
-    // const res = clearValue(value, type).toLocaleString().replace(/,/gi, ".");
-    // return res;
-    return clearValue(value, type).toLocaleString().replace(/,/gi, ".");
-  }
+  if (type === "money" || type === "money-cents") return clearValue(value, type).toLocaleString().replace(/,/gi, ",");
   if (type === "number") return clearValue(value, type).toString();
   if (type === "decimal") return clearValue(value, type).toString();
   if (type === "double") return clearValue(value, type);

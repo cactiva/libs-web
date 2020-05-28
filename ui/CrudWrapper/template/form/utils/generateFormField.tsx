@@ -257,6 +257,9 @@ export const generateFormField = (
               case "money":
                 children = <Input type="money" />;
               break;
+              case "money-cents":
+                children = <Input type="money-cents" />;
+              break;
               case "timestamp without time zone":
               case "timestamp with time zone":
                 children = <DateTime />;
