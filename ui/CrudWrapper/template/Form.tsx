@@ -31,11 +31,11 @@ export default observer((props: any) => {
   React.useEffect(() => {
     if (typeof form === "function" && !meta.fields) {
       meta.events.data = data;
-      meta.events.render = () => {
+      meta.events.render = async () => {
         const parsedForm = form(mode, meta.events);
         const afterLoad = _.get(meta, "events.afterLoad");
         if (afterLoad) {
-          afterLoad(data);
+          await afterLoad(data);
         }
         meta.fields = generateFormField(
           parsedForm,
