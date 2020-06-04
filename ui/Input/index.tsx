@@ -2,6 +2,9 @@ import * as React from "react";
 import { TextField } from "office-ui-fabric-react/lib/TextField";
 import { useObservable, observer } from "mobx-react-lite";
 import _ from "lodash";
+import { Select } from "@src/libs";
+import { toJS } from "mobx";
+
 
 export default observer((iprops: any) => {
   const props = _.cloneDeep(iprops);
@@ -62,6 +65,26 @@ export default observer((iprops: any) => {
         }}
       />
     );
+  } else if (props.type === "boolean") {
+    return (
+      <Select
+        label={iprops.label}
+        items={[{ value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }]}
+        selectedKey={meta.oldval.toString()}
+        onChange={(e, val)=>{
+          meta.oldval = val.key;
+          if (props.onChange) {
+            props.onChange({
+              ...e,
+              target: {
+                ...e.target,
+                value:meta.oldval
+              },
+            });
+          }
+        }}
+      ></Select>
+    )
   }
 
   return <TextField {...props} />;
@@ -72,7 +95,7 @@ const clearValue = (value, type) => {
     return parseInt((value || 0).toString().replace(/\D/g, ""));
   if (type === "decimal" || type === "money") {
     if (value && typeof value === 'string' && value.toString().includes('.')) {
-      if(!value.split('.').pop()) value = value.concat('01');
+      if (!value.split('.').pop()) value = value.concat('01');
     }
     return parseFloat((value || 0).toString().replace(/,/g, ""));
   }

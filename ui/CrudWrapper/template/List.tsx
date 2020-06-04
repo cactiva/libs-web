@@ -63,16 +63,16 @@ export default observer(
     const onClick = table.onRowClick
       ? table.onRowClick
       : (item) => {
-          setForm(item);
-          if (isRoot && item.id && location.state) {
-            window.history.pushState(
-              {},
-              "",
-              `${(location.state as any).path}/${item.id}`
-            );
-          }
-          setMode("edit");
-        };
+        setForm(item);
+        if (isRoot && item.id && location.state) {
+          window.history.pushState(
+            {},
+            "",
+            `${(location.state as any).path}/${item.id}`
+          );
+        }
+        setMode("edit");
+      };
     useAsyncEffect(async () => {
       meta.columns = generateColumns(structure, table, colDef, fkeys, onClick);
     }, [structure]);
@@ -148,7 +148,7 @@ export default observer(
                     <div
                       className={`mobile-list-item ${
                         meta.more.indexOf(id) >= 0 ? "expanded" : ""
-                      }`}
+                        }`}
                     >
                       <div
                         className="outer"
@@ -159,22 +159,22 @@ export default observer(
                         <div className="inner">
                           {meta.more.indexOf(id) >= 0
                             ? meta.columns.map((e: any, idx: number) => {
-                                const v = e.onRender(item);
-                                return (
-                                  <Label key={idx}>
-                                    <div className="label">{e.name}</div>
-                                    <span className="sep">:</span>
-                                    <div className="value">{!v ? "-" : v}</div>
-                                  </Label>
-                                );
-                              })
+                              const v = e.onRender(item);
+                              return (
+                                <Label key={idx}>
+                                  <div className="label">{e.name}</div>
+                                  <span className="sep">:</span>
+                                  <div className="value">{!v ? "-" : v}</div>
+                                </Label>
+                              );
+                            })
                             : meta.columns.map((e: any, idx: number) => {
-                                if (idx <= 2) {
-                                  return (
-                                    <Label key={idx}> {e.onRender(item)}</Label>
-                                  );
-                                }
-                              })}
+                              if (idx <= 2) {
+                                return (
+                                  <Label key={idx}> {e.onRender(item)}</Label>
+                                );
+                              }
+                            })}
                         </div>
                         <Icon
                           style={{ fontSize: 25, color: "#aaa" }}
@@ -202,101 +202,101 @@ export default observer(
                 }}
               />
             ) : (
-              <DetailsList
-                constrainMode={ConstrainMode.horizontalConstrained}
-                disableSelectionZone={true}
-                componentRef={dref}
-                selectionMode={SelectionMode.single}
-                items={
-                  meta.sortedList.length > 0 ? meta.sortedList : list || []
-                }
-                onRenderMissingItem={(e) => {
-                  return null;
-                }}
-                onShouldVirtualize={(e: any) => {
-                  return true; // will be falsed when pagination is implemented
-                }}
-                onColumnHeaderClick={(__: any, c: any) => {
-                  let prerender = false;
+                    <DetailsList
+                      constrainMode={ConstrainMode.horizontalConstrained}
+                      disableSelectionZone={true}
+                      componentRef={dref}
+                      selectionMode={SelectionMode.single}
+                      items={
+                        meta.sortedList.length > 0 ? meta.sortedList : list || []
+                      }
+                      onRenderMissingItem={(e) => {
+                        return null;
+                      }}
+                      onShouldVirtualize={(e: any) => {
+                        return true; // will be falsed when pagination is implemented
+                      }}
+                      onColumnHeaderClick={(__: any, c: any) => {
+                        let prerender = false;
 
-                  for (let idx in list) {
-                    const row = list[idx];
-                    if (typeof toJS(row[c.key]) === "object") {
-                      if (!prerender) prerender = true;
-                      if (row[c.key + "___"] !== undefined) break;
-                      row[c.key + "___"] = _.join(_.values(row[c.key]), " ");
-                    }
-                  }
+                        for (let idx in list) {
+                          const row = list[idx];
+                          if (typeof toJS(row[c.key]) === "object") {
+                            if (!prerender) prerender = true;
+                            if (row[c.key + "___"] !== undefined) break;
+                            row[c.key + "___"] = _.join(_.values(row[c.key]), " ");
+                          }
+                        }
 
-                  if (c.relation) {
-                    prerender = true;
-                    for (let idx in list) {
-                      const row = list[idx];
-                      if (row[c.key + "___"] !== undefined) break;
+                        if (c.relation) {
+                          prerender = true;
+                          for (let idx in list) {
+                            const row = list[idx];
+                            if (row[c.key + "___"] !== undefined) break;
 
-                      const alias = c.relation.alias;
-                      if (typeof c.relation.label === "function") {
-                        row[c.key + "___"] = c.relation.label(
-                          row,
-                          colDef[alias]
+                            const alias = c.relation.alias;
+                            if (typeof c.relation.label === "function") {
+                              row[c.key + "___"] = c.relation.label(
+                                row,
+                                colDef[alias]
+                              );
+                            } else if (alias) {
+                              row[c.key + "___"] = row[alias];
+                            }
+                          }
+                        }
+
+                        if (meta.sort.by === c.key) {
+                          if (meta.sort.order === "asc") {
+                            meta.sort.by = c.key;
+                            meta.sort.order = "desc";
+                            if (prerender) {
+                              meta.sortedList = _.orderBy(list, c.key + "___", [
+                                "desc",
+                              ]);
+                            } else {
+                              meta.sortedList = _.orderBy(list, c.key, ["desc"]);
+                            }
+                          } else {
+                            meta.sort.by = "___________";
+                            meta.sortedList = [];
+                          }
+                        } else {
+                          meta.sort.by = c.key;
+                          meta.sort.order = "asc";
+                          if (prerender) {
+                            meta.sortedList = _.orderBy(list, c.key + "___", ["asc"]);
+                          } else {
+                            meta.sortedList = _.orderBy(list, c.key, ["asc"]);
+                          }
+                        }
+                      }}
+                      onRenderDetailsHeader={(
+                        detailsHeaderProps?: any,
+                        defaultRender?: any
+                      ) => {
+                        return (
+                          <ListHeader
+                            render={defaultRender}
+                            props={detailsHeaderProps}
+                            sort={meta.sort}
+                          />
                         );
-                      } else if (alias) {
-                        row[c.key + "___"] = row[alias];
-                      }
-                    }
-                  }
-
-                  if (meta.sort.by === c.key) {
-                    if (meta.sort.order === "asc") {
-                      meta.sort.by = c.key;
-                      meta.sort.order = "desc";
-                      if (prerender) {
-                        meta.sortedList = _.orderBy(list, c.key + "___", [
-                          "desc",
-                        ]);
-                      } else {
-                        meta.sortedList = _.orderBy(list, c.key, ["desc"]);
-                      }
-                    } else {
-                      meta.sort.by = "___________";
-                      meta.sortedList = [];
-                    }
-                  } else {
-                    meta.sort.by = c.key;
-                    meta.sort.order = "asc";
-                    if (prerender) {
-                      meta.sortedList = _.orderBy(list, c.key + "___", ["asc"]);
-                    } else {
-                      meta.sortedList = _.orderBy(list, c.key, ["asc"]);
-                    }
-                  }
-                }}
-                onRenderDetailsHeader={(
-                  detailsHeaderProps?: any,
-                  defaultRender?: any
-                ) => {
-                  return (
-                    <ListHeader
-                      render={defaultRender}
-                      props={detailsHeaderProps}
-                      sort={meta.sort}
+                      }}
+                      onRenderRow={(detailsRowProps?: any, defaultRender?: any) => (
+                        <ItemRow
+                          render={defaultRender}
+                          props={detailsRowProps}
+                          selectedId={table.root.selectedId}
+                        />
+                      )}
+                      layoutMode={DetailsListLayoutMode.fixedColumns}
+                      onRenderCheckbox={() => {
+                        return null;
+                      }}
+                      columns={columns}
                     />
-                  );
-                }}
-                onRenderRow={(detailsRowProps?: any, defaultRender?: any) => (
-                  <ItemRow
-                    render={defaultRender}
-                    props={detailsRowProps}
-                    selectedId={table.root.selectedId}
-                  />
-                )}
-                layoutMode={DetailsListLayoutMode.fixedColumns}
-                onRenderCheckbox={() => {
-                  return null;
-                }}
-                columns={columns}
-              />
-            )}
+                  )}
           </div>
         </div>
       </>
@@ -321,7 +321,7 @@ const ItemRow = observer(({ render, props, selectedId }: any) => {
     <div
       className={`list-row ${props.item.__loading ? "loading" : ""} ${
         !!selectedId && selectedId === props.item["id"] ? "selected" : ""
-      }`}
+        }`}
     >
       {render(props)}
     </div>
@@ -472,6 +472,10 @@ const generateColumns = (structure, table, colDef, fkeys, onClick) => {
               cdef.data_type === "date"
             ) {
               valueEl = dateFormat(value);
+            } else if (cdef.data_type.indexOf("boolean") >= 0) {
+              let res = 'Yes';
+              if (!value) res = 'No';
+              valueEl = res;
             } else {
               valueEl = formatValue(value);
             }
