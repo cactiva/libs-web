@@ -3,11 +3,12 @@ import pluralize from "@src/libs/utils/pluralize";
 import gql from "graphql-tag";
 import _ from "lodash";
 import * as React from "react";
-import { DateTime, Field, Input } from "../../../..";
+import { DateTime, Field, Input, Select } from "../../../..";
 import DateField from "../../../../DateField";
 import FileUpload from "../../fields/FileUpload";
 import SelectFk from "../../fields/SelectFk";
 import generateSubStructure from "./generateSubStructure";
+import { toJS } from "mobx";
 
 export const generateFieldWidth = (px) => {
   return px < 800 ? (px < 550 ? "98%" : "48%") : "32%";
@@ -253,13 +254,13 @@ export const generateFormField = (
                 children = <Input type="money" />;
               case "decimal":
                 children = <Input type="decimal" />;
-              break;
+                break;
               case "double precision":
                 children = <Input type="decimal" />;
-              break;
+                break;
               case "money":
                 children = <Input type="money" />;
-              break;
+                break;
               case "timestamp without time zone":
               case "timestamp with time zone":
                 children = <DateTime />;
@@ -280,6 +281,9 @@ export const generateFormField = (
                 break;
               case "textarea":
                 children = <Input type="text" multiline={true} />;
+                break;
+              case "boolean":
+                children = <Input type="boolean" />;
                 break;
               default:
                 children = <Input type="text" />;

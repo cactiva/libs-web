@@ -5,7 +5,6 @@ import { ComboBox, IComboBoxStyles } from 'office-ui-fabric-react/lib/ComboBox';
 import * as React from "react";
 import ReactDOM, { createPortal } from "react-dom";
 
-
 interface ISelectProps {
   style?: any;
   styles?: Partial<IComboBoxStyles>;
