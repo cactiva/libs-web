@@ -57,8 +57,8 @@ export default observer((props: any) => {
     return <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', ...rootStyle }}>
         <DatePicker
             {...props}
-            readOnly = {props.disableDate}
-            disabled = {props.disableDate}
+            readOnly={props.disableDate}
+            disabled={props.disableDate}
             isRequired={props.required}
             textField={{
                 errorMessage: props.errorMessage
@@ -75,8 +75,8 @@ export default observer((props: any) => {
             }}
         />
         <MaskedTextField mask="99:99"
-            readOnly = {props.disableTime}
-            disabled = {props.disableTime}
+            readOnly={props.disableTime}
+            disabled={props.disableTime}
             styles={{ root: { paddingLeft: 10, width: '65px' }, field: { textAlign: 'center' } }}
             value={meta.time}
             label={props.label ? '‎' : undefined}
@@ -87,7 +87,13 @@ export default observer((props: any) => {
                 }
             }}
             onChange={(e: any) => {
-                meta.time = e.target.value;
+                let val = e.target.value;
+                if (val.length > 5) {
+                    val = val.replace("_", "");
+                    val = val.replace(":", "");
+                    val = val.slice(0, 2) + ":" + val.slice(2);
+                }
+                meta.time = val;
             }}
         />
     </div>
