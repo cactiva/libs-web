@@ -70,7 +70,7 @@ export default observer((iprops: any) => {
       <Select
         label={iprops.label}
         items={[{ value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }]}
-        selectedKey={meta.oldval.toString()}
+        selectedKey={meta.oldval ? meta.oldval.toString() : 'false'}
         onChange={(e, val)=>{
           meta.oldval = val.key;
           if (props.onChange) {
@@ -95,7 +95,7 @@ const clearValue = (value, type) => {
     return parseInt((value || 0).toString().replace(/\D/g, ""));
   if (type === "decimal" || type === "money") {
     if (value && typeof value === 'string' && value.toString().includes('.')) {
-      if (!value.split('.').pop()) value = value.concat('01');
+      if (!value.split('.').pop()) value = value.concat('55');
     }
     return parseFloat((value || 0).toString().replace(/,/g, ""));
   }
