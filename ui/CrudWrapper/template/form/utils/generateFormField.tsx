@@ -279,6 +279,9 @@ export const generateFormField = (
                   <DateTime disableDate={"disabled"} disableTime={"disabled"} />
                 );
                 break;
+              case "readonly-boolean":
+                children = <Input type="boolean" readOnly disabled={true} />;
+                break;
               case "textarea":
                 children = <Input type="text" multiline={true} />;
                 break;
