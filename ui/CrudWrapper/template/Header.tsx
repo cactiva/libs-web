@@ -261,9 +261,9 @@ export default observer(
                   e.props.options && e.props.options.onClick
                     ? e.props.options.onClick
                     : () => {
-                        if (isRoot) {
+                        // if (isRoot) {
                           window.history.back();
-                        }
+                        // }
                       },
               };
             }
