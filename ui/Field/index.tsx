@@ -42,6 +42,7 @@ interface IFieldProps {
     default?: {
       [key: string]: any;
     };
+    booleanVal?: any [];
   };
   setValue?: any;
   value?: any;

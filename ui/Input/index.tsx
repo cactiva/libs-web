@@ -66,19 +66,21 @@ export default observer((iprops: any) => {
       />
     );
   } else if (props.type === "boolean") {
+    const val = _.get(props, 'options.booleanVal');
+    const booleanVal = val ? val : [{ value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }];
     return (
       <Select
         label={iprops.label}
-        items={[{ value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }]}
+        items={booleanVal}
         selectedKey={meta.oldval ? meta.oldval.toString() : 'false'}
-        onChange={(e, val)=>{
+        onChange={(e, val) => {
           meta.oldval = val.key;
           if (props.onChange) {
             props.onChange({
               ...e,
               target: {
                 ...e.target,
-                value:meta.oldval
+                value: meta.oldval
               },
             });
           }
