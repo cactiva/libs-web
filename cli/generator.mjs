@@ -26,33 +26,56 @@ const project = new morph.Project({
 const sf = project.getSourceFile(process.argv.splice(2).join(" "));
 const exec = async (sf) => {
   const rawQuery = getQuery(sf);
-  const struct = gql`
+
+  if (!rawQuery) {
+    let code = `
+import {
+  View,
+} from "@src/libs";
+import React from "react";
+import { useCrud } from "@src/libs/utils/useCrud";
+import { observer, useObservable } from "mobx-react-lite";
+  
+export default observer(() => {
+  const meta = useObservable({
+    crud: {},
+  }) as any
+
+  useCrud(meta, 'crud', \`\`);
+  return <View></View>;
+});
+`;
+    code = prettier.format(code, { parser: "typescript" });
+    sf.replaceWithText(code);
+  } else {
+
+    const struct = gql`
     ${rawQuery}
   `;
 
-  const root = _.get(struct, "definitions.0.selectionSet.selections.0");
-  const table = parseTable(root);
-  const query = { table, var: {}, auth: {} };
+    const root = _.get(struct, "definitions.0.selectionSet.selections.0");
+    const table = parseTable(root);
+    const query = { table, var: {}, auth: {} };
 
-  const cw = {
-    kind: SyntaxKind.JsxElement,
-    name: "CrudWrapper",
-    props: {
-      data: {
-        kind: 73,
-        value: "meta.crud",
+    const cw = {
+      kind: SyntaxKind.JsxElement,
+      name: "CrudWrapper",
+      props: {
+        data: {
+          kind: 73,
+          value: "meta.crud",
+        },
       },
-    },
-    children: [],
-  };
-  cw.children.push(generateCrudTitle(query));
-  cw.children.push(generateCrudActions(query));
-  cw.children.push(generateCrudTable(query));
-  cw.children.push(generateCrudForm(query));
-  const h = getReturn(sf);
-  if (h) {
-    const text = sf.getText();
-    const im = `import {
+      children: [],
+    };
+    cw.children.push(generateCrudTitle(query));
+    cw.children.push(generateCrudActions(query));
+    cw.children.push(generateCrudTable(query));
+    cw.children.push(generateCrudForm(query));
+    const h = getReturn(sf);
+    if (h) {
+      const text = sf.getText();
+      const im = `import {
     Button,
     CrudWrapper,
     Field,
@@ -61,17 +84,19 @@ const exec = async (sf) => {
     Table,
     TableColumn,
     TableHead,
+    View,
     Text,
 } from "@src/libs";`;
-    let code = `${text.indexOf(im) < 0 ? im : ""}
+      let code = `${text.indexOf(im) < 0 ? im : ""}
 ${replaceRange(
-  text,
-  h.pos,
-  h.end,
-  `\nreturn <View>${generateSource(cw)}</View>`
-)}`;
-    code = prettier.format(code, { parser: "typescript" });
-    sf.replaceWithText(code);
+        text,
+        h.pos,
+        h.end,
+        `\nreturn <View>${generateSource(cw)}</View>`
+      )}`;
+      code = prettier.format(code, { parser: "typescript" });
+      sf.replaceWithText(code);
+    }
   }
   sf.formatText();
   sf.save();
