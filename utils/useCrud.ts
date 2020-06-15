@@ -1,14 +1,20 @@
 import gql from "graphql-tag";
 import _ from "lodash";
-import { useEffect } from "react";
+import useAsyncEffect from "use-async-effect";
 
 export const useCrud = (meta: any, metaField: string, query: (() => Promise<string>) | string) => {
-  useEffect(() => {
+  useAsyncEffect(async () => {
     let struct = {} as any;
     try {
-      struct = gql`
+      if (typeof query === "string") {
+        struct = gql`
         ${query}
       `;
+      } else {
+        struct = gql`
+        ${await query()}
+      `;
+      }
     } catch (e) {
       console.log(e);
       return undefined;
