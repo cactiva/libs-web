@@ -17,6 +17,9 @@ const clearValue = (value, type) => {
 };
 
 const formatValue = (value, type) => {
+
+  if (!value) return value;
+  
   if (type === "decimal" || type === "money") {
     if (typeof value === "string" && value[value.length - 1] === ".") {
       console.log(value);
