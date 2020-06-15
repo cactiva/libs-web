@@ -227,8 +227,8 @@ export default observer(
                   e.props.options && e.props.options.onClick
                     ? e.props.options.onClick
                     : () => {
-                        console.log("custom clicked");
-                      },
+                      console.log("custom clicked");
+                    },
               };
             }
             break;
@@ -242,12 +242,12 @@ export default observer(
                   e.props.options && e.props.options.onClick
                     ? e.props.options.onClick
                     : () => {
-                        const filename = e.props.options.filename;
-                        ExportExcel({
-                          data: getList(),
-                          filename: filename ? filename : "excel-file",
-                        });
-                      },
+                      const filename = e.props.options.filename;
+                      ExportExcel({
+                        data: getList(),
+                        filename: filename ? filename : "excel-file",
+                      });
+                    },
               };
             }
             break;
@@ -261,10 +261,10 @@ export default observer(
                   e.props.options && e.props.options.onClick
                     ? e.props.options.onClick
                     : () => {
-                        // if (isRoot) {
-                          window.history.back();
-                        // }
-                      },
+                      // if (isRoot) {
+                      window.history.back();
+                      // }
+                    },
               };
             }
             break;
@@ -275,11 +275,11 @@ export default observer(
     const titleStyle =
       size.width < 800
         ? {
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            maxWidth: "200px",
-          }
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          maxWidth: "200px",
+        }
         : {};
 
     return (
@@ -308,7 +308,11 @@ export default observer(
                 style={{ marginRight: -15 }}
                 key={e.key}
                 iconProps={e.iconProps}
-                onClick={e.onClick}
+                onClick={(ev) => {
+                  if (e.onClick) {
+                    e.onClick(ev, { reloadList: reload });
+                  }
+                }}
               />
             ))}
           {!!title && (
@@ -328,15 +332,15 @@ export default observer(
           {meta.loading ? (
             <Spinner style={{ marginRight: 25 }} />
           ) : (
-            <MenuButtons actions={actions} />
-          )}
+              <MenuButtons actions={actions} reload={reload} />
+            )}
         </div>
       </div>
     );
   }
 );
 
-const MenuButtons = ({ actions }: any) => {
+const MenuButtons = ({ actions, reload }: any) => {
   const size = useWindowSize();
   const buttons = actions.filter((e) => e.key !== "cancel" && e.key !== "back");
   if ((size.width > 800 && buttons.length <= 5) || buttons.length < 2)
@@ -347,7 +351,11 @@ const MenuButtons = ({ actions }: any) => {
             text={e.text}
             key={e.key}
             iconProps={e.iconProps}
-            onClick={e.onClick}
+            onClick={(ev) => {
+              if (e.onClick) {
+                e.onClick(ev, { reloadList: reload });
+              }
+            }}
           />
         ))}
       </>

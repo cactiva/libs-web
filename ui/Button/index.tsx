@@ -3,7 +3,25 @@ import { DefaultButton, PrimaryButton } from "office-ui-fabric-react/lib/Button"
 import * as React from 'react';
 import Text from '../Text';
 
-export default (props: any) => {
+
+interface IButtonProps {
+    type?: string,
+    children?: any,
+    style?: any,
+    onPress?: any,
+    onClick?: any,
+    iconProps?: any,
+    className?: any,
+    options?: {
+        key?: string,
+        mode?: string,
+        icon?: string,
+        filename?: string,
+        onClick?: (event: any, options: { reloadList: () => void }) => void
+    }
+}
+
+export default (props: IButtonProps) => {
     let children = props.children;
     let text = undefined;
     let styles: any = undefined;
