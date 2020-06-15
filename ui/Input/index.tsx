@@ -1,14 +1,37 @@
-import * as React from "react";
-import { TextField } from "office-ui-fabric-react/lib/TextField";
-import { useObservable, observer } from "mobx-react-lite";
-import _ from "lodash";
 import { Select } from "@src/libs";
-import { toJS } from "mobx";
+import _ from "lodash";
+import { observer, useObservable } from "mobx-react-lite";
+import { TextField } from "office-ui-fabric-react/lib/TextField";
+import * as React from "react";
+import { useRifm } from './rifm';
+
+
+
+const clearValue = (value, type) => {
+  if (type === "number")
+    return parseInt((value || 0).toString().replace(/\D/g, ""));
+  if (type === "decimal" || type === "money") {
+    return parseFloat((value || 0).toString().replace(/,/g, ""));
+  }
+  return 0;
+};
+
+const formatValue = (value, type) => {
+  if (type === "decimal" || type === "money") {
+    if (typeof value === "string" && value[value.length - 1] === ".") {
+      console.log(value);
+      return value;
+    }
+    return clearValue(value, type).toLocaleString('en').replace(/,/gi, ",");
+  }
+  if (type === "number") return clearValue(value, type).toString();
+  return value;
+};
 
 
 export default observer((iprops: any) => {
   const props = _.cloneDeep(iprops);
-  const meta = useObservable({ oldval: formatValue(props.value, props.type) });
+  const meta = useObservable({ oldval: props.value || '' });
   if (props.children) {
     delete props.children;
   }
@@ -47,12 +70,24 @@ export default observer((iprops: any) => {
     props.type === "decimal" ||
     props.type === "double"
   ) {
+
+    React.useEffect(() => {
+      meta.oldval = meta.oldval ? formatValue(meta.oldval, props.type) : meta.oldval;
+    }, []);
+
+    const rifm = useRifm({
+      value: meta.oldval,
+      accept: /[\d\.]+/g,
+      onChange: (v) => { meta.oldval = v },
+      format: (str) => formatValue(str, props.type)
+    })
+
     return (
       <TextField
         {...props}
-        value={meta.oldval}
+        value={rifm.value}
         onChange={(e: any) => {
-          meta.oldval = formatValue(e.target.value, props.type);
+          rifm.onChange(e);
           if (props.onChange) {
             props.onChange({
               ...e,
@@ -91,36 +126,3 @@ export default observer((iprops: any) => {
 
   return <TextField {...props} />;
 });
-
-const clearValue = (value, type) => {
-  if (type === "number")
-    return parseInt((value || 0).toString().replace(/\D/g, ""));
-  if (type === "decimal" || type === "money") {
-    if (value && typeof value === 'string' && value.toString().includes('.')) {
-      if (!value.split('.').pop()) value = value.concat('55');
-    }
-    return parseFloat((value || 0).toString().replace(/,/g, ""));
-  }
-  return 0;
-};
-
-const formatValue = (value, type) => {
-  if (type === "decimal" || type === "money") return clearValue(value, type).toLocaleString().replace(/,/gi, ",");
-  if (type === "number") return clearValue(value, type).toString();
-  return value;
-};
-
-  // if (type === "money") {
-  //   if (!Number.isInteger(value) && typeof value !== 'string') {
-  //     const num = value.toString().split('.');
-  //     value = Number(num[0]);
-  //   };
-  //   return parseInt((value || 0).toString().replace(/\D/g, ""));
-  // }
-  // if (type === "decimal") return (value || 0).toString().replace(/[^0-9\.]+/g, '');
-  // if (type === "double")
-  //   return value ? parseFloat(value).toFixed(2) : parseFloat(value || 0);
-  // return 0;
-
-  // if (type === "decimal") return clearValue(value, type).toString();
-  // if (type === "double") return clearValue(value, type);
