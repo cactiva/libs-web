@@ -84,6 +84,11 @@ export default observer((iprops: any) => {
       format: (str) => formatValue(str, props.type)
     })
 
+    
+    props.onBlur = (e: any) => {
+      props.setValue(rifm.value);
+    };
+
     return (
       <TextField
         {...props}
