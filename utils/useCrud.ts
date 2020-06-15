@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 import _ from "lodash";
 import { useEffect } from "react";
 
-export const useCrud = (meta: any, metaField: string, query: string) => {
+export const useCrud = (meta: any, metaField: string, query: (() => Promise<string>) | string) => {
   useEffect(() => {
     let struct = {} as any;
     try {
