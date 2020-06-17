@@ -68,7 +68,6 @@ export default observer((iprops: any) => {
   if (
     props.type === "money" ||
     props.type === "money-cents" ||
-    props.type === "number" ||
     props.type === "decimal" ||
     props.type === "double"
   ) {
@@ -90,6 +89,25 @@ export default observer((iprops: any) => {
         value={rifm.value}
         onChange={(e: any) => {
           rifm.onChange(e);
+          if (props.onChange) {
+            props.onChange({
+              ...e,
+              target: {
+                ...e.target,
+                value: clearValue(meta.oldval, props.type),
+              },
+            });
+          }
+        }}
+      />
+    );
+  } else if (props.type === "number") {
+    return (
+      <TextField
+        {...props}
+        value={meta.oldval}
+        onChange={(e: any) => {
+          meta.oldval = formatValue(e.target.value, props.type);
           if (props.onChange) {
             props.onChange({
               ...e,
