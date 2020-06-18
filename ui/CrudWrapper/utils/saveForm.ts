@@ -61,14 +61,15 @@ export default async ({
           }
         }
 
-        if (!hasRelation) {
+        // if (!hasRelation) {
+        //   await reload();
+        //   setMode("");
+        // } else {
           await reload();
-          setMode("");
-        } else {
           setMode("edit");
           meta.shouldRefresh = true;
           setForm(toJS(form));
-        }
+        // }
       }
       setLoading(false);
 
