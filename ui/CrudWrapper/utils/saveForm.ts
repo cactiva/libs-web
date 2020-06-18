@@ -95,7 +95,8 @@ export default async ({
         }
       }
       // afterSubmit
-      setMode("");
+      // setMode("");
+      alert('Form Saved!');
       setLoading(false);
       reload();
       break;
