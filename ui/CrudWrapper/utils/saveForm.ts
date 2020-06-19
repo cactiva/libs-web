@@ -65,7 +65,8 @@ export default async ({
         //   await reload();
         //   setMode("");
         // } else {
-          await reload();
+          alert('Form Saved!');
+          reload();
           setMode("edit");
           meta.shouldRefresh = true;
           setForm(toJS(form));

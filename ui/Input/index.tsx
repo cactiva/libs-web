@@ -19,9 +19,9 @@ const clearValue = (value, type) => {
 const formatValue = (value, type) => {
 
   if (!value) return value;
-
+  
   if (type === "decimal" || type === "money") {
-    if (typeof value === "string" && value[value.length - 1] === ".") {
+    if (typeof value === "string" && ( value[value.length - 1] === "." || value.toString().substr(value.length - 2, 2) === ".0" )) {
       return value;
     }
     return clearValue(value, type).toLocaleString('en').replace(/,/gi, ",");
@@ -76,19 +76,21 @@ export default observer((iprops: any) => {
       meta.oldval = meta.oldval ? formatValue(meta.oldval, props.type) : meta.oldval;
     }, []);
 
-    const rifm = useRifm({
-      value: meta.oldval,
-      accept: /[\d\.]+/g,
-      onChange: (v) => { meta.oldval = v },
-      format: (str) => formatValue(str, props.type)
-    })
+    // const rifm = useRifm({
+    //   value: meta.oldval,
+    //   accept: /[\d\.]+/g,
+    //   onChange: (v) => { meta.oldval = Number(v) },
+    //   format: (str) => formatValue(str, props.type)
+    // })
 
     return (
       <TextField
         {...props}
-        value={rifm.value}
+        // value={rifm.value}
+        value = {meta.oldval}
         onChange={(e: any) => {
-          rifm.onChange(e);
+          meta.oldval = formatValue(e.target.value, props.type);
+          // rifm.onChange(e);
           if (props.onChange) {
             props.onChange({
               ...e,
