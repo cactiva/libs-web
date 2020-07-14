@@ -136,6 +136,10 @@ const floatPointer = (number, precision) => {
   return Math.ceil(Number(parseFloat(number).toPrecision(precision)));
 };
 
+const formatSeparatorDec = (value:any) => {
+  return parseFloat((value || 0).toString().replace(/,/g, "")).toLocaleString('en').replace(/,/gi, ",");
+}
+
 export {
   uuid,
   randString,
@@ -147,4 +151,5 @@ export {
   textStyle,
   capitalizeFLetter,
   truncateStr,
+  formatSeparatorDec
 };
