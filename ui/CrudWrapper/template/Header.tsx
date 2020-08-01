@@ -119,7 +119,7 @@ export default observer(
                 text: "",
                 iconProps: { iconName: "ChevronLeft" },
                 onClick: () => {
-                  if (isRoot) {
+                  if (isRoot && mode === 'edit') {
                     window.history.back();
                   } else {
                     setMode("");
