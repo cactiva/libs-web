@@ -61,16 +61,11 @@ export default async ({
           }
         }
 
-        // if (!hasRelation) {
-        //   await reload();
-        //   setMode("");
-        // } else {
-          alert('Form Saved!');
-          reload();
-          setMode("edit");
-          meta.shouldRefresh = true;
-          setForm(toJS(form));
-        // }
+        alert('Form Saved!');
+        reload();
+        meta.shouldRefresh = true;
+        setForm(toJS(form));
+        setMode("edit");
       }
       setLoading(false);
 
