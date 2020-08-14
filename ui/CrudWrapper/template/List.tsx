@@ -1,5 +1,5 @@
 import { useLocation } from "@reach/router";
-import { formatMoney } from "@src/libs/utils";
+import { formatSeparatorDec } from "@src/libs/utils";
 import { dateFormat } from "@src/libs/utils/date";
 import { queryUpdate } from "@src/libs/utils/gql";
 import { useWindowSize } from "@src/libs/utils/useWindowSize";
@@ -467,7 +467,7 @@ const generateColumns = (structure, table, colDef, fkeys, onClick) => {
               cdef.data_type.indexOf("double precision") >= 0 ||
               cdef.data_type.indexOf("decimal") >= 0
             ) {
-              valueEl = numberFormatter(value);
+              valueEl = formatSeparatorDec(value);
             } else if (
               cdef.data_type.indexOf("timestamp") >= 0 ||
               cdef.data_type === "date"
