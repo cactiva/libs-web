@@ -8,6 +8,7 @@ interface ITableColumn {
   };
   suffix?: string;
   editable?: boolean;
+  editableType?: string;
   prefix?: string;
   children?: any;
   relation?: any;

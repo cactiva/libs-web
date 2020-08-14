@@ -7,7 +7,8 @@ import { useRifm } from './rifm';
 
 
 
-const clearValue = (value, type) => {
+export const clearValue = (value, type?) => {
+  if (!type) type = 'money';
   if (type === "number")
     return parseInt((value || 0).toString().replace(/\D/g, ""));
   if (type === "decimal" || type === "money") {
@@ -16,12 +17,13 @@ const clearValue = (value, type) => {
   return 0;
 };
 
-const formatValue = (value, type) => {
+export const formatValue = (value, type?) => {
 
   if (!value) return value;
-  
+
+  if (!type) type = 'money';
   if (type === "decimal" || type === "money") {
-    if (typeof value === "string" && ( value[value.length - 1] === "." || value.toString().substr(value.length - 2, 2) === ".0" )) {
+    if (typeof value === "string" && (value[value.length - 1] === "." || value.toString().substr(value.length - 2, 2) === ".0")) {
       return value;
     }
     return clearValue(value, type).toLocaleString('en').replace(/,/gi, ",");
@@ -87,7 +89,7 @@ export default observer((iprops: any) => {
       <TextField
         {...props}
         // value={rifm.value}
-        value = {meta.oldval}
+        value={meta.oldval}
         onChange={(e: any) => {
           meta.oldval = formatValue(e.target.value, props.type);
           // rifm.onChange(e);

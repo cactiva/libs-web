@@ -27,6 +27,7 @@ import FileUpload from "./fields/FileUpload";
 import { formatRelationLabel } from "./fields/SelectFk";
 import Filter from "./filter";
 import Loading from "./Loading";
+import { formatValue as numberFormatter, clearValue } from "../../Input/index";
 
 export const DEFAULT_COLUMN_WIDTH = 160;
 export default observer(
@@ -466,7 +467,7 @@ const generateColumns = (structure, table, colDef, fkeys, onClick) => {
               cdef.data_type.indexOf("double precision") >= 0 ||
               cdef.data_type.indexOf("decimal") >= 0
             ) {
-              valueEl = formatMoney(value);
+              valueEl = numberFormatter(value);
             } else if (
               cdef.data_type.indexOf("timestamp") >= 0 ||
               cdef.data_type === "date"
@@ -490,7 +491,8 @@ const generateColumns = (structure, table, colDef, fkeys, onClick) => {
                 data["id"] = item.id;
                 if (item[e.path] !== ev.target.value) {
                   item[e.path] = ev.target.value;
-                  data[e.path] = ev.target.value;
+                  if (e.editableType === 'decimal' || 'money' || 'number') data[e.path] = clearValue(ev.target.value, e.editableType);
+                  else data[e.path] = ev.target.value;
                   item.__loading = true;
                   await queryUpdate(structure.name, data);
                   setTimeout(() => {
