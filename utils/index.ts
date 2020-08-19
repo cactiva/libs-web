@@ -36,13 +36,13 @@ const deepFind = (object: object, path: string, defaultValue?: any) =>
 const findLargestSmallest = (a: string, b: string) =>
   a.length > b.length
     ? {
-        largest: a,
-        smallest: b,
-      }
+      largest: a,
+      smallest: b,
+    }
     : {
-        largest: b,
-        smallest: a,
-      };
+      largest: b,
+      smallest: a,
+    };
 const fuzzyMatch = (strA: string, strB: string, fuzziness = 0) => {
   if (strA === "" || strB === "") {
     return false;
@@ -136,7 +136,8 @@ const floatPointer = (number, precision) => {
   return Math.ceil(Number(parseFloat(number).toPrecision(precision)));
 };
 
-const formatSeparatorDec = (value:any) => {
+const formatSeparatorDec = (value: any, decimal?: number) => {
+  if (decimal || decimal === 0) value = Number(value).toFixed(decimal);
   return parseFloat((value || 0).toString().replace(/,/g, "")).toLocaleString('en').replace(/,/gi, ",");
 }
 
