@@ -120,7 +120,11 @@ export default observer(
                 iconProps: { iconName: "ChevronLeft" },
                 onClick: () => {
                   if (isRoot && mode === 'edit') {
-                    window.history.back();
+                    const url = window.location.pathname;
+                    const lastIdx = url.lastIndexOf('/');
+                    const id = Number(url.substring(lastIdx + 1));
+                    if (isNaN(id)) setMode("");
+                    else window.history.back();
                   } else {
                     setMode("");
                     reloadList();
