@@ -17,6 +17,7 @@ export default observer((props: any) => {
     isRoot,
     formRef,
     generateForm,
+    enableSub
   } = props;
   const { errors, fkeys } = inmeta;
   const data = inmeta.form;
@@ -88,6 +89,7 @@ export default observer((props: any) => {
         mode={mode}
         isRoot={isRoot}
         parsed={parsed}
+        enableSub={enableSub}
         events={meta.events}
         fields={toJS(meta.fields)}
       />

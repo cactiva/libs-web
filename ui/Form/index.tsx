@@ -10,6 +10,7 @@ interface IForm {
     setValue?: (value, path) => void
     onSubmit?: () => void
     children?: any
+    enableSub?: boolean
 }
 export default observer((props: IForm) => {
     const { children, data, setValue, onSubmit } = props;

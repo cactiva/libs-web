@@ -17,6 +17,7 @@ interface ICrudWrapper {
   generateForm?: "auto" | "manual";
   children: any;
   isRoot?: boolean;
+  enableSub?:boolean;
 }
 
 export default observer((props: ICrudWrapper) => {
@@ -43,6 +44,7 @@ export default observer((props: ICrudWrapper) => {
       isRoot={props.isRoot === undefined ? true : props.isRoot}
       generateForm={props.generateForm || "auto"}
       setMode={(newmode) => (meta.front.mode = newmode)}
+      enableSub={props.enableSub}
     />
   );
 });

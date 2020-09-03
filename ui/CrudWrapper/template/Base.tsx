@@ -28,6 +28,7 @@ export default observer((props: any) => {
     isRoot,
     style,
     headerStyle,
+    enableSub
   } = props;
   const { table, form } = parsed;
   const meta = useObservable({
@@ -238,6 +239,7 @@ export default observer((props: any) => {
 
   const scroll = meta.listScroll;
   const list = meta.list;
+
   return (
     <div
       style={{ display: "flex", flexDirection: "column", flex: 1, ...style }}
@@ -283,6 +285,7 @@ export default observer((props: any) => {
             formRef={formRef}
             reloadFormKey={meta.reloadFormKey}
             mode={mode}
+            enableSub={enableSub}
           />
         )}
     </div>
