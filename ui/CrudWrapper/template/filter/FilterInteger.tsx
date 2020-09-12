@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { useObservable, observer } from 'mobx-react-lite';
+import { useLocalStore, observer } from 'mobx-react-lite';
 import ItemButton from './ItemButton';
-import { TextField } from 'office-ui-fabric-react/lib/TextField';
+import { TextField } from '@fluentui/react/lib/TextField';
 
 export default observer(({ label, field, value, setValue, submit }: any) => {
-    const meta = useObservable({
+    const meta = useLocalStore(() => ({
         oldval: value
-    })
+    }))
     return <ItemButton
         label={label}
         field={field}

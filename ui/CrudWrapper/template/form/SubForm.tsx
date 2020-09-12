@@ -1,9 +1,9 @@
 import Select from "@src/libs/ui/Select";
 import { useWindowSize } from "@src/libs/utils/useWindowSize";
-import { observer, useObservable } from "mobx-react-lite";
-import { IconButton } from "office-ui-fabric-react/lib/Button";
-import { Label } from "office-ui-fabric-react/lib/Label";
-import { Pivot, PivotItem } from "office-ui-fabric-react/lib/Pivot";
+import { observer, useLocalStore } from "mobx-react-lite";
+import { IconButton } from "@fluentui/react/lib/Button";
+import { Label } from "@fluentui/react/lib/Label";
+import { Pivot, PivotItem } from "@fluentui/react/lib/Pivot";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import _ from "lodash";
@@ -12,10 +12,10 @@ import Base from "../Base";
 
 export default observer(
   ({ fields, auth, maximize, minimize, restore, height }: any) => {
-    const meta = useObservable({
+    const meta = useLocalStore(() => ({
       selectedKey: "",
       pivotEl: null as any,
-    });
+    }));
     const size = useWindowSize();
     const baseRef = React.useRef(null as any);
     const relationKeys = Object.keys(fields.relations);
@@ -238,9 +238,9 @@ export default observer(
 );
 
 const SubBase = observer(({ sub, auth }: any) => {
-  const meta = useObservable({
+  const meta = useLocalStore(() => ({
     mode: "",
-  });
+  }));
   const size = useWindowSize();
   const style =
     size.width < 800

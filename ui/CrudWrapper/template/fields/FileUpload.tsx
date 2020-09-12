@@ -1,11 +1,10 @@
-import { observer, useObservable } from "mobx-react-lite";
-import { DefaultButton } from "office-ui-fabric-react/lib/Button";
-import { Label } from "office-ui-fabric-react/lib/Label";
-import { Spinner } from "office-ui-fabric-react/lib/Spinner";
+import { observer, useLocalStore } from "mobx-react-lite";
+import { DefaultButton } from "@fluentui/react/lib/Button";
+import { Label } from "@fluentui/react/lib/Label";
+import { Spinner } from "@fluentui/react/lib/Spinner";
 import React, { useRef } from "react";
 import Axios from "axios";
 import session from "@src/stores/session";
-import { alert } from "@src/Main";
 const config = require("@src/settings.json");
 
 export default observer(
@@ -18,11 +17,11 @@ export default observer(
     onChange?;
   }) => {
     const fileRef = useRef(null as any);
-    const meta = useObservable({
+    const meta = useLocalStore(() => ({
       uploading: false,
       percent: 0,
       value: props.value,
-    });
+    }));
     return (
       <div
         onClick={(e) => {

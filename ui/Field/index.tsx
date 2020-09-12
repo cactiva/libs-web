@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { observer, useObservable } from "mobx-react-lite";
+import { observer, useLocalStore } from "mobx-react-lite";
 import * as React from "react";
 
 interface IFieldProps {

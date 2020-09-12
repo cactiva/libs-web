@@ -1,11 +1,11 @@
 import { dateFormat } from '@src/libs/utils/date';
 import parseISO from 'date-fns/parseISO';
-import { observer, useObservable } from 'mobx-react-lite';
-import { DatePicker } from 'office-ui-fabric-react/lib/DatePicker';
+import { observer, useLocalStore } from 'mobx-react-lite';
+import { DatePicker } from '@fluentui/react/lib/DatePicker';
 import * as React from 'react';
 
 export default observer((props: any) => {
-    const meta = useObservable({ date: null as any });
+    const meta = useLocalStore(() => ({ date: null as any }));
 
     React.useEffect(() => {
         if (props.value) {

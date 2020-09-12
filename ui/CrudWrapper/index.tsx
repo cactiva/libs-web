@@ -1,7 +1,7 @@
 import { useLocation } from "@reach/router";
 import _ from "lodash";
 import { observable } from "mobx";
-import { observer, useObservable } from "mobx-react-lite";
+import { observer, useLocalStore } from "mobx-react-lite";
 import * as React from "react";
 import parserChildren from "./utils/parserChildren";
 
@@ -21,11 +21,11 @@ interface ICrudWrapper {
 }
 
 export default observer((props: ICrudWrapper) => {
-  const meta = useObservable({
+  const meta = useLocalStore(() => ({
     front: {
       mode: "",
     },
-  });
+  }));
 
   const { data, children, afterQuery } = props;
   if (!data || !children) return null;

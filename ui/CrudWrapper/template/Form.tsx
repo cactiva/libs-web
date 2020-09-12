@@ -1,5 +1,5 @@
 import { toJS } from "mobx";
-import { observer, useObservable } from "mobx-react-lite";
+import { observer, useLocalStore } from "mobx-react-lite";
 import * as React from "react";
 import FormContainer from "./form/FormContainer";
 import { generateFormField } from "./form/utils/generateFormField";
@@ -21,13 +21,13 @@ export default observer((props: any) => {
   } = props;
   const { errors, fkeys } = inmeta;
   const data = inmeta.form;
-  const meta = useObservable({
+  const meta = useLocalStore(() => ({
     size: localStorage["cactiva-app-split-size"] || "200",
     resizing: false,
     fields: null as any,
     resizeTimer: 0 as any,
     events: {} as any,
-  });
+  }));
   const size = useWindowSize();
   React.useEffect(() => {
     if (typeof form === "function" && !meta.fields) {

@@ -34,12 +34,12 @@ import {
 } from "@src/libs";
 import React from "react";
 import { useCrud } from "@src/libs/utils/useCrud";
-import { observer, useObservable } from "mobx-react-lite";
+import { observer, useLocalStore } from "mobx-react-lite";
   
 export default observer(() => {
-  const meta = useObservable({
+  const meta = useLocalStore(() => ({
     crud: {},
-  }) as any
+  })) as any
 
   useCrud(meta, 'crud', \`\`);
   return <View></View>;
@@ -48,10 +48,9 @@ export default observer(() => {
     code = prettier.format(code, { parser: "typescript" });
     sf.replaceWithText(code);
   } else {
-
     const struct = gql`
-    ${rawQuery}
-  `;
+      ${rawQuery}
+    `;
 
     const root = _.get(struct, "definitions.0.selectionSet.selections.0");
     const table = parseTable(root);
@@ -89,11 +88,11 @@ export default observer(() => {
 } from "@src/libs";`;
       let code = `${text.indexOf(im) < 0 ? im : ""}
 ${replaceRange(
-        text,
-        h.pos,
-        h.end,
-        `\nreturn <View>${generateSource(cw)}</View>`
-      )}`;
+  text,
+  h.pos,
+  h.end,
+  `\nreturn <View>${generateSource(cw)}</View>`
+)}`;
       code = prettier.format(code, { parser: "typescript" });
       sf.replaceWithText(code);
     }

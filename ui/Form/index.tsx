@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { observer, useObservable } from 'mobx-react-lite';
+import { observer, useLocalStore } from 'mobx-react-lite';
 import _ from 'lodash';
 import Field from '../Field';
 import { uuid } from '@src/libs/utils';
@@ -14,10 +14,10 @@ interface IForm {
 }
 export default observer((props: IForm) => {
     const { children, data, setValue, onSubmit } = props;
-    const meta = useObservable({
+    const meta = useLocalStore(() => ({
         initError: false,
         validate: {}
-    });
+    }));
 
     return <div style={props.style}>
         {children && Array.isArray(children) ? (

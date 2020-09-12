@@ -1,6 +1,6 @@
 import { startCase } from '@src/libs/utils';
 import { observer } from 'mobx-react-lite';
-import { Label } from 'office-ui-fabric-react/lib/Label';
+import { Label } from '@fluentui/react/lib/Label';
 import React from 'react';
 import Text from '../Text';
 import EmptyCell from './EmptyCell';

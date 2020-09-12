@@ -1,7 +1,7 @@
 import { Select } from '@src/libs/ui';
 import { queryAll } from '@src/libs/utils/gql';
 import _ from "lodash";
-import { observer, useObservable } from 'mobx-react-lite';
+import { observer, useLocalStore } from 'mobx-react-lite';
 import * as React from 'react';
 import useAsyncEffect from 'use-async-effect';
 import ItemButton from './ItemButton';
@@ -10,9 +10,9 @@ import { formatRelationLabel } from '../fields/SelectFk';
 
 const relationDatas = observable({});
 export default observer(({ label, field, value, setValue, submit, tablename, auth, alias, structure, relation }: any) => {
-    const meta = useObservable({
+    const meta = useLocalStore(() => ({
         list: []
-    })
+    }))
     useAsyncEffect(async () => {
         if (!relationDatas[tablename]) {
             let q = ``;

@@ -1,7 +1,7 @@
 import _ from "lodash";
-import { observer, useObservable } from "mobx-react-lite";
-import { IconButton } from 'office-ui-fabric-react/lib/Button';
-import { ComboBox, IComboBoxStyles } from 'office-ui-fabric-react/lib/ComboBox';
+import { observer, useLocalStore } from "mobx-react-lite";
+import { IconButton } from '@fluentui/react/lib/Button';
+import { ComboBox, IComboBoxStyles } from '@fluentui/react/lib/ComboBox';
 import * as React from "react";
 import ReactDOM, { createPortal } from "react-dom";
 
@@ -33,9 +33,9 @@ interface ISelectProps {
 }
 
 export default observer((props: ISelectProps) => {
-  const meta = useObservable({
+  const meta = useLocalStore(() => ({
     portal: undefined as any,
-  });
+  }));
   const items: any = (props.items || [])
     .map((e) => {
       if (typeof e === "string") {

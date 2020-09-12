@@ -2,7 +2,7 @@ import { Select } from "@src/libs/ui";
 import { dateFormat } from "@src/libs/utils/date";
 import { queryAll } from "@src/libs/utils/gql";
 import _ from "lodash";
-import { observer, useObservable } from "mobx-react-lite";
+import { observer, useLocalStore } from "mobx-react-lite";
 import * as React from "react";
 import useAsyncEffect from "use-async-effect";
 import { columnDefs } from "../..";
@@ -14,10 +14,11 @@ const queryCache = {};
 export default observer((props: any) => {
   const { value, onChange } = props;
 
-  const meta = useObservable({
+  const meta = useLocalStore(() => ({
     list: queryCache[getQuery(props)] || [],
     loading: false,
-  });
+  }));
+
   const query = getQuery(props);
   useAsyncEffect(async () => {
     if (meta.list.length === 0) {
@@ -108,10 +109,7 @@ const formatSingleString = (e, f, cdef) => {
 };
 
 const getQuery = (props) => {
-  const {
-    tablename,
-    relation,
-  } = props;
+  const { tablename, relation } = props;
   let query = "";
   if (relation && relation.query) {
     if (typeof relation.query === "function") {
@@ -125,12 +123,7 @@ const getQuery = (props) => {
   return query;
 };
 const loadList = async (props) => {
-  const {
-    tablename,
-    labelField,
-    auth,
-    relation,
-  } = props;
+  const { tablename, labelField, auth, relation } = props;
   let queryIndex = getQuery(props);
   let query = queryIndex;
   if (queryIndex.indexOf(":::") === 0) {
@@ -140,9 +133,9 @@ const loadList = async (props) => {
       query = `query { ${tablename} {
                     id
                     ${cols
-          .map((e) => e.column_name)
-          .filter((e) => e !== "id" && e.indexOf("id") !== 0)
-          .join("\n")}
+                      .map((e) => e.column_name)
+                      .filter((e) => e !== "id" && e.indexOf("id") !== 0)
+                      .join("\n")}
                 }}`;
     }
   }

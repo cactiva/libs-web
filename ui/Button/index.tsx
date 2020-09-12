@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { DefaultButton, PrimaryButton } from "office-ui-fabric-react/lib/Button";
+import { DefaultButton, PrimaryButton } from "@fluentui/react/lib/Button";
 import * as React from 'react';
 import Text from '../Text';
 

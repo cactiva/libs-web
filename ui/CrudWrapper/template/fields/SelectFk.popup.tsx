@@ -6,9 +6,9 @@ import { querySingle } from "@src/libs/utils/gql";
 import { parseTable, useCrud } from "@src/libs/utils/useCrud";
 import gql from "graphql-tag";
 import _ from "lodash";
-import { observer, useObservable } from "mobx-react-lite";
-import { Modal } from "office-ui-fabric-react";
-import { TextField } from "office-ui-fabric-react/lib/TextField";
+import { observer, useLocalStore } from "mobx-react-lite";
+import { Modal } from "@fluentui/react";
+import { TextField } from "@fluentui/react/lib/TextField";
 import * as React from "react";
 import useAsyncEffect from "use-async-effect";
 import { columnDefs } from "../..";
@@ -16,12 +16,12 @@ import { loadColDefs } from "../../utils/reloadStructure";
 import { waitUntil } from "../Base";
 
 export default observer((props: any) => {
-  const meta = useObservable({
+  const meta = useLocalStore(() => ({
     label: "Loading...",
     rawQuery: "",
     query: "",
     show: false,
-  });
+  }));
 
   meta.rawQuery = getQuery(props);
   useAsyncEffect(async () => {
@@ -81,10 +81,10 @@ export default observer((props: any) => {
 
 const FkPicker = observer(
   ({ query, label, onSelect, onDismiss, value, page }: any) => {
-    const meta = useObservable({
+    const meta = useLocalStore(() => ({
       crud: {} as any,
       fields: [] as any[],
-    });
+    }));
 
     useCrud(meta, "crud", query);
 

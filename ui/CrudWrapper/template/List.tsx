@@ -5,19 +5,19 @@ import { queryUpdate } from "@src/libs/utils/gql";
 import { useWindowSize } from "@src/libs/utils/useWindowSize";
 import _ from "lodash";
 import { toJS } from "mobx";
-import { observer, useObservable } from "mobx-react-lite";
-import { Icon } from "office-ui-fabric-react/lib/Icon";
-import { List } from "office-ui-fabric-react/lib/List";
-import { TextField } from "office-ui-fabric-react/lib/TextField";
+import { observer, useLocalStore } from "mobx-react-lite";
+import { Icon } from "@fluentui/react/lib/Icon";
+import { List } from "@fluentui/react/lib/List";
+import { TextField } from "@fluentui/react/lib/TextField";
 
 import {
   ColumnActionsMode,
   ConstrainMode,
   DetailsList,
   DetailsListLayoutMode,
-} from "office-ui-fabric-react/lib/DetailsList";
-import { Label } from "office-ui-fabric-react/lib/Label";
-import { SelectionMode } from "office-ui-fabric-react/lib/Selection";
+} from "@fluentui/react/lib/DetailsList";
+import { Label } from "@fluentui/react/lib/Label";
+import { SelectionMode } from "@fluentui/react/lib/Selection";
 import * as React from "react";
 import useAsyncEffect from "use-async-effect";
 import NiceValue from "../../Field/NiceValue";
@@ -52,7 +52,7 @@ export default observer(
     const isMobile = size.width > 800 ? false : true;
     const isEmpty = !(list && list.length > 0);
     const isLoading = Object.keys(colDef).length === 0 || loading;
-    const meta = useObservable({
+    const meta = useLocalStore(() => ({
       columns: [],
       sort: {
         by: "___________",
@@ -60,7 +60,7 @@ export default observer(
       },
       more: [] as any,
       sortedList: [] as any,
-    });
+    }));
     const onClick = table.onRowClick
       ? table.onRowClick
       : (item) => {

@@ -1,7 +1,7 @@
 import { useLocation, navigate } from "@reach/router";
 import _ from "lodash";
 import { toJS } from "mobx";
-import { observer, useObservable } from "mobx-react-lite";
+import { observer, useLocalStore } from "mobx-react-lite";
 import React, { useRef } from "react";
 import useAsyncEffect from "use-async-effect";
 import { columnDefs } from "..";
@@ -31,7 +31,7 @@ export default observer((props: any) => {
     enableSub
   } = props;
   const { table, form } = parsed;
-  const meta = useObservable({
+  const meta = useLocalStore(() => ({
     list: [],
     filter: {
       columns: {},
@@ -53,7 +53,7 @@ export default observer((props: any) => {
     reloadFormKey: 0,
     init: false,
     initStructure: false,
-  });
+  }));
   const reload = async (resetStructure = false) => {
     if (resetStructure) {
       meta.fkeys = await reloadStructure({

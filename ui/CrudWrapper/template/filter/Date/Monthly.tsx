@@ -3,9 +3,9 @@ import lastDayOfMonth from "date-fns/lastDayOfMonth";
 import startOfMonth from "date-fns/startOfMonth";
 import subMonths from "date-fns/subMonths";
 import _ from "lodash";
-import { observer, useObservable } from "mobx-react-lite";
-import { Dropdown } from "office-ui-fabric-react/lib/Dropdown";
-import { Icon } from "office-ui-fabric-react/lib/Icon";
+import { observer, useLocalStore } from "mobx-react-lite";
+import { Dropdown } from "@fluentui/react/lib/Dropdown";
+import { Icon } from "@fluentui/react/lib/Icon";
 import * as React from "react";
 
 export default observer(({ value, setValue, submit }: any) => {
@@ -23,9 +23,9 @@ export default observer(({ value, setValue, submit }: any) => {
     "Nov",
     "Des",
   ];
-  const meta = useObservable({
+  const meta = useLocalStore(() => ({
     value: value && value.from ? value.from : new Date(),
-  });
+  }));
 
   React.useEffect(() => {
     meta.value = value && value.from ? value.from : new Date();

@@ -5,17 +5,17 @@ import parseISO from 'date-fns/parseISO';
 import setHours from 'date-fns/setHours';
 import setMinutes from 'date-fns/setMinutes';
 import _ from "lodash";
-import { observer, useObservable } from 'mobx-react-lite';
-import { DatePicker } from 'office-ui-fabric-react/lib/DatePicker';
-import { MaskedTextField } from 'office-ui-fabric-react/lib/TextField';
+import { observer, useLocalStore } from 'mobx-react-lite';
+import { DatePicker } from '@fluentui/react/lib/DatePicker';
+import { MaskedTextField } from '@fluentui/react/lib/TextField';
 import * as React from 'react';
 
 
 export default observer((props: any) => {
-    const meta = useObservable({
+    const meta = useLocalStore(() => ({
         date: null,
         time: "",
-    }) as any;
+    })) as any;
 
     React.useEffect(() => {
         if (props.value) {

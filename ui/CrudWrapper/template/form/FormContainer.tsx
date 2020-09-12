@@ -1,5 +1,5 @@
 import { useWindowSize } from "@src/libs/utils/useWindowSize";
-import { observer, useObservable } from "mobx-react-lite";
+import { observer, useLocalStore } from "mobx-react-lite";
 import * as React from "react";
 import SplitPane from "react-split-pane";
 import FormBody from "./FormBody";
@@ -9,12 +9,12 @@ import _ from "lodash";
 export default observer(
   ({ mode, fields, formRef, data, auth, parsed, events, isRoot, enableSub }: any) => {
     const localSize = localStorage["cactiva-app-split-size"] || "44";
-    const meta = useObservable({
+    const meta = useLocalStore(() => ({
       size: isRoot ? localSize : "44",
       subs: {},
       resizing: false,
       resizeTimer: 0 as any,
-    });
+    }));
 
     const conRef = React.useRef(null as any);
     const size = useWindowSize();

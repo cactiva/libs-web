@@ -1,21 +1,21 @@
 import _ from "lodash";
 import { toJS } from "mobx";
-import { observer, useObservable } from "mobx-react-lite";
-import { Label } from "office-ui-fabric-react/lib/Label";
+import { observer, useLocalStore } from "mobx-react-lite";
+import { Label } from "@fluentui/react/lib/Label";
 import {
   MessageBar,
   MessageBarType,
-} from "office-ui-fabric-react/lib/MessageBar";
+} from "@fluentui/react/lib/MessageBar";
 import * as React from "react";
 
 export default observer(
   ({ parsed, data, errors, fields, formRef, events }: any) => {
-    const meta = useObservable({
+    const meta = useLocalStore(() => ({
       data: toJS(data),
       errors: toJS(errors) || {},
       beforeSubmit: _.get(events, "beforeSubmit"),
       afterSubmit: _.get(events, "afterSubmit"),
-    });
+    }));
 
     React.useEffect(() => {
       meta.data = data;

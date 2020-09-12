@@ -1,7 +1,7 @@
 import { Select } from "@src/libs";
 import _ from "lodash";
-import { observer, useObservable } from "mobx-react-lite";
-import { TextField } from "office-ui-fabric-react/lib/TextField";
+import { observer, useLocalStore } from "mobx-react-lite";
+import { TextField } from "@fluentui/react/lib/TextField";
 import * as React from "react";
 import { useRifm } from './rifm';
 
@@ -35,7 +35,7 @@ export const formatValue = (value, type?) => {
 
 export default observer((iprops: any) => {
   const props = _.cloneDeep(iprops);
-  const meta = useObservable({ oldval: props.value || '' });
+  const meta = useLocalStore(() => ({ oldval: props.value || '' }));
   if (props.children) {
     delete props.children;
   }

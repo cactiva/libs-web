@@ -1,9 +1,9 @@
 import _ from "lodash";
 import { toJS } from "mobx";
-import { observer, useObservable } from "mobx-react-lite";
-import { IconButton } from "office-ui-fabric-react/lib/Button";
-import { Callout } from "office-ui-fabric-react/lib/Callout";
-import { Checkbox } from "office-ui-fabric-react/lib/Checkbox";
+import { observer, useLocalStore } from "mobx-react-lite";
+import { IconButton } from "@fluentui/react/lib/Button";
+import { Callout } from "@fluentui/react/lib/Callout";
+import { Checkbox } from "@fluentui/react/lib/Checkbox";
 import React, { useEffect, useRef } from "react";
 import { argsApplyFilter } from "../../utils/argsApplyFilter";
 import { argsLoadFilter } from "../../utils/argsLoadFilter";
@@ -19,12 +19,12 @@ import FilterString from "./FilterString";
 
 export default observer((props: any) => {
   const { reload, filter, columns, colDef, fkeys, structure, auth } = props;
-  const meta = useObservable({
+  const meta = useLocalStore(() => ({
     show: false,
     visibles: {},
     init: false,
     columns: [] as any,
-  });
+  }));
   useEffect(() => {
     meta.columns = _.cloneDeep(columns);
     if (structure.args) {

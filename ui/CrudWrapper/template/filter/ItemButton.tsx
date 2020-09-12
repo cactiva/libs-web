@@ -1,7 +1,7 @@
-import { observer, useObservable } from "mobx-react-lite";
-import { ActionButton, IconButton } from "office-ui-fabric-react/lib/Button";
-import { Callout } from "office-ui-fabric-react/lib/Callout";
-import { Label } from "office-ui-fabric-react/lib/Label";
+import { observer, useLocalStore } from "mobx-react-lite";
+import { ActionButton, IconButton } from "@fluentui/react/lib/Button";
+import { Callout } from "@fluentui/react/lib/Callout";
+import { Label } from "@fluentui/react/lib/Label";
 import * as React from "react";
 
 export default observer(
@@ -16,9 +16,9 @@ export default observer(
     setValue,
     callout,
   }: any) => {
-    const meta = useObservable({
+    const meta = useLocalStore(() => ({
       show: false,
-    });
+    }));
     const btnRef = React.useRef(null);
     let valueContentEl = (
       <Label style={{ marginLeft: "2px" }}>{value || "All"}</Label>

@@ -4,8 +4,8 @@ import { generateDeleteString } from "@src/libs/utils/genDeleteString";
 import { queryAll } from "@src/libs/utils/gql";
 import { useWindowSize } from "@src/libs/utils/useWindowSize";
 import _ from "lodash";
-import { observer, useObservable } from "mobx-react-lite";
-import { ActionButton, PrimaryButton } from "office-ui-fabric-react/lib/Button";
+import { observer, useLocalStore } from "mobx-react-lite";
+import { ActionButton, PrimaryButton } from "@fluentui/react/lib/Button";
 import * as React from "react";
 import { columnDefs } from "..";
 import { Text } from "../..";
@@ -40,10 +40,10 @@ export default observer(
       actions.push({ props: { type: "cancel" } });
     }
     const size = useWindowSize();
-    const meta = useObservable({
+    const meta = useLocalStore(() => ({
       loading: false,
       shouldRefresh: false,
-    });
+    }));
 
     actions = actions
       .map((e) => {

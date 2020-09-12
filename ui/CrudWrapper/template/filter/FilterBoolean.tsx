@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
+import { Toggle } from '@fluentui/react/lib/Toggle';
 import * as React from 'react';
 import ItemButton from './ItemButton';
 

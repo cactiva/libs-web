@@ -1,4 +1,4 @@
-import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
+import { Spinner } from '@fluentui/react/lib/Spinner';
 import * as React from 'react';
 
 export default (props: any) => {
