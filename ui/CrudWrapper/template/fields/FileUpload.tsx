@@ -7,7 +7,7 @@ import Axios from "axios";
 import session from "@src/stores/session";
 const config = require("@src/settings.json");
 
-export default observer(
+const FileUpload = observer(
   (props: {
     field: string;
     table: string;
@@ -43,8 +43,7 @@ export default observer(
             <Spinner style={{ marginRight: 5 }} /> Uploading ({meta.percent}%)
           </div>
         ) : !meta.value ? (
-          (props.enableUpload === undefined ||
-            props.enableUpload === true) && (
+          (props.enableUpload === undefined || props.enableUpload === true) && (
             <DefaultButton
               onClick={() => {
                 fileRef.current.click();
@@ -55,35 +54,36 @@ export default observer(
             </DefaultButton>
           )
         ) : (
-              <DefaultButton
-                split
-                iconProps={{ iconName: "Download" }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  const url = `${config.backend.protocol}://${config.backend.host}:${config.backend.port}/repo/`;
-                  window.open(url + meta.value, "_blank");
-                }}
-                menuProps={
-                  props.onChange && (props.enableUpload === undefined || props.enableUpload)
-                    ? {
-                      items: [
-                        {
-                          key: "upload",
-                          text: "Replace File",
-                          iconProps: { iconName: "Upload" },
-                          onClick: () => {
-                            fileRef.current.click();
-                          },
+          <DefaultButton
+            split
+            iconProps={{ iconName: "Download" }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const url = `${config.backend.protocol}://${config.backend.host}:${config.backend.port}/repo/`;
+              window.open(url + meta.value, "_blank");
+            }}
+            menuProps={
+              props.onChange &&
+              (props.enableUpload === undefined || props.enableUpload)
+                ? {
+                    items: [
+                      {
+                        key: "upload",
+                        text: "Replace File",
+                        iconProps: { iconName: "Upload" },
+                        onClick: () => {
+                          fileRef.current.click();
                         },
-                      ],
-                    }
-                    : undefined
-                }
-              >
-                Download
-              </DefaultButton>
-            )}
+                      },
+                    ],
+                  }
+                : undefined
+            }
+          >
+            Download
+          </DefaultButton>
+        )}
         <input
           ref={fileRef}
           style={{ display: "none" }}
@@ -127,3 +127,6 @@ export default observer(
     );
   }
 );
+
+(FileUpload as any).libType = "FileUpload";
+export default FileUpload;

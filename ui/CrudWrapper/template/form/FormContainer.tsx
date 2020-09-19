@@ -5,6 +5,7 @@ import SplitPane from "react-split-pane";
 import FormBody from "./FormBody";
 import SubForm from "./SubForm";
 import _ from "lodash";
+import { Input } from "@src/libs/ui";
 
 export default observer(
   ({ mode, fields, formRef, data, auth, parsed, events, isRoot, enableSub }: any) => {
@@ -19,6 +20,7 @@ export default observer(
     const conRef = React.useRef(null as any);
     const size = useWindowSize();
     const rels = Object.keys(fields.relations);
+
     return mode === "create" || (rels.length === 0 && enableSub !== true) ? (
       <div
         style={{
@@ -83,7 +85,7 @@ export default observer(
         >
           <FormBody
             parsed={parsed}
-            data={data}
+            data={data} 
             fields={fields}
             formRef={formRef}
             events={events}

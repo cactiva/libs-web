@@ -3,12 +3,10 @@ import _ from "lodash";
 import { observer, useLocalStore } from "mobx-react-lite";
 import { TextField } from "@fluentui/react/lib/TextField";
 import * as React from "react";
-import { useRifm } from './rifm';
-
-
+import { useRifm } from "./rifm";
 
 export const clearValue = (value, type?) => {
-  if (!type) type = 'money';
+  if (!type) type = "money";
   if (type === "number")
     return parseInt((value || 0).toString().replace(/\D/g, ""));
   if (type === "decimal" || type === "money") {
@@ -18,24 +16,26 @@ export const clearValue = (value, type?) => {
 };
 
 export const formatValue = (value, type?) => {
-
   if (!value) return value;
 
-  if (!type) type = 'money';
+  if (!type) type = "money";
   if (type === "decimal" || type === "money") {
-    if (typeof value === "string" && (value[value.length - 1] === "." || value.toString().substr(value.length - 2, 2) === ".0")) {
+    if (
+      typeof value === "string" &&
+      (value[value.length - 1] === "." ||
+        value.toString().substr(value.length - 2, 2) === ".0")
+    ) {
       return value;
     }
-    return clearValue(value, type).toLocaleString('en').replace(/,/gi, ",");
+    return clearValue(value, type).toLocaleString("en").replace(/,/gi, ",");
   }
   if (type === "number") return clearValue(value, type).toString();
   return value;
 };
 
-
-export default observer((iprops: any) => {
+const Input = observer((iprops: any) => {
   const props = _.cloneDeep(iprops);
-  const meta = useLocalStore(() => ({ oldval: props.value || '' }));
+  const meta = useLocalStore(() => ({ oldval: props.value || "" }));
   if (props.children) {
     delete props.children;
   }
@@ -73,9 +73,10 @@ export default observer((iprops: any) => {
     props.type === "decimal" ||
     props.type === "double"
   ) {
-
     React.useEffect(() => {
-      meta.oldval = meta.oldval ? formatValue(meta.oldval, props.type) : meta.oldval;
+      meta.oldval = meta.oldval
+        ? formatValue(meta.oldval, props.type)
+        : meta.oldval;
     }, []);
 
     // const rifm = useRifm({
@@ -125,13 +126,18 @@ export default observer((iprops: any) => {
       />
     );
   } else if (props.type === "boolean") {
-    const val = _.get(props, 'options.booleanVal');
-    const booleanVal = val ? val : [{ value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }];
+    const val = _.get(props, "options.booleanVal");
+    const booleanVal = val
+      ? val
+      : [
+          { value: "true", label: "Yes" },
+          { value: "false", label: "No" },
+        ];
     return (
       <Select
         label={iprops.label}
         items={booleanVal}
-        selectedKey={meta.oldval ? meta.oldval.toString() : 'false'}
+        selectedKey={meta.oldval ? meta.oldval.toString() : "false"}
         onChange={(e, val) => {
           meta.oldval = val.key;
           if (props.onChange) {
@@ -139,14 +145,17 @@ export default observer((iprops: any) => {
               ...e,
               target: {
                 ...e.target,
-                value: meta.oldval
+                value: meta.oldval,
               },
             });
           }
         }}
       ></Select>
-    )
+    );
   }
 
   return <TextField {...props} />;
 });
+
+(Input as any).libType = "Input";
+export default Input;

@@ -1,10 +1,10 @@
+import { useWindowSize } from "@src/libs/utils/useWindowSize";
+import _ from "lodash";
 import { toJS } from "mobx";
 import { observer, useLocalStore } from "mobx-react-lite";
 import * as React from "react";
 import FormContainer from "./form/FormContainer";
 import { generateFormField } from "./form/utils/generateFormField";
-import _ from "lodash";
-import { useWindowSize } from "@src/libs/utils/useWindowSize";
 export default observer((props: any) => {
   const {
     structure,
@@ -17,7 +17,7 @@ export default observer((props: any) => {
     isRoot,
     formRef,
     generateForm,
-    enableSub
+    enableSub,
   } = props;
   const { errors, fkeys } = inmeta;
   const data = inmeta.form;
@@ -72,7 +72,7 @@ export default observer((props: any) => {
     typeof form !== "function"
   )
     return null;
-
+ 
   return (
     <div
       style={{

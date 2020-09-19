@@ -6,7 +6,7 @@ import * as React from "react";
 import Dropdown from "./SelectFk.dropdown";
 import Popup from "./SelectFk.popup";
 
-export default observer((props: any) => {
+const Field = observer((props: any) => {
   return props.relationPage ? (
     <Popup
       {...props}
@@ -37,6 +37,8 @@ export default observer((props: any) => {
     />
   );
 });
+(Field as any).libType = "SelectFk";
+export default Field;
 
 export const formatRelationLabel = (keys, e, colDef?) => {
   let usedKeys = keys;
