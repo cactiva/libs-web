@@ -1,9 +1,7 @@
-import * as React from "react";
-import { Spinner, SpinnerSize } from "@fluentui/react/lib/Spinner";
-import { Label } from "@fluentui/react/lib/Label";
-
-import _ from "lodash";
 import { Icon } from "@fluentui/react/lib/Icon";
+import { Label } from "@fluentui/react/lib/Label";
+import * as React from "react";
+
 
 export default ({ text }: any) => {
   return (

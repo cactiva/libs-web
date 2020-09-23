@@ -17,16 +17,10 @@ interface ICrudWrapper {
   generateForm?: "auto" | "manual";
   children: any;
   isRoot?: boolean;
-  enableSub?:boolean;
+  enableSub?: boolean;
 }
 
 export default observer((props: ICrudWrapper) => {
-  const meta = useLocalStore(() => ({
-    front: {
-      mode: "",
-    },
-  }));
-
   const { data, children, afterQuery } = props;
   if (!data || !children) return null;
   const structure = _.get(props, "data.structure");
@@ -39,11 +33,9 @@ export default observer((props: ICrudWrapper) => {
       structure={structure}
       auth={auth}
       parsed={parsed}
-      mode={meta.front.mode}
       afterQuery={afterQuery}
       isRoot={props.isRoot === undefined ? true : props.isRoot}
       generateForm={props.generateForm || "auto"}
-      setMode={(newmode) => (meta.front.mode = newmode)}
       enableSub={props.enableSub}
     />
   );

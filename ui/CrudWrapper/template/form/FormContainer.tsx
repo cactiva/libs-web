@@ -129,7 +129,7 @@ export default observer(
             flexGrow: 1,
             position: "relative",
             display: "flex",
-            flexDirection: "column",
+            flexDirection: "row",
           }}
         >
           <div

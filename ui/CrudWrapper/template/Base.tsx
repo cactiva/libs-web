@@ -17,8 +17,6 @@ export default observer((props: any) => {
   const location = useLocation();
   const {
     parsed,
-    mode,
-    setMode,
     afterQuery,
     structure,
     generateForm,
@@ -28,7 +26,7 @@ export default observer((props: any) => {
     isRoot,
     style,
     headerStyle,
-    enableSub
+    enableSub,
   } = props;
   const { table, form } = parsed;
   const meta = useLocalStore(() => ({
@@ -53,6 +51,7 @@ export default observer((props: any) => {
     reloadFormKey: 0,
     init: false,
     initStructure: false,
+    mode: "",
   }));
   const reload = async (resetStructure = false) => {
     if (resetStructure) {
@@ -151,16 +150,16 @@ export default observer((props: any) => {
           meta.form = list[0];
           meta.reloadFormKey++;
 
-          if (mode !== "edit") {
-            setMode("edit");
+          if (meta.mode !== "edit") {
+            meta.mode = "edit";
           }
         } else {
           navigate((location.state as any).path);
         }
       }
     } else {
-      if (mode !== "") {
-        setMode("");
+      if (meta.mode !== "") {
+        meta.mode = "";
       }
 
       if (meta.list && meta.list.length === 0) {
@@ -192,7 +191,7 @@ export default observer((props: any) => {
       setErrors={(v) => (meta.errors = v)}
       errors={meta.errors}
       reloadList={reload}
-      mode={mode}
+      mode={meta.mode}
       style={headerStyle}
       hasRelation={meta.hasRelation}
       auth={auth}
@@ -233,7 +232,7 @@ export default observer((props: any) => {
       colDef={colDef}
       reload={reload}
       setLoading={(v: boolean) => (meta.loading = v)}
-      setMode={setMode}
+      setMode={(newmode) => (meta.mode = newmode)}
     />
   );
 
@@ -246,13 +245,13 @@ export default observer((props: any) => {
     >
       {renderHeader
         ? renderHeader({
-          header,
-        })
+            header,
+          })
         : header}
-      {mode === "" ? (
+      {meta.mode === "" ? (
         <List
           table={table}
-          setMode={setMode}
+          setMode={(newmode) => (meta.mode = newmode)}
           structure={structure}
           list={list}
           setForm={(v) => {
@@ -272,22 +271,22 @@ export default observer((props: any) => {
           fkeys={meta.fkeys}
         />
       ) : (
-          <Form
-            form={form}
-            colDef={colDef}
-            generateForm={generateForm}
-            parsed={parsed}
-            structure={structure}
-            hasRelation={meta.hasRelation}
-            inmeta={meta}
-            isRoot={isRoot}
-            setHasRelation={(v) => (meta.hasRelation = v)}
-            formRef={formRef}
-            reloadFormKey={meta.reloadFormKey}
-            mode={mode}
-            enableSub={enableSub}
-          />
-        )}
+        <Form
+          form={form}
+          colDef={colDef}
+          generateForm={generateForm}
+          parsed={parsed}
+          structure={structure}
+          hasRelation={meta.hasRelation}
+          inmeta={meta}
+          isRoot={isRoot}
+          setHasRelation={(v) => (meta.hasRelation = v)}
+          formRef={formRef}
+          reloadFormKey={meta.reloadFormKey}
+          mode={meta.mode}
+          enableSub={enableSub}
+        />
+      )}
     </div>
   );
 });
