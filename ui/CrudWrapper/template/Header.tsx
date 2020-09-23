@@ -1,3 +1,8 @@
+import {
+  ActionButton,
+  DefaultButton,
+  PrimaryButton,
+} from "@fluentui/react/lib/Button";
 import { useLocation } from "@reach/router";
 import { startCase } from "@src/libs/utils";
 import { generateDeleteString } from "@src/libs/utils/genDeleteString";
@@ -5,7 +10,6 @@ import { queryAll } from "@src/libs/utils/gql";
 import { useWindowSize } from "@src/libs/utils/useWindowSize";
 import _ from "lodash";
 import { observer, useLocalStore } from "mobx-react-lite";
-import { ActionButton, PrimaryButton } from "@fluentui/react/lib/Button";
 import * as React from "react";
 import { columnDefs } from "..";
 import { Text } from "../..";
@@ -119,9 +123,9 @@ export default observer(
                 text: "",
                 iconProps: { iconName: "ChevronLeft" },
                 onClick: () => {
-                  if (isRoot && mode === 'edit') {
+                  if (isRoot && mode === "edit") {
                     const url = window.location.pathname;
-                    const lastIdx = url.lastIndexOf('/');
+                    const lastIdx = url.lastIndexOf("/");
                     const id = Number(url.substring(lastIdx + 1));
                     if (isNaN(id)) setMode("");
                     else window.history.back();
@@ -231,8 +235,8 @@ export default observer(
                   e.props.options && e.props.options.onClick
                     ? e.props.options.onClick
                     : () => {
-                      console.log("custom clicked");
-                    },
+                        console.log("custom clicked");
+                      },
               };
             }
             break;
@@ -246,12 +250,12 @@ export default observer(
                   e.props.options && e.props.options.onClick
                     ? e.props.options.onClick
                     : () => {
-                      const filename = e.props.options.filename;
-                      ExportExcel({
-                        data: getList(),
-                        filename: filename ? filename : "excel-file",
-                      });
-                    },
+                        const filename = e.props.options.filename;
+                        ExportExcel({
+                          data: getList(),
+                          filename: filename ? filename : "excel-file",
+                        });
+                      },
               };
             }
             break;
@@ -265,10 +269,10 @@ export default observer(
                   e.props.options && e.props.options.onClick
                     ? e.props.options.onClick
                     : () => {
-                      // if (isRoot) {
-                      window.history.back();
-                      // }
-                    },
+                        // if (isRoot) {
+                        window.history.back();
+                        // }
+                      },
               };
             }
             break;
@@ -279,11 +283,11 @@ export default observer(
     const titleStyle =
       size.width < 800
         ? {
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          maxWidth: "200px",
-        }
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: "200px",
+          }
         : {};
 
     return (
@@ -336,8 +340,8 @@ export default observer(
           {meta.loading ? (
             <Spinner style={{ marginRight: 25 }} />
           ) : (
-              <MenuButtons actions={actions} reload={reload} />
-            )}
+            <MenuButtons actions={actions} reload={reload} />
+          )}
         </div>
       </div>
     );
@@ -364,16 +368,60 @@ const MenuButtons = ({ actions, reload }: any) => {
         ))}
       </>
     );
-  else
+  else {
+    const items: any[] = [];
+    let save: any = null;
+    buttons.forEach((e) => {
+      if (e.key === "save") {
+        save = e;
+      } else {
+        items.push(e);
+      }
+    });
+
     return (
       <>
-        <PrimaryButton
-          style={{ marginRight: 5, padding: "0px 5px" }}
-          text={`${buttons.length} Actions`}
-          menuProps={{
-            items: buttons,
-          }}
-        />
+        {save ? (
+          <>
+            <ActionButton
+              text={save.text}
+              key={save.key}
+              iconProps={save.iconProps}
+              onClick={(ev) => {
+                if (save.onClick) {
+                  save.onClick(ev, { reloadList: reload });
+                }
+              }}
+            />
+            <DefaultButton
+              style={{
+                padding: "0px 5px",
+                background: "#ececeb",
+                fontSize: "14px",
+                fontWeight: "normal",
+                border: 0,
+                borderLeft: "2px solid #1085D5",
+                borderRadius: 0,
+              }}
+              text={`${items.length} Actions`}
+              menuProps={{
+                items,
+              }}
+            />
+          </>
+        ) : (
+          <PrimaryButton
+            style={{
+              marginRight: 5,
+              borderRadius: 0,
+            }}
+            text={`${items.length} Actions`}
+            menuProps={{
+              items,
+            }}
+          />
+        )}
       </>
     );
+  }
 };
