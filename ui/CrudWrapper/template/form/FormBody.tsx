@@ -7,6 +7,7 @@ import { observer, useLocalStore } from "mobx-react-lite";
 import * as React from "react";
 import FileUpload from "../fields/FileUpload";
 import SelectFk from "../fields/SelectFk";
+import DateTime from "../../../DateTime";
 
 const renderField = (e, idx, isSection, presuf, meta) => {
   if (!e.children) {
@@ -19,6 +20,7 @@ const renderField = (e, idx, isSection, presuf, meta) => {
   if (e.children.type.libType === "Input") Field = Input;
   if (e.children.type.libType === "FileUpload") Field = FileUpload;
   if (e.children.type.libType === "SelectFk") Field = SelectFk;
+  if (e.children.type.libType === "DateTime") Field = DateTime;
 
   const ps = _.find(presuf, { path: e.props.path });
   const overridenProps: any = {};
