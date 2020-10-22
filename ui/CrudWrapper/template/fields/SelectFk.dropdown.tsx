@@ -7,6 +7,7 @@ import * as React from "react";
 import useAsyncEffect from "use-async-effect";
 import { columnDefs } from "../..";
 import { loadColDefs } from "../../utils/reloadStructure";
+import { toJS } from "mobx";
 
 const queryCacheEnabled = false;
 const queryCache = {};
@@ -21,17 +22,15 @@ export default observer((props: any) => {
 
   const query = getQuery(props);
   useAsyncEffect(async () => {
-    if (meta.list.length === 0) {
+    meta.loading = true;
+    meta.list = await loadList(props);
+    meta.loading = false;
+
+    if (queryCache[query].length === 0 && value) {
+      delete queryCache[query];
       meta.loading = true;
       meta.list = await loadList(props);
       meta.loading = false;
-
-      if (queryCache[query].length === 0 && value) {
-        delete queryCache[query];
-        meta.loading = true;
-        meta.list = await loadList(props);
-        meta.loading = false;
-      }
     }
   }, [query]);
   return (
@@ -133,9 +132,9 @@ const loadList = async (props) => {
       query = `query { ${tablename} {
                     id
                     ${cols
-                      .map((e) => e.column_name)
-                      .filter((e) => e !== "id" && e.indexOf("id") !== 0)
-                      .join("\n")}
+          .map((e) => e.column_name)
+          .filter((e) => e !== "id" && e.indexOf("id") !== 0)
+          .join("\n")}
                 }}`;
     }
   }
